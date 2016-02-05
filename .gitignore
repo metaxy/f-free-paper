@@ -4,3 +4,7 @@
 *.toc
 *.gz
 *.idx
+*.bbl
+*.blg
+*.dvi
+*.run.xml

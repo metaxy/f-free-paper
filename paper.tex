@@ -5,10 +5,13 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % for coloring text
 \author{Paul Walger}
 \title{Approximation of f-free}
 \makeindex
 \begin{document}
+
 \maketitle
 \tableofcontents
 \newpage
@@ -16,26 +19,46 @@
 \section{Abstract}
 
 \section{Einleitung}
+
+
+\subsection{Motivation}
+
+\subsection{Anwendungsbeispiele}
+
 \subsection{Definitionen}
 \subsubsection{Definition Graph}
 \subsubsection{Definition induzierte Subgraph}
 
-\subsection{Motivation}
-\subsection{Anwendungsbeispiele}
+\section{Ähnliche Arbeiten}
+\cite{Moreno13} Implicit Hitting Set hilft hier leider nicht viel.
 
-\section{Framework}
+\section{Implementation}
 \subsection{Repräsentation vom Graphen}
+Die Graphen werden in einer Adjazenzmatrix gespeichert.
+
 \subsection{Das Finden von induzierten Subgraphen}
 
+\subsection{Eingabe}
+Die Eingabe besteht hauptsächlich aus dem Graphen und dem verbotenen Subgraphen. Diese müssen als eine Textdatei vorliegen und die Pfade werden als Paramater zu dem Programm übergeben.
+
+\subsection{Ausgabe}
+Die Ausgabe besteht aus den Kanten die geändert werden müssen. Diese werden auf $stdout$ geschrieben als Paare, wobei die beiden Namen der Knoten durch ein Leerzeichen getrennt sind. Eine Kante nimmt eine Zeile ein.
+Weiterhin gibt es Zeilen die mit einem \# anfangen. Diese sind zusätzliche Information die das Programm ausgibt und können ignoriert werden. Man kann dies mit dem Flag -\,-no-comments ausschalten.
+
 \section{Algorithmen}
+Die nachfolgenden beschriebenen Alogrithmen basieren alle auf dem folgenden Prinzip, suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält, der minimal unterschiedlich ist zu dem Eingabegraphen. Wiederhole dies, wenn notwendig. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen.
+Da alle Anstätze diesen Schritte enthalten und sich nur in dem unterschieden, wie der valid Graph gefunden wird, wird folgend nur dieser Aspekt betrachtet.
+
+Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
+Der Top-Bottom-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht. Der Bottom-Top-Ansatz fängt mit einem leeren oder vollen Graphen an, und ändert solange Konten, bis man möglichst nahe an dem Eingabegraphen ist.
+Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es unterschiedliche Stadien gibt… 
+
 \subsection{Top-Bottom}
 \subsection{Bottom-Top}
 \subsection{Grow-Reduce}
-
-\section{Aufbau der Test}
-\subsection{Datensätze}
-\subsection{Optimale Lösung}
-Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es erforderlich die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden.
+\textcolor{green}{Ist der Grow-Reduce Ansatz ein Greedy Randomized Adaptive Search Procedure? Siehe \cite{Bastos2014}}
+\subsection{FPT}
+\subsection{Lineare Programmierung}
 \subsubsection{Lineare Optimierung}
 Bei der linearen Optimierung wird eine lineare Zielfunktion minimiert bzw. maximiert, wobei sie durch lineare Gleichungen und Ungleichungen beschränkt ist.
 \subsubsection{Das Model des Graphen}
@@ -43,12 +66,31 @@ Bei der linearen Optimierung wird eine lineare Zielfunktion minimiert bzw. maxim
 \subsubsection{Die Beschränkungen}
 \subsubsection{Pseudocode}
 
+\subsection{Relaxierte Lineare Programmierung}
+
+
+\section{Aufbau der Test}
+\subsection{Datensätze}
+\subsection{Optimale Lösung}
+Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es erforderlich die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden.
+
 
 \subsection{Formate}
-
 \section{Auswertung}
+\section{Vergleich mit anderen Heuristiken}
+\subsection{Cluster-Editing}
+\subsubsection{2K-Heuristik}
+\subsubsection{Andere Heuristiken}
+\cite{Bastos2014} Effizenitze Algorithmen
+
+ GRASP Heuritik
+ ILS Heuristik
+
 \section{Zukünftige Forschungsmöglichkeiten}
-\section{Related Work}
 \section{Zusammenfassung}
+
+\bibliographystyle{plain}
+\bibliographystyle{te}
+\bibliography{biblio}
 
 \end{document}
