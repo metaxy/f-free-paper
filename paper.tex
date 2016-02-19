@@ -6,9 +6,21 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 
+%for pseudocode
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{caption}
+
+\DeclareCaptionFormat{algor}{%
+  \hrulefill\par\offinterlineskip\vskip1pt%
+    \textbf{#1#2}#3\offinterlineskip\hrulefill}
+\DeclareCaptionStyle{algori}{singlelinecheck=off,format=algor,labelsep=space}
+\captionsetup[algorithm]{style=algori}
+
+
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % for coloring text
 \author{Paul Walger}
-\title{Approximation of f-free}
+\title{Heuristiken für das Entfernen von verbotenen Teilgraphen}
 \makeindex
 \begin{document}
 
@@ -23,14 +35,24 @@
 
 \subsection{Motivation}
 
+
 \subsection{Anwendungsbeispiele}
 
+\subsubsection{Soziale Netzwerke}
+ $(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur.\cite{NastosG13}
+ Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und afür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
+
+\subsubsection{Protein interaction networks}
+$(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung von Interaktionsnetzwerken von Proteinen \cite{BrucknerHK15}.
 \subsection{Definitionen}
-\subsubsection{Definition Graph}
-\subsubsection{Definition induzierte Subgraph}
+\subsubsection{Notationen und Definitionen}
+Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und E die Menge seiner Kanten.
+
+Sei $G = (V,E)$ ein Graph und $S \subseteq V$ eine beliebige Knotenmenge von $V$. 
+Dann ist $G[S]$ der auf $S$ induzierte Subgraph von $G$ mit $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$
 
 \section{Ähnliche Arbeiten}
-\cite{Moreno13} Implicit Hitting Set hilft hier leider nicht viel.
+Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13} 
 
 \section{Implementation}
 \subsection{Repräsentation vom Graphen}
@@ -46,7 +68,7 @@ Die Ausgabe besteht aus den Kanten die geändert werden müssen. Diese werden au
 Weiterhin gibt es Zeilen die mit einem \# anfangen. Diese sind zusätzliche Information die das Programm ausgibt und können ignoriert werden. Man kann dies mit dem Flag -\,-no-comments ausschalten.
 
 \section{Algorithmen}
-Die nachfolgenden beschriebenen Alogrithmen basieren alle auf dem folgenden Prinzip, suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält, der minimal unterschiedlich ist zu dem Eingabegraphen. Wiederhole dies, wenn notwendig. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen.
+Die nachfolgenden beschriebenen Alogrithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält, der minimal unterschiedlich ist zu dem Eingabegraphen. Wiederhole dies, wenn notwendig. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen.
 Da alle Anstätze diesen Schritte enthalten und sich nur in dem unterschieden, wie der valid Graph gefunden wird, wird folgend nur dieser Aspekt betrachtet.
 
 Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
@@ -62,9 +84,44 @@ Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es unterschiedlic
 \subsubsection{Lineare Optimierung}
 Bei der linearen Optimierung wird eine lineare Zielfunktion minimiert bzw. maximiert, wobei sie durch lineare Gleichungen und Ungleichungen beschränkt ist.
 \subsubsection{Das Model des Graphen}
+Wir nutzen binäre Variablen $e_{uv}$, wobei $u,v \in V$ sind und $u < v$ gilt.
+Dabei ist $e_{uv} = 1$ genau dann wenn, die kante ${u,v}$ ein Teil des Lösungsgraphen ist.
 
-\subsubsection{Die Beschränkungen}
-\subsubsection{Pseudocode}
+Wir minimieren \[\sum_{u,v \in V} 
+\begin{cases} 
+      e_{u,v} & \{u,v\} \in E \\
+      -e_{u,v} & \{u,v\} \notin E
+   \end{cases}\].
+   
+Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgraphen ausschließen wpürden, viel zum umfangreich wäre, werden die Bedingungen iterative dort hinzu gefügt, wo es einen verbotenen Teilgraphen gibt. Dann wird der Problem gelöst und und die Änderungen auf den Graphen übertragen. Dann wird wieder nach alle verboteten Subgraphen gesucht. Dies wird solange wiederholt bis es keine mehr gibt. Nun ist die minimale Anzahl von Änderungen gefunden. 
+\pagebreak
+\begin{center}
+  \captionof{algorithm}{F-Free BLP}\label{euclid}
+\begin{algorithmic}[1]
+\Function{solveBLP}{graph, forbidden}
+\For{each graph f $\in$ forbidden }
+	\While{findeVerboteneSubgraphen(graph, f) != $\emptyset$}
+		\For{each graph M $\in$ findeVerboteneSubgraphen(graph, f) }
+			\State{contstraint = 0}
+			\For{each $\{u,v\}$ $\in$ kanten(M)}
+				\If{$\{u,v\}$ $\in$ kanten(graph)} 
+					\State{contstraint += 1 - $e_{uv}$} 
+				\Else 
+					\State{contstraint += $e_{uv}$} 
+				\EndIf
+			\EndFor
+			\State{addConstraint(contstraint)}
+		\EndFor
+		\State{graph = lpSolve(graph)}
+	\EndWhile
+\EndFor
+
+\Return(graph)
+\EndFunction
+\end{algorithmic}
+\end{center}
+
+
 
 \subsection{Relaxierte Lineare Programmierung}
 
@@ -80,11 +137,59 @@ Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, i
 \section{Vergleich mit anderen Heuristiken}
 \subsection{Cluster-Editing}
 \subsubsection{2K-Heuristik}
+Die 2K-Heuristik, basiert auf einem Kernel für das Cluster-Editing-Problem, welches maximal 2K Knoten liefert \cite{ChenM12}. Wenn man dort eine Bedingung für die ?. Reduktionsregel abschwächt  abschwächt, kommt eine sehr gute Heuristik für das Cluster-Editing-Problem heraus. Dabei wird die Bedingung mit jedem Durchlauf abgeschwächt.
+\pagebreak
+\begin{center}
+  \captionof{algorithm}{2K Heuristik}\label{euclid}
+\begin{algorithmic}[1]
+\Function{solve2K}{g :: Gewichteter Graph}
+\State{a = 1,0} 
+\While{graph hat einen P3}
+	\For{each knoten u $\in$ g}
+		\If{$2 \cdot a \cdot costClique(g, u) + a \cdot costCut(g, u) < \#(N(u))$}
+			\For{each $\{a,b\}$  mit $a \in N(u)$, $b \in N(u) \land a \neq b$}
+				\State{merge(a,b)}
+			\EndFor
+		\EndIf
+	\EndFor
+	\State{$a = 0,99 \cdot a - 0,01$}
+\EndWhile
+
+\Return{graph}
+\EndFunction
+
+\Function{costClique}{graph :: Gewichteter Graph, u :: Kante}
+\State{cost = 0}
+	\For{each $\{a,b\}$  mit $a \in N^{*}(u)$, $b \in N^{*}(u) \land \{a,b\} \notin graph$}
+		\State{cost += $|\,w(\{a,b\})\,|$}
+	\EndFor
+
+\Return{cost}
+\EndFunction
+\Function{costCut}{graph :: Gewichteter Graph, u :: Kante}
+\State{cost = 0}
+	\For{each $\{a,b\}$  mit $a \in N^{*}(u)$, $b \notin N^{*}(u) \land \{a,b\} \in graph$}
+		\State{cost += $w(\{a,b\})$}
+	\EndFor
+
+\Return{cost}
+\EndFunction
+\end{algorithmic}
+\end{center}
+
+
 \subsubsection{Andere Heuristiken}
-\cite{Bastos2014} Effizenitze Algorithmen
+\cite{Bastos2014} Effiziente Algorithmen
 
  GRASP Heuritik
  ILS Heuristik
+
+\subsection{Quasi-Threshold Mover}
+In \cite{BrandesHSW15} wurde ein neuer schneller und auch für große Graphen geeigneter Algorithmus entwickelt für das Quasi-Threshold Editing Problem. Quasi-Threshold Graphen, auch bekannt als trivial perfekte Graphen lassen sich auch als $(P_4, C_4)$ - freie Graphen charakterisieren. 
+
+
+Vergleich mit mit meinem Algorithmus.
+
 
 \section{Zukünftige Forschungsmöglichkeiten}
 \section{Zusammenfassung}
