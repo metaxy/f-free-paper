@@ -22,7 +22,7 @@
 \renewcommand{\Return}{\State\oldReturn}
 
 \newcommand{\vars}{\texttt}
-\newcommand{\func}{\textrm}
+\newcommand{\func}{\textsc}
 
 
 \newcommand\todo[1]{\textcolor{red}{#1}}
@@ -63,6 +63,7 @@ Dann ist $G[S]$ der auf $S$ induzierte Subgraph von $G$ mit $G[S] = (S, E \cap \
 
 $N(u)$ ist die Nachbarschaft vom Knoten $u$. $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive.
 
+
 \section{Ähnliche Arbeiten}
 Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13} 
 
@@ -75,16 +76,36 @@ Die Graphen werden in einer Adjazenzmatrix gespeichert.
 
 \subsection{Das Finden von induzierten Subgraphen}
 \cite{Ullmann76}
-
+Wie verwenden einen VF Algorithmus für \func{findForbiddenSubgraph}(\vars{graph},\vars{forbidden}).
+Dieser gibt gibt eine Menge von Subgraphen zurück.
 \subsection{Eingabe}
-Die Eingabe besteht hauptsächlich aus dem Graphen und dem verbotenen Subgraphen. Diese müssen als eine Textdatei vorliegen und die Pfade werden als Paramater zu dem Programm übergeben.
+Die Eingabe besteht hauptsächlich aus dem Graphen und dem verbotenen Subgraphen. Diese müssen als eine Textdatei vorliegen und die Pfade werden als Parameter zu dem Programm übergeben.
 
 \subsection{Ausgabe}
 Die Ausgabe besteht aus den Kanten die geändert werden müssen. Diese werden auf $stdout$ geschrieben als Paare, wobei die beiden Namen der Knoten durch ein Leerzeichen getrennt sind. Eine Kante nimmt eine Zeile ein.
 Weiterhin gibt es Zeilen die mit einem \# anfangen. Diese sind zusätzliche Information die das Programm ausgibt und können ignoriert werden. Man kann dies mit dem Flag -\,-no-comments ausschalten.
 
 \section{Algorithmen}
-Die nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält, der minimal unterschiedlich ist zu dem Eingabegraphen. Wiederhole dies, wenn notwendig. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen.
+Die nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält, der minimal unterschiedlich ist zu dem Eingabegraphen. Wiederhole dies, wenn notwendig. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen. Dies wird in dem Algorithmus \ref{algo:general} noch einmal beschrieben. Dabei ist \func{SolveAlgo} einer der Alorithmen, die wir in den folgenden Abschnitten betrachten werden.
+\begin{center}
+  \captionof{algorithm}{F-Free BLP}\label{algo:general}
+\begin{algorithmic}[1]
+\Function{Solve}{\vars{graph}, \vars{forbidden}, \vars{iterations}}
+
+\State{\vars{bestGraph} = $(\emptyset,\emptyset)$}
+
+\For{\vars{i} = 1 to \vars{iterations}}
+	\State{\vars{validGraph} = \func{solveAlgo}(\vars{graph}, \vars{forbidden})}
+	\If{\func{difference}(\vars{bestGraph}, \vars{graph}) < \func{difference}(\vars{validGraph}, \vars{graph})}
+		\State{\vars{bestGraph} = \vars{validGraph}}
+	\EndIf  
+\EndFor
+
+\State{print \func{difference}(\vars{graph}, \vars{bestGraph})}
+\EndFunction
+\end{algorithmic}
+\end{center}
+
 Da alle Ansätze diesen Schritte enthalten und sich nur in dem unterschieden, wie der valide Graph gefunden wird, wird folgend nur dieser Aspekt betrachtet.
 
 Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
@@ -101,7 +122,7 @@ Das ist der einfachste Algorithmus. Das Problem bei diesen ist, dass er nicht in
 \begin{algorithmic}[1]
 \Function{StateRandom2Solve}{\vars{graph}, \vars{forbidden}}
 \For{Graph \vars{f} $\in$ \vars{forbidden} }
-	\While{findForbiddenSubgraph(\vars{graph}, \vars{f}) != $\emptyset$}
+	\While{\func{findForbiddenSubgraph}(\vars{graph}, \vars{f}) != $\emptyset$}
 		\State{change a random node in the forbidden subgraph}
 	\EndWhile
 \EndFor
@@ -131,15 +152,14 @@ Wir minimieren \[\sum_{u,v \in V}
    \end{cases}\].
    
 Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgraphen ausschließen wpürden, viel zum umfangreich wäre, werden die Bedingungen iterative dort hinzu gefügt, wo es einen verbotenen Teilgraphen gibt. Dann wird der Problem gelöst und und die Änderungen auf den Graphen übertragen. Dann wird wieder nach alle verboteten Subgraphen gesucht. Dies wird solange wiederholt bis es keine mehr gibt. Nun ist die minimale Anzahl von Änderungen gefunden. 
-\pagebreak
 
 \begin{center}
   \captionof{algorithm}{F-Free BLP}\label{euclid}
 \begin{algorithmic}[1]
-\Function{solveBLP}{graph, forbidden}
-\For{each graph f $\in$ forbidden }
-	\While{findeVerboteneSubgraphen(graph, f) != $\emptyset$}
-		\For{each graph M $\in$ findeVerboteneSubgraphen(graph, f) }
+\Function{solveBLP}{\vars{graph}, \vars{algo:blp}}
+\For{graph \vars{f} $\in$ \vars{forbidden}}
+	\While{\func{findForbiddenSubgraph}(graph, f) != $\emptyset$}
+		\For{each graph M $\in$ \func{findeVerboteneSubgraphen}(\vars{graph}, \vars{f}) }
 			\State{contstraint = 0}
 			\For{each $\{u,v\}$ $\in$ kanten(M)}
 				\If{$\{u,v\}$ $\in$ kanten(graph)} 
@@ -168,6 +188,8 @@ Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgrap
 \subsection{Datensätze}
 Folgende Datensätze wurden verwendet.
 \subsubsection{albert barabasi}
+Für den Datensatz albert barabasi wurde das Barabasi–Albert Modell, welches ein zufälliges skalenfreies Netz erzeugt.\cite{Albert02}
+
 Anzahl: 56
 
 \subsubsection{newman watts strogatz}
