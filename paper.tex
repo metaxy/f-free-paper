@@ -49,11 +49,13 @@
 \subsection{Anwendungsbeispiele}
 
 \subsubsection{Soziale Netzwerke}
- $(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur.\cite{NastosG13}
- Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und afür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
+$(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur.\cite{NastosG13}
+
+Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und afür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
 
 \subsubsection{Protein interaction networks}
 $(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung von Interaktionsnetzwerken von Proteinen \cite{BrucknerHK15}.
+
 \subsection{Definitionen}
 \subsubsection{Notationen und Definitionen}
 Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und E die Menge seiner Kanten.
@@ -63,8 +65,12 @@ Dann ist $G[S]$ der auf $S$ induzierte Subgraph von $G$ mit $G[S] = (S, E \cap \
 
 $N(u)$ ist die Nachbarschaft vom Knoten $u$. $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive.
 
+Sei $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
 
-\section{Ähnliche Arbeiten}
+\subsubsection{Problemstellung}
+
+
+\subsection{Ähnliche Arbeiten}
 Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13} 
 
 Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ ist effizient, aber $O(n^{2-\epsilon})$ ist NP-Hard.\cite{Alon09}
@@ -78,12 +84,24 @@ Die Graphen werden in einer Adjazenzmatrix gespeichert.
 \cite{Ullmann76}
 Wie verwenden einen VF Algorithmus für \func{findForbiddenSubgraph}(\vars{graph},\vars{forbidden}).
 Dieser gibt gibt eine Menge von Subgraphen zurück.
-\subsection{Eingabe}
-Die Eingabe besteht hauptsächlich aus dem Graphen und dem verbotenen Subgraphen. Diese müssen als eine Textdatei vorliegen und die Pfade werden als Parameter zu dem Programm übergeben.
 
-\subsection{Ausgabe}
-Die Ausgabe besteht aus den Kanten die geändert werden müssen. Diese werden auf $stdout$ geschrieben als Paare, wobei die beiden Namen der Knoten durch ein Leerzeichen getrennt sind. Eine Kante nimmt eine Zeile ein.
-Weiterhin gibt es Zeilen die mit einem \# anfangen. Diese sind zusätzliche Information die das Programm ausgibt und können ignoriert werden. Man kann dies mit dem Flag -\,-no-comments ausschalten.
+\subsubsection{Vergleich VFLib, Boost und eigne Implemtation}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+• & find all p3s & count all p3s & has a p3 \\ 
+\hline 
+Spezial & 0.73s & 0.04s & 0.00016s \\ 
+\hline 
+VFLib & 1.73s & 0.87s & 0.0253s \\ 
+\hline 
+Boost & 3.04s & 1.68 & 0.0021s \\ 
+\hline 
+\end{tabular} 
+\\
+
+Bei VFLib ist der Graph immutable und bei der Suche nach einem  Subgraphen müssen wir jedes Mal den Graphen neu erstellen.
+
+
 
 \section{Algorithmen}
 Die nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält, der minimal unterschiedlich ist zu dem Eingabegraphen. Wiederhole dies, wenn notwendig. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen. Dies wird in dem Algorithmus \ref{algo:general} noch einmal beschrieben. Dabei ist \func{SolveAlgo} einer der Alorithmen, die wir in den folgenden Abschnitten betrachten werden.
@@ -135,6 +153,25 @@ Es ist wie random2 aber mit einer kleineren Wahrscheinheitlich, dass bereits edi
 \subsubsection{Random Half}
 
 \subsection{Bottom-Top}
+
+\subsubsection{Extend}
+\begin{center}
+  \captionof{algorithm}{F-Free Extend}\label{euclid}
+\begin{algorithmic}[1]
+\Function{StateExtendSolve}{\vars{input}, \vars{forbidden}}
+	\State{\vars{graph} = $(\emptyset,\emptyset)$}
+	\While{true}
+		\For{each Edge \vars{e} $\in$ difference(\vars{graph},\vars{input}) }
+			\State{try to flip \vars{e}, revert if it produces an invalid graph}
+		\EndFor
+		\State{break if there was no change}
+	\EndWhile
+\Return(\vars{graph})
+\EndFunction
+\end{algorithmic}
+\end{center}
+
+
 \subsection{Grow-Reduce}
 \todo{Ist der Grow-Reduce Ansatz ein Greedy Randomized Adaptive Search Procedure? Siehe \cite{Bastos2014}}
 \subsection{FPT}
@@ -207,7 +244,6 @@ Anzahl: 360
 Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden.
 
 
-\subsection{Formate}
 \section{Auswertung}
 \section{Vergleich mit anderen Heuristiken}
 \subsection{Cluster-Editing}
