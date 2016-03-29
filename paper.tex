@@ -75,54 +75,29 @@ Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13}
 
 Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ ist effizient, aber $O(n^{2-\epsilon})$ ist NP-Hard.\cite{Alon09}
 
-\section{Implementation}
-\subsection{Repräsentation vom Graphen}
-Die Graphen werden in einer Adjazenzmatrix gespeichert.
-
-
-\subsection{Das Finden von induzierten Subgraphen}
-\cite{Ullmann76}
-Wie verwenden einen VF Algorithmus für \func{findForbiddenSubgraph}(\vars{graph},\vars{forbidden}).
-Dieser gibt gibt eine Menge von Subgraphen zurück.
-
-\subsubsection{Vergleich VFLib, Boost und eigne Implemtation}
-\begin{tabular}{|c|c|c|c|}
-\hline 
-• & find all p3s & count all p3s & has a p3 \\ 
-\hline 
-Spezial & 0.73s & 0.04s & 0.00016s \\ 
-\hline 
-VFLib & 1.73s & 0.87s & 0.0253s \\ 
-\hline 
-Boost & 3.04s & 1.68 & 0.0021s \\ 
-\hline 
-\end{tabular} 
-\\
-
-Bei VFLib ist der Graph immutable und bei der Suche nach einem  Subgraphen müssen wir jedes Mal den Graphen neu erstellen.
 
 
 
 \section{Algorithmen}
-Die nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält, der minimal unterschiedlich ist zu dem Eingabegraphen. Wiederhole dies, wenn notwendig. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen. Dies wird in dem Algorithmus \ref{algo:general} noch einmal beschrieben. Dabei ist \func{SolveAlgo} einer der Alorithmen, die wir in den folgenden Abschnitten betrachten werden.
-\begin{center}
-  \captionof{algorithm}{F-Free BLP}\label{algo:general}
+Die nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen. Dies wird in dem Algorithmus \ref{algo:general} noch einmal beschrieben. Dabei steht \func{SolveAlgo} für einen der Algorithmen, die wir in den folgenden Abschnitten betrachten werden.
+\begin{algorithm}
+  \captionof{algorithm}{Genereller Aufbau}\label{algo:general}
 \begin{algorithmic}[1]
 \Function{Solve}{\vars{graph}, \vars{forbidden}, \vars{iterations}}
 
-\State{\vars{bestGraph} = $(\emptyset,\emptyset)$}
+\State{\vars{bestGraph} $\gets$ $(\emptyset,\emptyset)$}
 
 \For{\vars{i} = 1 to \vars{iterations}}
-	\State{\vars{validGraph} = \func{solveAlgo}(\vars{graph}, \vars{forbidden})}
-	\If{\func{difference}(\vars{bestGraph}, \vars{graph}) < \func{difference}(\vars{validGraph}, \vars{graph})}
-		\State{\vars{bestGraph} = \vars{validGraph}}
+	\State{\vars{validGraph} $\gets$ \func{solveAlgo}(\vars{graph}, \vars{forbidden})}
+	\If{\func{diff}(\vars{bestGraph}, \vars{graph}) < \func{diff}(\vars{validGraph}, \vars{graph})}
+		\State{\vars{bestGraph} $\gets$ \vars{validGraph}}
 	\EndIf  
 \EndFor
 
-\State{print \func{difference}(\vars{graph}, \vars{bestGraph})}
+\State{print \func{diff}(\vars{graph}, \vars{bestGraph})}
 \EndFunction
 \end{algorithmic}
-\end{center}
+\end{algorithm}
 
 Da alle Ansätze diesen Schritte enthalten und sich nur in dem unterschieden, wie der valide Graph gefunden wird, wird folgend nur dieser Aspekt betrachtet.
 
@@ -133,47 +108,98 @@ Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es unterschiedlic
 \subsection{Top-Bottom}
 Der Top-Bottom-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht.
 
-\subsubsection{Random2}
-Das ist der einfachste Algorithmus. Das Problem bei diesen ist, dass er nicht in absehbarer Zeit terminieren muss.
-\begin{center}
-  \captionof{algorithm}{F-Free BLP}\label{euclid}
+\subsubsection{RandomChange}
+Das ist der einfachste Algorithmus. 
+\begin{algorithm}
+  \captionof{algorithm}{RandomChange}\label{algo:RandomChange}
+\begin{algorithmic}[1]
+\Function{RandomChangeSolve}{\vars{graph}, \vars{forbidden}}
+\For{Graph \vars{f} $\in$ \vars{forbidden} }
+	\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
+	\While{forbiddenSubgraph  $\neq \emptyset$}
+		\State{change a random edge $\in$ \vars{forbiddenSubgraph}}
+		\State{\vars{forbiddenSubgraph} $\gets$	 \func{findFS}(\vars{graph}, \vars{f})}
+	\EndWhile
+\EndFor
+\Return{\vars{graph}}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Random}
+Es ist wie RandomChange\footnote{Algorithmus \ref{algo:RandomChange}}, aber bereits editierte Kanten werden mit einer geringeren Wahrscheinlichkeit geändert.
+Auch hat es für kleine Graphen ein Konvergenzkriterium. Dieses Konvergenzkriterum besteht darin, dass nach für jede Änderung, die Anzahl der verbotenen Subgraphen gezählt wird und die nur dann ausgeführt wird, wenn die Anzahl der verbotenen Subgraphen dadurch weniger wird.
+
+\begin{algorithm}
+  \captionof{algorithm}{Random}\label{algo:Random}
 \begin{algorithmic}[1]
 \Function{StateRandom2Solve}{\vars{graph}, \vars{forbidden}}
 \For{Graph \vars{f} $\in$ \vars{forbidden} }
-	\While{\func{findForbiddenSubgraph}(\vars{graph}, \vars{f}) != $\emptyset$}
-		\State{change a random node in the forbidden subgraph}
+	\State{f\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
+	\While{\vars{forbiddenSubgraph} != $\emptyset$}
+	    \State{\vars{foundEdge} $\gets \emptyset$}
+		\While{true}
+			\State{\vars{e} $\gets$ random edge from \vars{forbiddenSubgraph}}
+			\State{\vars{prob} $\gets$ 1 / \#(E(f))}
+			\If{e is already visited}
+				\State{\vars{prob} $\gets$ \vars{prob} / 4}
+		    \EndIf
+		    \If{random number from [0,1] > prob}
+		    	\State{\vars{foundEdge} $\gets$ \vars{e}}
+		    	\State{break}
+		    \EndIf
+		    \State{flip \vars{e} in \vars{graph}}
+		\EndWhile
+		\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
 	\EndWhile
 \EndFor
-\Return(\vars{graph})
+\Return{\vars{graph}}
 \EndFunction
 \end{algorithmic}
-\end{center}
-\subsubsection{Random}
-Es ist wie random2 aber mit einer kleineren Wahrscheinheitlich, dass bereits editierte Kanten geändert werden und mit einem optionalen Konvergenzkriterum.
-\subsubsection{Random Half}
+\end{algorithm}
 
 \subsection{Bottom-Top}
 
 \subsubsection{Extend}
-\begin{center}
+\begin{algorithm}
   \captionof{algorithm}{F-Free Extend}\label{euclid}
 \begin{algorithmic}[1]
 \Function{StateExtendSolve}{\vars{input}, \vars{forbidden}}
 	\State{\vars{graph} = $(\emptyset,\emptyset)$}
 	\While{true}
-		\For{each Edge \vars{e} $\in$ difference(\vars{graph},\vars{input}) }
+		\For{each Edge \vars{e} $\in$ \func{Difference}(\vars{graph},\vars{input}) }
 			\State{try to flip \vars{e}, revert if it produces an invalid graph}
 		\EndFor
 		\State{break if there was no change}
 	\EndWhile
-\Return(\vars{graph})
+\Return{\vars{graph}}
 \EndFunction
 \end{algorithmic}
-\end{center}
+\end{algorithm}
 
 
 \subsection{Grow-Reduce}
-\todo{Ist der Grow-Reduce Ansatz ein Greedy Randomized Adaptive Search Procedure? Siehe \cite{Bastos2014}}
+Der Grow-Reduce-Ansatz ist ein Art von einer greedy randomized adaptive search procedure(GRASP).\todo{GRASPH beschreiben Siehe \cite{Bastos2014}}
+Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem leeren Graphen, dann wird in jeder Iteration ein Knoten und seine Umgebung hinzugefügt und durch lokale Suche werden alle neu entstandenen verbotenen Subgraphen wieder entfernt.
+
+\begin{algorithm}
+  \captionof{algorithm}{GrowReduce}\label{algo:GrowReduce}
+\begin{algorithmic}[1]
+\Function{GrowReduceSolve}{\vars{input}, \vars{forbidden}}
+	\State{\vars{graph} $\gets$ $(\emptyset,\emptyset)$}
+	\State{\vars{nodes} $\gets$ \func{randomOrder}(V(\vars{input}))}
+	\For{\vars{node} $\in$ \vars{nodes}}
+		
+		\For{\vars{neighbor} $\in$ N(\vars{node})}\Comment{Grow Phase}
+			\State{Add Edge (\vars{node}, \vars{neighbor}) to \vars{graph}}
+		\EndFor
+		
+	\EndFor
+\Return{\vars{graph}}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{FPT}
 \subsection{Lineare Programmierung}
 \subsubsection{Lineare Optimierung}
@@ -190,12 +216,12 @@ Wir minimieren \[\sum_{u,v \in V}
    
 Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgraphen ausschließen wpürden, viel zum umfangreich wäre, werden die Bedingungen iterative dort hinzu gefügt, wo es einen verbotenen Teilgraphen gibt. Dann wird der Problem gelöst und und die Änderungen auf den Graphen übertragen. Dann wird wieder nach alle verboteten Subgraphen gesucht. Dies wird solange wiederholt bis es keine mehr gibt. Nun ist die minimale Anzahl von Änderungen gefunden. 
 
-\begin{center}
+\begin{algorithm}
   \captionof{algorithm}{F-Free BLP}\label{euclid}
 \begin{algorithmic}[1]
 \Function{solveBLP}{\vars{graph}, \vars{algo:blp}}
 \For{graph \vars{f} $\in$ \vars{forbidden}}
-	\While{\func{findForbiddenSubgraph}(graph, f) != $\emptyset$}
+	\While{\func{findFS}(graph, f) != $\emptyset$}
 		\For{each graph M $\in$ \func{findeVerboteneSubgraphen}(\vars{graph}, \vars{f}) }
 			\State{contstraint = 0}
 			\For{each $\{u,v\}$ $\in$ kanten(M)}
@@ -213,7 +239,7 @@ Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgrap
 \Return(graph)
 \EndFunction
 \end{algorithmic}
-\end{center}
+\end{algorithm}
 
 
 
@@ -243,8 +269,35 @@ Anzahl: 360
 \subsection{Optimale Lösung}
 Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden.
 
+\section{Implementation}
+\subsection{Repräsentation vom Graphen}
+Die Graphen werden in einer Adjazenzmatrix gespeichert.
+
+
+\subsection{Das Finden von induzierten Subgraphen}
+\cite{Ullmann76}
+Wie verwenden einen VF Algorithmus für \func{findFS}(\vars{graph},\vars{forbidden}).
+Dieser gibt gibt eine Menge von Subgraphen zurück.
+
+\subsubsection{Vergleich VFLib, Boost und eigne Implemtation}
+\begin{tabular}{|c|c|c|c|}
+\hline 
+• & find all p3s & count all p3s & has a p3 \\ 
+\hline 
+Spezial & 0.73s & 0.04s & 0.00016s \\ 
+\hline 
+VFLib & 1.73s & 0.87s & 0.01236s \\ 
+\hline 
+Boost & 3.04s & 1.68 & 0.00102s \\ 
+\hline 
+\end{tabular} 
+\\
+
+Bei VFLib ist der Graph immutable und bei der Suche nach einem  Subgraphen müssen wir jedes Mal den Graphen neu erstellen.
+
 
 \section{Auswertung}
+
 \section{Vergleich mit anderen Heuristiken}
 \subsection{Cluster-Editing}
 \subsubsection{2K-Heuristik}
