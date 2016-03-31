@@ -68,10 +68,11 @@ $(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung vo
 \subsubsection{Notationen und Definitionen}
 Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und E die Menge seiner Kanten.
 
+$V(G)$ ist die Menge der Konten des Graphen $G$. $E(G)$ ist die Menge der Kanten des Graphen $G$. $N(u)$ ist die Nachbarschaft vom Knoten $u$. $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive.
+
 Sei $G = (V,E)$ ein Graph und $S \subseteq V$ eine beliebige Knotenmenge von $V$. 
 Dann ist $G[S]$ der auf $S$ induzierte Subgraph von $G$ mit $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$
 
-$N(u)$ ist die Nachbarschaft vom Knoten $u$. $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive.
 
 Sei $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
 
@@ -230,62 +231,59 @@ Die ist im Algorithmus \ref{algo:growReduce} zu sehen.
 
 \subsection{Explored-Grow-Reduce}
 Der Explored-Grow-Reduce-Ansatz ist dem Grow-Reduce-Ansatz ähnlich, bis auf das, es in der Grow-Phase nur die Kanten zu Knoten hinzufügt, die bereits erforscht sind.
-In Abbildung \ref{fig:algo_explored_1} ist der Anfangstatus zu sehen. Die gestrichelten Kanten, sind Kanten die Graphen vorhanden sind, aber noch nicht hinzugefügt worden sind und es wird der Knoten $a$ hinzugefügt, weil aber keine anderen Knoten bisher hinzugefügt worden sind, wird  werden keine Kanten hinzugefügt.
-In Abbildung \ref{fig:algo_explored_2} wird der Knoten $b$ hinzugefügt und weil $a$ auch schon hinzugefügt wurde
 
-
+Dieser Unterschied wird in der Abbildung \ref{fig:algo_explored} verdeutlich, wo nur die Grow Schritte visualiert wurden, ohne die Reduce-Phase, um es zu vereinfachen.In Abbildung \ref{fig:algo_explored_1} ist der Anfangstatus zu sehen. Die gestrichelten Kanten, sind Kanten die Graphen vorhanden sind, aber noch nicht hinzugefügt worden sind und es wird der Knoten $a$ hinzugefügt, weil aber keine anderen Knoten bisher hinzugefügt worden sind, wird  werden keine Kanten hinzugefügt.
+In Abbildung \ref{fig:algo_explored_2} wird der Knoten $b$ hinzugefügt und weil $a$ auch schon hinzugefügt wurde, wird auch die Kante $(a,b)$ hinzugefügt. Aber weder $(a,c)$ noch $(a,b)$ werden hingefügt, weil $c$ noch nicht erforscht wurde.
+In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somit auch die Kanten $(a,b)$ und $(a,c)$.
+	
+	
 \begin{figure}
   \centering
   \begin{tabular}[c]{ccc}
     \begin{subfigure}[b]{0.32\textwidth}
-     \digraph
-[width=\linewidth]{dot_explored_1}
-{
-   a[color=red];
-   b[style=dashed];
-   c[style=dashed];
-   d[style=dashed];
-   a->b[style=dashed];
-   a->c[style=dashed];
-   d->b[style=dashed];
-   b->c[style=dashed];
-}
-\caption{Knoten a wird hinzugefügt}
-\label{fig:algo_explored_1}
-    \end{subfigure}&
+      \digraph [width=\linewidth]{dot_explored_1}
+      {
+       a[color=red];
+       b[style=dashed];
+       c[style=dashed];
+       d[style=dashed];
+       a->b[style=dashed];
+       a->c[style=dashed];
+       d->b[style=dashed];
+       b->c[style=dashed];
+      }
+      \caption{Knoten a wird hinzugefügt}
+      \label{fig:algo_explored_1}
+   \end{subfigure}&
+	 \begin{subfigure}[b]{0.32\textwidth}
+	   \digraph [width=\linewidth]{dot_explored_2}
+	    {
+	     a[];
+	     b[color=red];
+	     c[style=dashed];
+	     d[style=dashed];
+	     a->b;
+	     a->c[style=dashed];
+	     d->b[style=dashed];
+	     b->c[style=dashed];
+	    }
+	    \caption{Knoten b wird hinzugefügt}
+	    \label{fig:algo_explored_2}
+	  \end{subfigure}&
     \begin{subfigure}[b]{0.32\textwidth}
-      \digraph
-[width=\linewidth]{dot_explored_2}
-{
-   a[];
-   b[color=red];
-   a->b;
-   c[style=dashed];
-   d[style=dashed];
-   a->c[style=dashed];
-   d->b[style=dashed];
-   b->c[style=dashed];
-
-}
-\caption{Knoten b wird hinzugefügt}
-\label{fig:algo_explored_2}
-\end{subfigure}&
-\begin{subfigure}[b]{0.32\textwidth}
-     \digraph
-[width=\linewidth]{dot_explored_3}
-{
-   a[];
-   b[];
-   a->b;
-   a->c;
-   c[color=red];
-   d[style=dashed];
-   d->b[style=dashed];
-   b->c;
-
-}
-\caption{Knoten c wird hinzugefügt}
-\label{fig:algo_explored_3}
+	    \digraph [width=\linewidth]{dot_explored_3}
+	    {
+	     a[];
+	     b[];
+	     c[color=red];
+	     d[style=dashed];
+	     a->b;
+	     a->c;
+	     d->b[style=dashed];
+	     b->c;
+	    }
+	    \caption{Knoten c wird hinzugefügt}
+	    \label{fig:algo_explored_3}
     \end{subfigure}
   \end{tabular}
   \caption{Beispielweise Grow-Phase}\label{fig:algo_explored}
@@ -373,14 +371,28 @@ Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 
 \section{Aufbau der Test}
 \subsection{Datensätze}
-Folgende Datensätze wurden verwendet.
-\subsubsection{albert barabasi}
-Für den Datensatz albert barabasi wurde das Barabasi–Albert Modell, welches ein zufälliges skalenfreies Netz erzeugt.\cite{Albert02}
+Folgende Datensätze wurden verwendet. Da verschiedene Mengen von verbotenen Teilgraphen monotonen Grapheneigenschaften zugeordnet werden können und jeder Datensatz von Graphen und jede Methode zufällige Graphen zu erzeugen, charakteristische Eigenschaften hat, ist es notwendig verschiedene Datensätze zu verwenden und verschiedenen Methoden zur Erzeugung von zufälligen Graphen.
+Ingesammt wurde 6 verschiedene Methoden zur Erzeugung von zufälligen Graphen verwendet und 3 Datensätze.
+Wir brachten zuerst die zufälligen Graphen.
 
-Anzahl: 56
 
+\subsubsection{Barabási–Albert}
+Für den Datensatz \vars{barabasi\_albert} wurde das Barabási–Albert Model verwendet, welches ein zufälliges skalenfreies Netz erzeugt.\cite{Albert02}
+Skalenfrei bedeutet hier, dass die Knotengrad einer Potenzverteilung folgt. Es gibt also viel mehr Konten die einen geringeren Grad haben als Knoten mit einem hohen Anzahl von Nachbarn. Es wurden 56 Graphen generiert mit Knotenanzahl zwischen 10 und 150, wobei der Parameter $m$, welcher die Anzahl der der Kanten definiert, die zu bereits bestehenden Knoten erstellt werden, zwischen 1 und 8 war.
+\subsubsection{Erdős-Rényi}
+Für den Datensatz \vars{binomial} wurde das Erdős-Rényi Model verwendet\cite{Gilbert59}, wo jede Kante eine fixe Wahrscheinlichkeit hat zu existieren oder nicht zu existieren.
+Es wurden dabei 54 Graphen generiert, mit einer Knotenanzahl zwischen 10 und 100 und den folgenden Wahrscheinlichkeiten: $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
+
+
+\subsubsection{duplication divergence}
+Anzahl: 54
 \subsubsection{newman watts strogatz}
 Anzahl: 144
+\subsubsection{powerlaw}
+Anzahl: 30
+\subsubsection{random}
+Anzahl: 40$•$
+
 \subsubsection{UCINetworkDataRepository}
 Anzahl: 9
 \subsubsection{bio1}
@@ -391,7 +403,7 @@ Anzahl: 360
 \todo{Was ist die Quelle für diese Daten}
 
 \subsection{Optimale Lösung}
-Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden.
+Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden. 
 
 \section{Implementation}
 \subsection{Repräsentation vom Graphen}
@@ -503,7 +515,7 @@ Vergleich mit mit meinem Algorithmus.
 {
   a->b->c->d;
 }
-      \caption{Ein $P_4$}
+      \caption{$P_4$}
       \label{fig:graphs:p4}
     \end{subfigure}&
     \begin{subfigure}[b]{0.20\textwidth}
