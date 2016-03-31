@@ -54,7 +54,7 @@
 \subsection{Anwendungsbeispiele}
 
 \subsubsection{Soziale Netzwerke}
-$(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur.\cite{NastosG13}
+$(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur. \cite{NastosG13}
 
 Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und afür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
 
@@ -62,7 +62,7 @@ $(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur.\cite{NastosG13}
 $(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung von Interaktionsnetzwerken von Proteinen \cite{BrucknerHK15}.
 
 \subsubsection{Bicluster Editing}
-\cite{De12}\cite{Madeira04} 
+\cite{De12} \cite{Madeira04} 
 
 \subsection{Definitionen}
 \subsubsection{Notationen und Definitionen}
@@ -230,13 +230,15 @@ Die ist im Algorithmus \ref{algo:growReduce} zu sehen.
 
 \subsection{Explored-Grow-Reduce}
 Der Explored-Grow-Reduce-Ansatz ist dem Grow-Reduce-Ansatz ähnlich, bis auf das, es in der Grow-Phase nur die Kanten zu Knoten hinzufügt, die bereits erforscht sind.
-In Abbildung \ref{fig:algo_explored_1} ist der Anfangstatus zu sehen. Die gestrichelten Kanten, sind Kanten die Graphen vorhanden sind, aber noch nicht hinzugefügt worden sind. In Abbildung \ref{fig:algo_explored_1} wird der Knoten $a$ hinzugefügt, weil aber keine anderen Knoten bisher hinzugefügt worden sind, wird  werden keine Kanten hinzugefügt.
-In Abbildung \ref{fig:algo_explored_1} wird der Knoten $b$ hinzugefügt und weil $a$ auch schon hinzugefügt wurde
+In Abbildung \ref{fig:algo_explored_1} ist der Anfangstatus zu sehen. Die gestrichelten Kanten, sind Kanten die Graphen vorhanden sind, aber noch nicht hinzugefügt worden sind und es wird der Knoten $a$ hinzugefügt, weil aber keine anderen Knoten bisher hinzugefügt worden sind, wird  werden keine Kanten hinzugefügt.
+In Abbildung \ref{fig:algo_explored_2} wird der Knoten $b$ hinzugefügt und weil $a$ auch schon hinzugefügt wurde
 
-\begin{figure}[!htb]
 
-\minipage{0.32\textwidth}
-\digraph
+\begin{figure}
+  \centering
+  \begin{tabular}[c]{ccc}
+    \begin{subfigure}[b]{0.32\textwidth}
+     \digraph
 [width=\linewidth]{dot_explored_1}
 {
    a[color=red];
@@ -246,14 +248,13 @@ In Abbildung \ref{fig:algo_explored_1} wird der Knoten $b$ hinzugefügt und weil
    a->b[style=dashed];
    a->c[style=dashed];
    d->b[style=dashed];
-   d->c[style=dashed];
+   b->c[style=dashed];
 }
 \caption{Knoten a wird hinzugefügt}
 \label{fig:algo_explored_1}
-\endminipage\hfill
-
-\minipage{0.32\textwidth}
-\digraph
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.32\textwidth}
+      \digraph
 [width=\linewidth]{dot_explored_2}
 {
    a[];
@@ -263,14 +264,14 @@ In Abbildung \ref{fig:algo_explored_1} wird der Knoten $b$ hinzugefügt und weil
    d[style=dashed];
    a->c[style=dashed];
    d->b[style=dashed];
-   d->c[style=dashed];
+   b->c[style=dashed];
+
 }
 \caption{Knoten b wird hinzugefügt}
 \label{fig:algo_explored_2}
-\endminipage\hfill
-
-\minipage{0.32\textwidth}
-\digraph
+\end{subfigure}&
+\begin{subfigure}[b]{0.32\textwidth}
+     \digraph
 [width=\linewidth]{dot_explored_3}
 {
    a[];
@@ -280,12 +281,14 @@ In Abbildung \ref{fig:algo_explored_1} wird der Knoten $b$ hinzugefügt und weil
    c[color=red];
    d[style=dashed];
    d->b[style=dashed];
-   d->c[style=dashed];
+   b->c;
+
 }
 \caption{Knoten c wird hinzugefügt}
 \label{fig:algo_explored_3}
-\endminipage\hfill
-
+    \end{subfigure}
+  \end{tabular}
+  \caption{Beispielweise Grow-Phase}\label{fig:algo_explored}
 \end{figure}
 
 \begin{algorithm}
@@ -400,7 +403,7 @@ Die Graphen werden in einer Adjazenzmatrix gespeichert.
 Wie verwenden einen VF Algorithmus für \func{findFS}(\vars{graph},\vars{forbidden}).
 Dieser gibt gibt eine Menge von Subgraphen zurück.
 
-\subsubsection{Vergleich VFLib, Boost und eigne Implemtation}
+\subsubsection{Vergleich VFLib, Boost und eigene Implemtation}
 \begin{tabular}{|c|c|c|c|}
 \hline 
 • & find all p3s & count all p3s & has a p3 \\ 
@@ -478,6 +481,53 @@ Vergleich mit mit meinem Algorithmus.
 
 \section{Zukünftige Forschungsmöglichkeiten}
 \section{Zusammenfassung}
+
+\section{Anhang}
+\subsection{Kleine Graphen}
+
+\begin{figure}
+  \centering
+  \begin{tabular}[c]{cccc}
+    \begin{subfigure}[b]{0.20\textwidth}
+      \digraph
+[width=\linewidth]{dot_p3}
+{
+	a->b->c;
+}
+      \caption{$P_3$}
+      \label{fig:graphs:p3}
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.20\textwidth}
+     \digraph
+[width=\linewidth]{dot_p4}
+{
+  a->b->c->d;
+}
+      \caption{Ein $P_4$}
+      \label{fig:graphs:p4}
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.20\textwidth}
+      \digraph
+[width=\linewidth]{dot_c4}
+{
+  a->b->c->d->a;
+}
+      \caption{$C_4$}
+      \label{fig:graphs:c4}
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.20\textwidth}
+     \digraph
+[width=\linewidth]{dot_2k2}
+{
+  a->b;
+  c->d;
+}
+      \caption{$2K_2$}
+      \label{fig:mouse}
+    \end{subfigure}
+  \end{tabular}
+  \caption{Einige Graphen}\label{fig:animals}
+\end{figure}
 
 \bibliographystyle{plain}
 \bibliographystyle{te}
