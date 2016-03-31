@@ -56,12 +56,13 @@
 \subsubsection{Soziale Netzwerke}
 $(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur. \cite{NastosG13}
 
-Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und afür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
+Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
 
 \subsubsection{Protein interaction networks}
 $(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung von Interaktionsnetzwerken von Proteinen \cite{BrucknerHK15}.
 
 \subsubsection{Bicluster Editing}
+
 \cite{De12} \cite{Madeira04} 
 
 \subsection{Definitionen}
@@ -341,21 +342,22 @@ Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 \begin{algorithm}
   \captionof{algorithm}{F-Free BLP}\label{algo:blp}
 \begin{algorithmic}[1]
-\Function{solveBLP}{\vars{graph}, \vars{algo:blp}}
+\Function{solveBLP}{\vars{graph}, \vars{forbidden}}
+\State{\vars{constraints} $\gets$ $\emptyset$}
 \For{graph \vars{f} $\in$ \vars{forbidden}}
 	\While{\func{findFS}(graph, f) != $\emptyset$}
-		\For{each graph M $\in$ \func{findeVerboteneSubgraphen}(\vars{graph}, \vars{f}) }
-			\State{contstraint = 0}
-			\For{each $\{u,v\}$ $\in$ kanten(M)}
-				\If{$\{u,v\}$ $\in$ kanten(graph)} 
+		\For{each graph M $\in$ \func{findeFS}(\vars{graph}, \vars{f}) }
+			\State{contstraint $\gets$ 0}
+			\For{each $\{u,v\}$ $\in$ E(M)}
+				\If{$\{u,v\}$ $\in$ E(graph)} 
 					\State{contstraint += 1 - $e_{uv}$} 
 				\Else 
 					\State{contstraint += $e_{uv}$} 
 				\EndIf
 			\EndFor
-			\State{addConstraint(contstraint)}
+			\State{\vars{constraints} $\gets$ \vars{constraints} $\cup$ \{ \vars{constraint} \}}
 		\EndFor
-		\State{graph = lpSolve(graph)}
+		\State{\vars{variables} $\gets$ \func{lpSolve}(\vars{constraints}, \vars{}}
 	\EndWhile
 \EndFor
 \Return(graph)
@@ -365,33 +367,41 @@ Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 
 
 
-
-\subsection{Relaxierte Lineare Programmierung}
-
-
 \section{Aufbau der Test}
 \subsection{Datensätze}
 Folgende Datensätze wurden verwendet. Da verschiedene Mengen von verbotenen Teilgraphen monotonen Grapheneigenschaften zugeordnet werden können und jeder Datensatz von Graphen und jede Methode zufällige Graphen zu erzeugen, charakteristische Eigenschaften hat, ist es notwendig verschiedene Datensätze zu verwenden und verschiedenen Methoden zur Erzeugung von zufälligen Graphen.
-Ingesammt wurde 6 verschiedene Methoden zur Erzeugung von zufälligen Graphen verwendet und 3 Datensätze.
+Ingesammt wurde 5 verschiedene Methoden zur Erzeugung von zufälligen Graphen verwendet und 3 Datensätze.
 Wir brachten zuerst die zufälligen Graphen.
 
 
 \subsubsection{Barabási–Albert}
-Für den Datensatz \vars{barabasi\_albert} wurde das Barabási–Albert Model verwendet, welches ein zufälliges skalenfreies Netz erzeugt.\cite{Albert02}
-Skalenfrei bedeutet hier, dass die Knotengrad einer Potenzverteilung folgt. Es gibt also viel mehr Konten die einen geringeren Grad haben als Knoten mit einem hohen Anzahl von Nachbarn. Es wurden 56 Graphen generiert mit Knotenanzahl zwischen 10 und 150, wobei der Parameter $m$, welcher die Anzahl der der Kanten definiert, die zu bereits bestehenden Knoten erstellt werden, zwischen 1 und 8 war.
+Für den Datensatz \vars{barabasi\_albert} wurde das Barabási–Albert Modell verwendet, welches ein zufälliges skalenfreies Netz erzeugt.\cite{Albert02}
+Skalenfrei bedeutet hier, dass die Knotengrad einer Potenzverteilung folgt. Es gibt also viel mehr Konten die einen geringeren Grad haben als Knoten mit einem hohen Anzahl von Nachbarn. 
+
+Es wurden 56 Graphen generiert mit Knotenanzahl zwischen 10 und 150, wobei der Parameter $m$, welcher die Anzahl der der Kanten definiert, die zu bereits bestehenden Knoten erstellt werden, zwischen 1 und 8 war.
 \subsubsection{Erdős-Rényi}
-Für den Datensatz \vars{binomial} wurde das Erdős-Rényi Model verwendet\cite{Gilbert59}, wo jede Kante eine fixe Wahrscheinlichkeit hat zu existieren oder nicht zu existieren.
+Für den Datensatz \vars{binomial} wurde das Erdős-Rényi Modell verwendet\cite{Gilbert59} \cite{Batagelj05}, wo jede Kante eine fixe Wahrscheinlichkeit hat zu existieren oder nicht zu existieren.
+
 Es wurden dabei 54 Graphen generiert, mit einer Knotenanzahl zwischen 10 und 100 und den folgenden Wahrscheinlichkeiten: $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
 
 
-\subsubsection{duplication divergence}
-Anzahl: 54
-\subsubsection{newman watts strogatz}
-Anzahl: 144
+\subsubsection{Duplication-Divergence}
+Für den Datensatz \vars{duplication divergence} wurde das Duplication Divergence Modell verwendet\cite{Ispolatov05}, welches Interaktionsnetzwerke zwischen Proteinen modelliert. 
+
+Dabei gibt es in jeder Iteration bei der Erstellung eines solchen zufälligen Graphen zwei Phase. Die erste ist die Duplikations-Phase, wo ein zufälliger Knoten $u$ genommen und dupliziert wird zu $v$. Dann beginnt die Divergence-Phase, wo zu jedem Nachbarn von $u$ mit gewissen Wahrscheinlichkeit $p$ eine Kante zu $v$ hinzugefügt wird. Falls keine Kanten hinzugefügt wurde, dann wird $v$ wieder gelöscht. Dies wird $n$-mal wiederholt 
+
+Es wurden mit diesem Modell 54 Graphen generiert mit $n$ zwischen 10 und 100. Für die Wahrscheinlichkeiten $p$ wurden folgenden Werte verwendet $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
+
+\subsubsection{Newman-Watts-Strogatz}
+Für den Datensatz \vars{newman\_watts\_strogatz} wurde das Newman-Watts-Strogatz Modell verwendet\cite{Newman99}, welches einen Kleine-Welt-Graphen erzeugt mit kurzen durchschnittlichen Pfaden und einem hohen Clusterkoeffizienten.
+
+Dabei wird zuerst ein Ring von $n$ Knoten erstellt. Dann wird jeder Knoten mit $k$ von seinen nächsten Nachbarn verbunden (oder mit $k-1$, wenn $k$ ungerade ist).
+Dann werden Abkürzungen erzeugt indem, man für jede Kante $(u,v)$ in dem zugrundeliegenden $n$-Ring mit den $k$-nächsten Nachbarn: Füge mit der der Wahrscheinlichkeit $p$ eine neue Kante $(u,w)$ ein, wobei $w$ ein zufälliger existierender Knoten ist.
+
+Es wurden mit diesem Model 144 Graphen generiert mit einer Knotenanzahl($n$) zwischen 10 und 100, $m$ zwischen 2 und 8 und der Wahrscheinlichkeit $p$ zwischen 0,2 und 0,8.
+
 \subsubsection{powerlaw}
 Anzahl: 30
-\subsubsection{random}
-Anzahl: 40$•$
 
 \subsubsection{UCINetworkDataRepository}
 Anzahl: 9
@@ -399,8 +409,10 @@ Anzahl: 9
 Anzahl: 147
 \todo{Was ist die Quelle für diese Daten}
 \subsubsection{bio2}
-Anzahl: 360
-\todo{Was ist die Quelle für diese Daten}
+Der Datensatz \vars{bio2} sind COG protein similarity data \cite{Rahmann07} \cite{Bocker08}
+Es sind 360 Graphen mit einer Knotenanzahl zwischen 3 und 80.
+
+
 
 \subsection{Optimale Lösung}
 Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden. 
