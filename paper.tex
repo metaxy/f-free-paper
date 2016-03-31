@@ -5,11 +5,15 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-
+\usepackage{tikz}
 %for pseudocode
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{caption}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{graphvizzz} 
 
 \DeclareCaptionFormat{algor}{%
   \hrulefill\par\offinterlineskip\vskip1pt%
@@ -23,12 +27,13 @@
 
 \newcommand{\vars}{\texttt}
 \newcommand{\func}{\textsc}
-
+\newcommand{\va}{\texttt}
+\newcommand{\f}{\textsc}
 
 \newcommand\todo[1]{\textcolor{red}{#1}}
 %\renewcommand\todo[1]{}
 
-\usepackage[usenames,dvipsnames,svgnames,table]{xcolor} % for coloring text
+
 \author{Paul Walger}
 \title{Heuristiken für das Entfernen von verbotenen Teilgraphen}
 \makeindex
@@ -55,6 +60,9 @@ $(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur.\cite{NastosG13}
 
 \subsubsection{Protein interaction networks}
 $(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung von Interaktionsnetzwerken von Proteinen \cite{BrucknerHK15}.
+
+\subsubsection{Bicluster Editing}
+\cite{De12}\cite{Madeira04} 
 
 \subsection{Definitionen}
 \subsubsection{Notationen und Definitionen}
@@ -129,22 +137,24 @@ Das ist der einfachste Algorithmus.
 \subsubsection{Random}
 Es ist wie RandomChange\footnote{Algorithmus \ref{algo:RandomChange}}, aber bereits editierte Kanten werden mit einer geringeren Wahrscheinlichkeit geändert.
 Auch hat es für kleine Graphen ein Konvergenzkriterium. Dieses Konvergenzkriterum besteht darin, dass nach für jede Änderung, die Anzahl der verbotenen Subgraphen gezählt wird und die nur dann ausgeführt wird, wenn die Anzahl der verbotenen Subgraphen dadurch weniger wird.
+Der allgemeine Vorgehensweise wird im Algorithmus \ref{algo:random} beschrieben.
+Der große Unterschied zu zum RandomChange sehen wir ab Zeile  \ref{alg:random:select}. Dort wählen wird die Kante ausgewählt welche geändert werden soll, aber eine bereits geänderte Kante bekommt eine Wahrscheinlichkeit zugewiesen die 4-mal kleiner ist(siehe Zeile \ref{alg:random:prob4}).
 
 \begin{algorithm}
-  \captionof{algorithm}{Random}\label{algo:Random}
+  \captionof{algorithm}{Random}\label{algo:random}
 \begin{algorithmic}[1]
 \Function{StateRandom2Solve}{\vars{graph}, \vars{forbidden}}
 \For{Graph \vars{f} $\in$ \vars{forbidden} }
 	\State{f\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
 	\While{\vars{forbiddenSubgraph} != $\emptyset$}
 	    \State{\vars{foundEdge} $\gets \emptyset$}
-		\While{true}
+		\While{true\label{alg:random:select}}
 			\State{\vars{e} $\gets$ random edge from \vars{forbiddenSubgraph}}
 			\State{\vars{prob} $\gets$ 1 / \#(E(f))}
 			\If{e is already visited}
-				\State{\vars{prob} $\gets$ \vars{prob} / 4}
+				\State{\vars{prob} $\gets$ \vars{prob} / 4}\label{alg:random:prob4}
 		    \EndIf
-		    \If{random number from [0,1] > prob}
+		    \If{random number from [0,1] > \vars{prob}}
 		    	\State{\vars{foundEdge} $\gets$ \vars{e}}
 		    	\State{break}
 		    \EndIf
@@ -159,13 +169,17 @@ Auch hat es für kleine Graphen ein Konvergenzkriterium. Dieses Konvergenzkriter
 \end{algorithm}
 
 \subsection{Bottom-Top}
-
+Die Bottom-Top-Ansätze zeichnet sich dadurch aus, dass wir mit einem Graphen beginnen, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten.
+Dieser Graph ist somit valide, weil er keine verbotenen Subgraphen enthält.
+Dies ist ein Vorteil gegenüber den Top-Bottom-Ansätzen, da es möglich ist immer einen validen Graphen zu haben und somit jederzeit terminieren.
+ 
 \subsubsection{Extend}
+
 \begin{algorithm}
-  \captionof{algorithm}{F-Free Extend}\label{euclid}
+  \captionof{algorithm}{F-Free Extend}\label{algo:extend}
 \begin{algorithmic}[1]
 \Function{StateExtendSolve}{\vars{input}, \vars{forbidden}}
-	\State{\vars{graph} = $(\emptyset,\emptyset)$}
+	\State{\vars{graph} = $(V(\vars{input}),\emptyset)$}
 	\While{true}
 		\For{each Edge \vars{e} $\in$ \func{Difference}(\vars{graph},\vars{input}) }
 			\State{try to flip \vars{e}, revert if it produces an invalid graph}
@@ -180,18 +194,32 @@ Auch hat es für kleine Graphen ein Konvergenzkriterium. Dieses Konvergenzkriter
 
 \subsection{Grow-Reduce}
 Der Grow-Reduce-Ansatz ist ein Art von einer greedy randomized adaptive search procedure(GRASP).\todo{GRASPH beschreiben Siehe \cite{Bastos2014}}
-Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem leeren Graphen, dann wird in jeder Iteration ein Knoten und seine Umgebung hinzugefügt und durch lokale Suche werden alle neu entstandenen verbotenen Subgraphen wieder entfernt.
+Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem Graphen, der die selben Knoten wie der Eingabegraph hat, aber keine kanten. Dann wird in jeder Iteration ein Knoten und seine Umgebung hinzugefügt und durch lokale Suche werden alle neu entstandenen verbotenen Subgraphen wieder entfernt.
+Die ist im Algorithmus \ref{algo:growReduce} zu sehen. 
 
 \begin{algorithm}
-  \captionof{algorithm}{GrowReduce}\label{algo:GrowReduce}
+  \captionof{algorithm}{GrowReduce}\label{algo:growReduce}
 \begin{algorithmic}[1]
 \Function{GrowReduceSolve}{\vars{input}, \vars{forbidden}}
-	\State{\vars{graph} $\gets$ $(\emptyset,\emptyset)$}
+	\State{\vars{graph} $\gets$ $(V(\vars{input}),\emptyset)$}
 	\State{\vars{nodes} $\gets$ \func{randomOrder}(V(\vars{input}))}
 	\For{\vars{node} $\in$ \vars{nodes}}
 		
 		\For{\vars{neighbor} $\in$ N(\vars{node})}\Comment{Grow Phase}
 			\State{Add Edge (\vars{node}, \vars{neighbor}) to \vars{graph}}
+		\EndFor
+		\For{\vars{f} $\in$ \vars{forbidden}}\Comment{Reduce Phase}
+			\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph},\vars{f})}
+			\While{\vars{forbiddenSubgraph} != $\emptyset$}
+				\State{\vars{edge} $\gets$ random Edge from \vars{forbiddenSubgraph}}
+				\State{\vars{count} $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\State{flip \vars{edge} in \vars{graph}}
+				\State{countAfter $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\If{\vars{countAfter} $\geq$ \vars{count}}
+					\State{flip \vars{edge} in \vars{graph}}
+				\EndIf
+				\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
+			\EndWhile
 		\EndFor
 		
 	\EndFor
@@ -200,7 +228,100 @@ Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem leeren Graph
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{FPT}
+\subsection{Explored-Grow-Reduce}
+Der Explored-Grow-Reduce-Ansatz ist dem Grow-Reduce-Ansatz ähnlich, bis auf das, es in der Grow-Phase nur die Kanten zu Knoten hinzufügt, die bereits erforscht sind.
+In Abbildung \ref{fig:algo_explored_1} ist der Anfangstatus zu sehen. Die gestrichelten Kanten, sind Kanten die Graphen vorhanden sind, aber noch nicht hinzugefügt worden sind. In Abbildung \ref{fig:algo_explored_1} wird der Knoten $a$ hinzugefügt, weil aber keine anderen Knoten bisher hinzugefügt worden sind, wird  werden keine Kanten hinzugefügt.
+In Abbildung \ref{fig:algo_explored_1} wird der Knoten $b$ hinzugefügt und weil $a$ auch schon hinzugefügt wurde
+
+\begin{figure}[!htb]
+
+\minipage{0.32\textwidth}
+\digraph
+[width=\linewidth]{dot_explored_1}
+{
+   a[color=red];
+   b[style=dashed];
+   c[style=dashed];
+   d[style=dashed];
+   a->b[style=dashed];
+   a->c[style=dashed];
+   d->b[style=dashed];
+   d->c[style=dashed];
+}
+\caption{Knoten a wird hinzugefügt}
+\label{fig:algo_explored_1}
+\endminipage\hfill
+
+\minipage{0.32\textwidth}
+\digraph
+[width=\linewidth]{dot_explored_2}
+{
+   a[];
+   b[color=red];
+   a->b;
+   c[style=dashed];
+   d[style=dashed];
+   a->c[style=dashed];
+   d->b[style=dashed];
+   d->c[style=dashed];
+}
+\caption{Knoten b wird hinzugefügt}
+\label{fig:algo_explored_2}
+\endminipage\hfill
+
+\minipage{0.32\textwidth}
+\digraph
+[width=\linewidth]{dot_explored_3}
+{
+   a[];
+   b[];
+   a->b;
+   a->c;
+   c[color=red];
+   d[style=dashed];
+   d->b[style=dashed];
+   d->c[style=dashed];
+}
+\caption{Knoten c wird hinzugefügt}
+\label{fig:algo_explored_3}
+\endminipage\hfill
+
+\end{figure}
+
+\begin{algorithm}
+  \captionof{algorithm}{ExploredGrowReduce}\label{algo:ExploredGrowReduce}
+\begin{algorithmic}[1]
+\Function{ExploredGrowReduceSolve}{\vars{input}, \vars{forbidden}}
+	\State{\vars{graph} $\gets$ $(V(\vars{input}),\emptyset)$}
+	\State{\vars{nodes} $\gets$ \func{randomOrder}(V(\vars{input}))}
+	\State{\vars{explored} $\gets \emptyset$}
+	\For{\vars{node} $\in$ \vars{nodes}}
+		
+		\For{\vars{neighbor} $\in$ N(\vars{node})}\Comment{Grow Phase}
+			\If{\vars{neighbor} $\in$ \vars{explored}}
+				\State{Add Edge (\vars{node}, \vars{neighbor}) to \vars{graph}}
+			\EndIf
+		\EndFor
+		\State{\vars{explored} $\gets$ \vars{explored} $\cup$ $\{$\vars{node}$\}$}
+		\For{\vars{f} $\in$ \vars{forbidden}}\Comment{Reduce Phase}
+			\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph},\vars{f})}
+			\While{\vars{forbiddenSubgraph} != $\emptyset$}
+				\State{\vars{edge} $\gets$ random Edge from \vars{forbiddenSubgraph}}
+				\State{\vars{count} $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\State{flip \vars{edge} in \vars{graph}}
+				\State{countAfter $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\If{\vars{countAfter} $\geq$ \vars{count}}
+					\State{flip \vars{edge} in \vars{graph}}
+				\EndIf
+				\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
+			\EndWhile
+		\EndFor
+		
+	\EndFor
+\Return{\vars{graph}}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 \subsection{Lineare Programmierung}
 \subsubsection{Lineare Optimierung}
 Bei der linearen Optimierung wird eine lineare Zielfunktion minimiert bzw. maximiert, wobei sie durch lineare Gleichungen und Ungleichungen beschränkt ist.
@@ -212,12 +333,12 @@ Wir minimieren \[\sum_{u,v \in V}
 \begin{cases} 
       e_{u,v} & \{u,v\} \in E \\
       -e_{u,v} & \{u,v\} \notin E
-   \end{cases}\].
+   \end{cases}\]
    
 Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgraphen ausschließen wpürden, viel zum umfangreich wäre, werden die Bedingungen iterative dort hinzu gefügt, wo es einen verbotenen Teilgraphen gibt. Dann wird der Problem gelöst und und die Änderungen auf den Graphen übertragen. Dann wird wieder nach alle verboteten Subgraphen gesucht. Dies wird solange wiederholt bis es keine mehr gibt. Nun ist die minimale Anzahl von Änderungen gefunden. 
-
+Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 \begin{algorithm}
-  \captionof{algorithm}{F-Free BLP}\label{euclid}
+  \captionof{algorithm}{F-Free BLP}\label{algo:blp}
 \begin{algorithmic}[1]
 \Function{solveBLP}{\vars{graph}, \vars{algo:blp}}
 \For{graph \vars{f} $\in$ \vars{forbidden}}
@@ -304,7 +425,7 @@ Bei VFLib ist der Graph immutable und bei der Suche nach einem  Subgraphen müss
 Die 2K-Heuristik, basiert auf einem Kernel für das Cluster-Editing-Problem, welches maximal 2K Knoten liefert \cite{Chen12}. Wenn man dort eine Bedingung für die \todo{?.} Reduktionsregel abschwächt  abschwächt, kommt eine sehr gute Heuristik für das Cluster-Editing-Problem heraus. Dabei wird die Bedingung mit jedem Durchlauf abgeschwächt.
 \pagebreak
 \begin{center}
-  \captionof{algorithm}{2K Heuristik}\label{euclid}
+  \captionof{algorithm}{2K Heuristik}\label{algo:2k}
 \begin{algorithmic}[1]
 \Function{solve2K}{g :: Gewichteter Graph}
 \State{a = 1,0} 
