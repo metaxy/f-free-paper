@@ -1,11 +1,13 @@
 \documentclass[12pt,a4paper,onecolumn,oneside,titlepage]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[german]{babel}
+
 \usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{tikz}
+
 %for pseudocode
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -14,13 +16,13 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{graphvizzz} 
-
+\usepackage{url}
 \DeclareCaptionFormat{algor}{%
   \hrulefill\par\offinterlineskip\vskip1pt%
     \textbf{#1#2}#3\offinterlineskip\hrulefill}
 \DeclareCaptionStyle{algori}{singlelinecheck=off,format=algor,labelsep=space}
 \captionsetup[algorithm]{style=algori}
-
+\usepackage{morewrites}
 %return on a new line
 \let\oldReturn\Return
 \renewcommand{\Return}{\State\oldReturn}
@@ -140,7 +142,7 @@ Das ist der einfachste Algorithmus.
 Es ist wie RandomChange\footnote{Algorithmus \ref{algo:RandomChange}}, aber bereits editierte Kanten werden mit einer geringeren Wahrscheinlichkeit geändert.
 Auch hat es für kleine Graphen ein Konvergenzkriterium. Dieses Konvergenzkriterum besteht darin, dass nach für jede Änderung, die Anzahl der verbotenen Subgraphen gezählt wird und die nur dann ausgeführt wird, wenn die Anzahl der verbotenen Subgraphen dadurch weniger wird.
 Der allgemeine Vorgehensweise wird im Algorithmus \ref{algo:random} beschrieben.
-Der große Unterschied zu zum RandomChange sehen wir ab Zeile  \ref{alg:random:select}. Dort wählen wird die Kante ausgewählt welche geändert werden soll, aber eine bereits geänderte Kante bekommt eine Wahrscheinlichkeit zugewiesen die 4-mal kleiner ist(siehe Zeile \ref{alg:random:prob4}).
+Der große Unterschied zu zum RandomChange sehen wir ab Zeile  \ref{algo:random:select}. Dort wählen wird die Kante ausgewählt welche geändert werden soll, aber eine bereits geänderte Kante bekommt eine Wahrscheinlichkeit zugewiesen die 4-mal kleiner ist(siehe Zeile \ref{algo:random:prob4}).
 
 \begin{algorithm}
   \captionof{algorithm}{Random}\label{algo:random}
@@ -150,11 +152,11 @@ Der große Unterschied zu zum RandomChange sehen wir ab Zeile  \ref{alg:random:s
 	\State{f\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
 	\While{\vars{forbiddenSubgraph} != $\emptyset$}
 	    \State{\vars{foundEdge} $\gets \emptyset$}
-		\While{true\label{alg:random:select}}
+		\While{true\label{algo:random:select}}
 			\State{\vars{e} $\gets$ random edge from \vars{forbiddenSubgraph}}
 			\State{\vars{prob} $\gets$ 1 / \#(E(f))}
 			\If{e is already visited}
-				\State{\vars{prob} $\gets$ \vars{prob} / 4}\label{alg:random:prob4}
+				\State{\vars{prob} $\gets$ \vars{prob} / 4}\label{algo:random:prob4}
 		    \EndIf
 		    \If{random number from [0,1] > \vars{prob}}
 		    	\State{\vars{foundEdge} $\gets$ \vars{e}}
@@ -176,25 +178,108 @@ Dieser Graph ist somit valide, weil er keine verbotenen Subgraphen enthält.
 Dies ist ein Vorteil gegenüber den Top-Bottom-Ansätzen, da es möglich ist immer einen validen Graphen zu haben und somit jederzeit terminieren.
  
 \subsubsection{Extend}
+Das ist der einfachste Algorithmus aus der Klasse der Bottom-Top-Ansätze.
+Zu sehen die Vorgehensweise in Algorithmus \ref{algo:extend}.
+Er fängt mit einem Graphen an, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten (Zeile \ref{algo:extend:start}). Dann wird versucht jede Kante einzufügen, die auch im originalen Graphen \vars{input} vorhanden war (Zeile \ref{algo:extend:each}). Wenn es einen invaliden Graphen erzeugt, also dass es nun einen verbotenen Teilgraphen im \vars{graph} gibt, dann wird die Änderung rückgängig gemacht (Zeile \ref{algo:extend:change}).
+Wenn nun keine Änderung in einem Durchlauf gemacht wurden, dann bricht der Algorithmus ab (Zeile \ref{algo:extend:break}) und gibt den erzeugen Graphen zurück. 
+
+Ein beispielweiser Ablauf für den Extend-Algorithmus, wo $P_3$ der verbotene Teilgraph ist ist in der Abbildung \ref{fig:algo:extend} zu sehen. Dabei wird der Graph \vars{graph} dargestellt und eine gestrichelte Kante gibt an, ob die Kante in dem Graphen \vars{input} vorhanden ist. Wenn die Kante rot ist, dann wurde versucht die Kante einzufügen, aber es hat eine $P_3$ erzeugt, wenn die Kante grün ist, dann wurde die Kante eingefügt, ohne dass ein $P_3$ erzeugt wurde.
 
 \begin{algorithm}
-  \captionof{algorithm}{F-Free Extend}\label{algo:extend}
+  \captionof{algorithm}{Extend}\label{algo:extend}
 \begin{algorithmic}[1]
-\Function{StateExtendSolve}{\vars{input}, \vars{forbidden}}
-	\State{\vars{graph} = $(V(\vars{input}),\emptyset)$}
+\Function{ExtendSolve}{\vars{input}, \vars{forbidden}}
+	\State{\vars{graph} = $(V(\vars{input}),\emptyset)$}\label{algo:extend:start}
 	\While{true}
-		\For{each Edge \vars{e} $\in$ \func{Difference}(\vars{graph},\vars{input}) }
-			\State{try to flip \vars{e}, revert if it produces an invalid graph}
+		\For{each Edge \vars{e} $\in$ \func{Difference}(\vars{graph},\vars{input}) }\label{algo:extend:each}
+			\State{try to flip \vars{e}, revert if it produces an invalid graph}\label{algo:extend:change}
 		\EndFor
-		\State{break if there was no change}
+		\State{break if there was no change}\label{algo:extend:break}
 	\EndWhile
 \Return{\vars{graph}}
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
+  
+\begin{figure}
+  \centering
+  \begin{tabular}[c]{ccc}
+    \begin{subfigure}[b]{0.32\textwidth}
+      \digraph [width=\linewidth]{dot_extend_1}
+      {
+       a->b[style=dashed,dir=none];
+       a->c[style=dashed,dir=none];
+       d->b[style=dashed,dir=none];
+       b->c[style=dashed,dir=none];
+      }
+      \caption{Startgraph}
+      \label{fig:algo:extend:1}
+   \end{subfigure}&
+   \begin{subfigure}[b]{0.32\textwidth}
+     \digraph [width=\linewidth]{dot_extend_2}
+      {
+       a->b[style=dashed,dir=none];
+       a->c[style=dashed,dir=none];
+       d->b[color=green,dir=none];
+       b->c[style=dashed,dir=none];
+      }
+      \caption{Kante (d,b) wird erfolgreich hinzugefügt}
+      \label{fig:algo:extend:2}
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.32\textwidth}
+      \digraph [width=\linewidth]{dot_extend_3}
+      {
+       a->b[style=dashed,dir=none];
+       a->c[color=green,dir=none];
+       d->b[dir=none];
+       b->c[style=dashed,dir=none];
+      }
+      \caption{Kante (a,c) erfolgreich wird hinzugefügt}
+      \label{fig:algo:extend:3}
+    \end{subfigure}
+  \end{tabular}
+  
+    \begin{tabular}[c]{ccc}
+    \begin{subfigure}[b]{0.32\textwidth}
+      \digraph [width=\linewidth]{dot_extend_4}
+      {
+       a->b[color=red,dir=none];
+       a->c[dir=none];
+       d->b[dir=none];
+       b->c[style=dashed,dir=none];
+      }
+      \caption{Kante (a,b) kann nicht hinzugefügt werden}
+      \label{fig:algo:extend:4}
+   \end{subfigure}&
+   \begin{subfigure}[b]{0.32\textwidth}
+     \digraph [width=\linewidth]{dot_extend_5}
+      {
+       a->b[style=dashed,dir=none];
+       a->c[dir=none];
+       d->b[dir=none];
+       b->c[color=red,dir=none];
+      }
+      \caption{Kante (b,c) kann nicht hinzugefügt werden}
+      \label{fig:algo:extend:5}
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.32\textwidth}
+      \digraph [width=\linewidth]{dot_extend_6}
+      {
+       a->b[style=dashed,dir=none];
+       a->c[dir=none];
+       d->b[dir=none];
+       b->c[style=dashed,dir=none];
+      }
+      \caption{Resultierender Graph}
+      \label{fig:algo:extend:6}
+    \end{subfigure}
+  \end{tabular}
+  \caption{Beispielweiser Ablauf des Extends}\label{fig:algo:extend}
+\end{figure}
 
-\subsection{Grow-Reduce}
+\subsection{GRASP}
+\subsubsection{Grow-Reduce}
 Der Grow-Reduce-Ansatz ist ein Art von einer greedy randomized adaptive search procedure(GRASP).\todo{GRASPH beschreiben Siehe \cite{Bastos2014}}
 Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem Graphen, der die selben Knoten wie der Eingabegraph hat, aber keine kanten. Dann wird in jeder Iteration ein Knoten und seine Umgebung hinzugefügt und durch lokale Suche werden alle neu entstandenen verbotenen Subgraphen wieder entfernt.
 Die ist im Algorithmus \ref{algo:growReduce} zu sehen. 
@@ -230,7 +315,7 @@ Die ist im Algorithmus \ref{algo:growReduce} zu sehen.
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Explored-Grow-Reduce}
+\subsubsection{Explored-Grow-Reduce}
 Der Explored-Grow-Reduce-Ansatz ist dem Grow-Reduce-Ansatz ähnlich, bis auf das, es in der Grow-Phase nur die Kanten zu Knoten hinzufügt, die bereits erforscht sind.
 
 Dieser Unterschied wird in der Abbildung \ref{fig:algo_explored} verdeutlich, wo nur die Grow Schritte visualiert wurden, ohne die Reduce-Phase, um es zu vereinfachen.In Abbildung \ref{fig:algo_explored_1} ist der Anfangstatus zu sehen. Die gestrichelten Kanten, sind Kanten die Graphen vorhanden sind, aber noch nicht hinzugefügt worden sind und es wird der Knoten $a$ hinzugefügt, weil aber keine anderen Knoten bisher hinzugefügt worden sind, wird  werden keine Kanten hinzugefügt.
@@ -248,10 +333,10 @@ In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somi
        b[style=dashed];
        c[style=dashed];
        d[style=dashed];
-       a->b[style=dashed];
-       a->c[style=dashed];
-       d->b[style=dashed];
-       b->c[style=dashed];
+       a->b[style=dashed,dir=none];
+       a->c[style=dashed,dir=none];
+       d->b[style=dashed,dir=none];
+       b->c[style=dashed,dir=none];
       }
       \caption{Knoten a wird hinzugefügt}
       \label{fig:algo_explored_1}
@@ -263,10 +348,10 @@ In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somi
 	     b[color=red];
 	     c[style=dashed];
 	     d[style=dashed];
-	     a->b;
-	     a->c[style=dashed];
-	     d->b[style=dashed];
-	     b->c[style=dashed];
+	     a->b[dir=none];
+	     a->c[style=dashed,dir=none];
+	     d->b[style=dashed,dir=none];
+	     b->c[style=dashed,dir=none];
 	    }
 	    \caption{Knoten b wird hinzugefügt}
 	    \label{fig:algo_explored_2}
@@ -278,10 +363,10 @@ In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somi
 	     b[];
 	     c[color=red];
 	     d[style=dashed];
-	     a->b;
-	     a->c;
-	     d->b[style=dashed];
-	     b->c;
+	     a->b[dir=none];
+	     a->c[dir=none];
+	     d->b[style=dashed,dir=none];
+	     b->c[dir=none];
 	    }
 	    \caption{Knoten c wird hinzugefügt}
 	    \label{fig:algo_explored_3}
@@ -336,8 +421,9 @@ Wir minimieren \[\sum_{u,v \in V}
       e_{u,v} & \{u,v\} \in E \\
       -e_{u,v} & \{u,v\} \notin E
    \end{cases}\]
-   
-Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgraphen ausschließen wpürden, viel zum umfangreich wäre, werden die Bedingungen iterative dort hinzu gefügt, wo es einen verbotenen Teilgraphen gibt. Dann wird der Problem gelöst und und die Änderungen auf den Graphen übertragen. Dann wird wieder nach alle verboteten Subgraphen gesucht. Dies wird solange wiederholt bis es keine mehr gibt. Nun ist die minimale Anzahl von Änderungen gefunden. 
+Dies ist die Zielfunktion \vars{objective} im Algorithmus \ref{algo:blp}.
+
+Da alle möglichen Bedingungen hinzuzufügen, welche bei alle verbotenen Subgraphen ausschließen würden, viel zum umfangreich wäre, werden die Bedingungen iterative dort hinzugefügt, wo es einen verbotenen Teilgraphen gibt (siehe Zeile \ref{algo:blp:add}). Dann wird der Problem gelöst(siehe Zeile \ref{algo:blp:solve}) und und die Änderungen auf den Graphen übertragen(siehe Zeile \ref{algo:blp:apply}) . Dann wird wieder nach alle verboteten Subgraphen gesucht(siehe Zeile \ref{algo:blp:findFS}). Dies wird solange wiederholt bis es keine mehr gibt. Nun ist die minimale Anzahl von Änderungen gefunden. 
 Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 \begin{algorithm}
   \captionof{algorithm}{F-Free BLP}\label{algo:blp}
@@ -345,10 +431,11 @@ Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 \Function{solveBLP}{\vars{graph}, \vars{forbidden}}
 \State{\vars{constraints} $\gets$ $\emptyset$}
 \For{graph \vars{f} $\in$ \vars{forbidden}}
-	\While{\func{findFS}(graph, f) != $\emptyset$}
-		\For{each graph M $\in$ \func{findeFS}(\vars{graph}, \vars{f}) }
+	\While{\func{findFS}(graph, f) != $\emptyset$}\label{algo:blp:findFS}
+	  
+		\For{each graph M $\in$ \func{findeFS}(\vars{graph}, \vars{f}) } \label{algo:blp:add}
 			\State{contstraint $\gets$ 0}
-			\For{each $\{u,v\}$ $\in$ E(M)}
+			\For{each $\{u,v\}$ $\in$ E(M)} \Comment{Add all Constraints}
 				\If{$\{u,v\}$ $\in$ E(graph)} 
 					\State{contstraint += 1 - $e_{uv}$} 
 				\Else 
@@ -357,10 +444,17 @@ Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 			\EndFor
 			\State{\vars{constraints} $\gets$ \vars{constraints} $\cup$ \{ \vars{constraint} \}}
 		\EndFor
-		\State{\vars{variables} $\gets$ \func{lpSolve}(\vars{constraints}, \vars{}}
+		\State{\vars{variables} $\gets$ \func{lpSolve}(\vars{constraints}, \vars{objective})}\label{algo:blp:solve}
+		\For{$e_{u,v}$ $\in$ \vars{variables}} \Comment{Apply solution to the graph.}\label{algo:blp:apply}
+		  \If{$e_{u,v} = 1$}
+		    \State{Set edge $(u,v)$ in \vars{graph}}
+		  \Else
+		    \State{Remove edge $(u,v)$ in \vars{graph}}
+		  \EndIf
+		\EndFor
 	\EndWhile
 \EndFor
-\Return(graph)
+\Return{graph}
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -386,11 +480,44 @@ Es wurden dabei 54 Graphen generiert, mit einer Knotenanzahl zwischen 10 und 100
 
 
 \subsubsection{Duplication-Divergence}
-Für den Datensatz \vars{duplication divergence} wurde das Duplication Divergence Modell verwendet\cite{Ispolatov05}, welches Interaktionsnetzwerke zwischen Proteinen modelliert. 
+Für den Datensatz \vars{duplication divergence} wurde das Duplication Divergence Modell verwendet\cite{Ispolatov05}, welches Interaktionsnetzwerke zwischen Proteinen modelliert. Ein Beispiel ist in Abbildung \ref{fig:duplication-divergence} zu sehen.
 
 Dabei gibt es in jeder Iteration bei der Erstellung eines solchen zufälligen Graphen zwei Phase. Die erste ist die Duplikations-Phase, wo ein zufälliger Knoten $u$ genommen und dupliziert wird zu $v$. Dann beginnt die Divergence-Phase, wo zu jedem Nachbarn von $u$ mit gewissen Wahrscheinlichkeit $p$ eine Kante zu $v$ hinzugefügt wird. Falls keine Kanten hinzugefügt wurde, dann wird $v$ wieder gelöscht. Dies wird $n$-mal wiederholt 
 
 Es wurden mit diesem Modell 54 Graphen generiert mit $n$ zwischen 10 und 100. Für die Wahrscheinlichkeiten $p$ wurden folgenden Werte verwendet $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
+\begin{figure}
+\digraph
+[scale=0.4]{dot_dupdivergence}
+{
+0->8;
+0->1;
+0->12;
+1->16;
+1->2;
+1->3;
+1->4;
+1->5;
+1->6;
+1->7;
+1->17;
+1->11;
+1->13;
+5->8;
+5->10;
+5->19;
+5->12;
+7->8;
+7->19;
+8->18;
+8->9;
+8->14;
+8->15;
+14->19;
+15->19;
+}
+\caption{Ein beispielhafter Duplication-Divergence Graph mit $n$ = 20 und $p$ = 0,4}
+\label{fig:duplication-divergence}
+\end{figure}
 
 \subsubsection{Newman-Watts-Strogatz}
 Für den Datensatz \vars{newman\_watts\_strogatz} wurde das Newman-Watts-Strogatz Modell verwendet\cite{Newman99}, welches einen Kleine-Welt-Graphen erzeugt mit kurzen durchschnittlichen Pfaden und einem hohen Clusterkoeffizienten.
@@ -400,14 +527,53 @@ Dann werden Abkürzungen erzeugt indem, man für jede Kante $(u,v)$ in dem zugru
 
 Es wurden mit diesem Model 144 Graphen generiert mit einer Knotenanzahl($n$) zwischen 10 und 100, $m$ zwischen 2 und 8 und der Wahrscheinlichkeit $p$ zwischen 0,2 und 0,8.
 
-\subsubsection{powerlaw}
-Anzahl: 30
+\subsubsection{Powerlaw-Baum}
+Für den Datensatz \vars{powerlaw}, wurde ein Modell verwendet, dass einen Baum erzeugt, deren Knotengrad einer Potenzverteilung folgt. Ein Beispiel ist in Abbildung \ref{fig:powerlaw-tree} zu sehen.
+Es wurden mit diesem Model 30 Graphen generiert mit einer Knotenanzahl zwischen 10 und 160.
+\begin{figure}
+ \digraph
+[scale=0.4]{dot_powerlaw}
+{
+ 0->1;
+1->2;
+2->3;
+3->4;
+4->5;
+4->7;
+5->8;
+5->9;
+5->6;
+}
+\caption{Ein Powerlaw-Baum mit $n$ = 10}
+\label{fig:powerlaw-tree}
+\end{figure}
 
 \subsubsection{UCINetworkDataRepository}
-Anzahl: 9
+Für den Datensatz \vars{UCINetworkDataRepository} wurden 9 reale Graphen verwendet, bereitgestellt von der University of California.
+
+Der Graph \vars{karate} ist ein soziales Netzwerk von Freundschaften zwischen 34 Mitgliedern eines Karate-Clubs in einer US-Universität in 1970 \cite{Zachary77}.
+
+Der Graph \vars{polbooks.paj} ist ein Netzwerk von Bücher über die aktuelle US Politik, die von dem Onlinehänder Amazon.com verkauft wurdem. Kanten repräsentieren häufiges Kaufen von den beiden Büchern von dem selben Käufer \cite{polbooks}.
+
+Der Graph \vars{football} ist ein Netzwerk von amerikanischen Footballspielen im Herbst 2000 \cite{Girvan02}.
+
+Der Graph \vars{power.paj} ist ein Netzwerk, dass die Topologie des "Western States Power Grid" in der Vereinigten Staaten wiederspieglt  \cite{Watts98}.
+
+Der Graph \vars{adjnoun} ist ein Netzwerk von häufigen Adjektiven und Nomen in dem Roman "David Copperfield" von Charles Dickens \cite{Newman06}.
+
+Der Graph \vars{lesmiserables} ist ein Netwerke von Figuren, die in dem  Roman "Les Misérables" von Victor Hugo, zur gleichen Zeit auftreten \cite{Knuth93}. 
+
+
+Der Graph \vars{celegansneural.paj} welches das neurale Netzwerk von Caenorhabditis elegans \cite{Watts98}. Es ist ein Fadenwurm, welcher gerne als Modellorganismus studiert wird. Jeder erwachsene C. elegans hat genau 302 Nervenzellen.
+
+
+Der Graph \vars{dolphins} ist ein soziales Netzwerk von 62 Dolphinen die in einer Gemeinschaft in der Nähe von Neuseeland leben \cite{Lusseau03}. 
+
+Der Graph \vars{polblogs} ist ein Netzwerk von Hyperlinks zwischen Webblogs in 2005, die sich mit auf US Politik beschäftigten \cite{Adamic05}.
+
 \subsubsection{bio1}
 Anzahl: 147
-\todo{Was ist die Quelle für diese Daten}
+\todo{Was ist die Quelle für diese Daten???}
 \subsubsection{bio2}
 Der Datensatz \vars{bio2} sind COG protein similarity data \cite{Rahmann07} \cite{Bocker08}
 Es sind 360 Graphen mit einer Knotenanzahl zwischen 3 und 80.
