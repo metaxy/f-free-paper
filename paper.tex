@@ -8,6 +8,9 @@
 \usepackage{amssymb}
 \usepackage{tikz}
 
+\usepackage{footnote}
+\makesavenoteenv{tabular}
+
 %for pseudocode
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -17,6 +20,8 @@
 \usepackage{subcaption}
 \usepackage{graphvizzz} 
 \usepackage{url}
+
+
 \DeclareCaptionFormat{algor}{%
   \hrulefill\par\offinterlineskip\vskip1pt%
     \textbf{#1#2}#3\offinterlineskip\hrulefill}
@@ -29,8 +34,8 @@
 
 \newcommand{\vars}{\texttt}
 \newcommand{\func}{\textsc}
-\newcommand{\va}{\texttt}
-\newcommand{\f}{\textsc}
+\newcommand\cursive[1]{\ensuremath{\mathcal{#1}}}
+
 
 \newcommand\todo[1]{\textcolor{red}{#1}}
 %\renewcommand\todo[1]{}
@@ -45,17 +50,35 @@
 \tableofcontents
 \newpage
 
-\section{Abstract}
-
 \section{Einleitung}
+Man kann einen Graphen als eine bildliche Darstellung von Beziehungen zwischen Objekten vorstellen. Dabei stellt man sie als Kreise (auch Knoten genannt) mit einem Namen dar und die Beziehungen als als Linien die diese Kreise verbinden (auch Kanten genannt). \cite{Nastos06}  Eine genauere Definition ist im Abschnitt \ref{sec:notation} zu finden.
 
+Diese Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel könnten sie Knoten Städte und die Kanten Verbindungen zwischen diesen sein und somit wird der Graph das Netzwerk von diesen Städten modellieren. Weitere Bespiele sind im dem Abschnitt \ref{sec:examples} zu finden.
+
+In diesem Abschnitt werden wir die Fundamente legen und diese Arbeit motivieren. Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
 
 \subsection{Motivation}
+Viele verschiedene Probleme erfordern, dass man einen Graphen so wenig wie möglich modifiziert, sodass er zu einer bestimmten Klassen von Graphen gehört. 
+Hereditary Graph Klassen = forbidden subgraph characterisation.
 
 
 \subsection{Anwendungsbeispiele}
+\label{sec:examples}
 
+\subsubsection{\textsc{Maximum Clique} auf Co-Graphen}
+Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangskomponenten hat, dann können wir 
+\textsc{Maximum Clique} auf den beiden Komponeten lösen und das Maximum davon ist, dass Ergebnis für den Graphen $G$. Hiermit können wir das Problem also in kleinere Probleme zerlegen.
+Außerdem gilt es, dass das Finden einer Clique in einem Graphen äquivalent zum Finden der stabilen Menge in der Komplementgraphen ist.
+Wir können also unser Problem weiter zerlegen indem wir das Komplement von jeder Zusammenhangskomponenten nehmen und es wieder in seine seine Zusammenhangskomponenten zerlegen. Dabei gilt die maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangskomponenten ist.
+
+Eine solche Vorgehensweise ist offesichtlich sehr attraktiv um eine solch schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem, wenn das Komplement eines Graphen zusammmenhängend ist und keine Zusammenhangskomponenten hat. Wir definieren, dass $G$ einen complement reducible graph, oder kurz Co-Graph, wenn so etwas in dem Graphen nie auftritt.\cite{Nastos06}
+
+Die Co-Graphen-Klasse hat also sehr wünschenswerte Eigenschaften, wie dass man \textsc{Maximum Clique} in linearer Zeit lösen kann. Diese Klasse ist eine sehr gut studierte Klasse, die in vielen  Anwendungen auftritt.
+
+Co-Graphen lassen sich auch durch charaketerisen, dass sie keinen $P_4$ als induzierten Subgraphen enthalten.
+\cite{NastosG13}
 \subsubsection{Soziale Netzwerke}
+
 $(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur. \cite{NastosG13}
 
 Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
@@ -69,6 +92,7 @@ $(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung vo
 
 \subsection{Definitionen}
 \subsubsection{Notationen und Definitionen}
+\label{sec:notation}
 Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und E die Menge seiner Kanten.
 
 $V(G)$ ist die Menge der Konten des Graphen $G$. $E(G)$ ist die Menge der Kanten des Graphen $G$. $N(u)$ ist die Nachbarschaft vom Knoten $u$. $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive.
@@ -79,7 +103,28 @@ Dann ist $G[S]$ der auf $S$ induzierte Subgraph von $G$ mit $G[S] = (S, E \cap \
 
 Sei $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
 
+Ein Graph $G$ ist \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
+Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ für jeden \textit{F} $\in \cursive{F}$ \textit{F}-frei ist.
+Siehe \cite{Cai96} für eine Defintion von FPT und Kernel.
+
 \subsubsection{Problemstellung}
+Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst ein Problem zu definieren. Es ist unter dem Namen \textsc{F-Free Edge Editing}\footnote{oder H-Free (Edge) Editing} bekannt.
+\begin{quote}
+  \textsc{\cursive{F}-Free Edge Editing}\newline
+  \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$\newline
+  \textbf{Frage:} Können wir von $G$ höchstens $k$ Kanten entfernen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
+  \textbf{Parameter:} $k$
+\end{quote}
+\textsc{\cursive{F}-Free Edge Editing} ist NP-Schwer für die meisten \cursive{F}. Man es exakt mit FPT lösen\cite{Cai96}, für die meisten Instanzen von \cursive{F} gibt es keine Polynomiale Kernel.
+
+
+Die hier vorgestellten Heuristiken.
+\begin{quote}
+  \textsc{\cursive{F}-Free Edge Editing}\newline
+  \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
+  \textbf{Frage:} Können wir von $G$ höchstens $k$ Kanten entfernen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
+  \textbf{Parameter:} $k$
+\end{quote}
 
 
 \subsection{Ähnliche Arbeiten}
@@ -91,22 +136,27 @@ Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ is
 
 
 \section{Algorithmen}
-Die nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält. Dann gebe, die Differenz zwischen dem erstellen validen Graphen und dem Eingabegraphen. Dies wird in dem Algorithmus \ref{algo:general} noch einmal beschrieben. Dabei steht \func{SolveAlgo} für einen der Algorithmen, die wir in den folgenden Abschnitten betrachten werden.
+\label{sec:algos}
+
+In diesem Abschnitt werden die verschiedenen Ansätze an die das Problem beschrieben.
+Die im nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält. Wiederhole dies \vars{iterations}-mal und dann geben die Differenz zwischen  besten validen Graphen und dem Eingabegraphen aus.
+
+Dieses Prinzip ist im Algoritmus \ref{algo:general} zu sehen. Dabei steht \func{SolveAlgo} für einen der Algorithmen, die wir in den folgenden Abschnitten betrachten werden.
 \begin{algorithm}
   \captionof{algorithm}{Genereller Aufbau}\label{algo:general}
 \begin{algorithmic}[1]
 \Function{Solve}{\vars{graph}, \vars{forbidden}, \vars{iterations}}
 
-\State{\vars{bestGraph} $\gets$ $(\emptyset,\emptyset)$}
+\State{\vars{best} $\gets$ $(\emptyset,\emptyset)$}
 
 \For{\vars{i} = 1 to \vars{iterations}}
-	\State{\vars{validGraph} $\gets$ \func{solveAlgo}(\vars{graph}, \vars{forbidden})}
-	\If{\func{diff}(\vars{bestGraph}, \vars{graph}) < \func{diff}(\vars{validGraph}, \vars{graph})}
-		\State{\vars{bestGraph} $\gets$ \vars{validGraph}}
+	\State{\vars{valid} $\gets$ \func{solveAlgo}(\vars{graph}, \vars{forbidden})}
+	\If{\#(\func{diff}(\vars{best}, \vars{graph})) < \#(\func{diff}(\vars{valid}, \vars{graph}))}
+		\State{\vars{best} $\gets$ \vars{valid}}
 	\EndIf  
 \EndFor
 
-\State{print \func{diff}(\vars{graph}, \vars{bestGraph})}
+\State{print \func{diff}(\vars{graph}, \vars{best})}
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -121,7 +171,7 @@ Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es unterschiedlic
 Der Top-Bottom-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht.
 
 \subsubsection{RandomChange}
-Das ist der einfachste Algorithmus. 
+Das ist der einfachste Algorithmus. Solange der Graph verbotene Subgraphen hat, dann versuche eine Kante in dem Graphen zu ändern. 
 \begin{algorithm}
   \captionof{algorithm}{RandomChange}\label{algo:RandomChange}
 \begin{algorithmic}[1]
@@ -183,7 +233,9 @@ Zu sehen die Vorgehensweise in Algorithmus \ref{algo:extend}.
 Er fängt mit einem Graphen an, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten (Zeile \ref{algo:extend:start}). Dann wird versucht jede Kante einzufügen, die auch im originalen Graphen \vars{input} vorhanden war (Zeile \ref{algo:extend:each}). Wenn es einen invaliden Graphen erzeugt, also dass es nun einen verbotenen Teilgraphen im \vars{graph} gibt, dann wird die Änderung rückgängig gemacht (Zeile \ref{algo:extend:change}).
 Wenn nun keine Änderung in einem Durchlauf gemacht wurden, dann bricht der Algorithmus ab (Zeile \ref{algo:extend:break}) und gibt den erzeugen Graphen zurück. 
 
-Ein beispielweiser Ablauf für den Extend-Algorithmus, wo $P_3$ der verbotene Teilgraph ist ist in der Abbildung \ref{fig:algo:extend} zu sehen. Dabei wird der Graph \vars{graph} dargestellt und eine gestrichelte Kante gibt an, ob die Kante in dem Graphen \vars{input} vorhanden ist. Wenn die Kante rot ist, dann wurde versucht die Kante einzufügen, aber es hat eine $P_3$ erzeugt, wenn die Kante grün ist, dann wurde die Kante eingefügt, ohne dass ein $P_3$ erzeugt wurde.
+Ein beispielsweiser Ablauf für den Extend-Algorithmus, wo $P_3$ der verbotene Teilgraph ist ist in der Abbildung \ref{fig:algo:extend} zu sehen. Dabei wird der Graph \vars{graph} dargestellt und eine gestrichelte Kante gibt an, wenn die Kante in dem Graphen \vars{input} vorhanden ist, aber nicht in dem Graphen \vars{input}. Wenn die Kante rot ist, dann wurde versucht die Kante einzufügen, aber es hat eine $P_3$ erzeugt, wenn die Kante grün ist, dann wurde die Kante eingefügt, ohne dass ein $P_3$ erzeugt wurde.
+
+Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in dem Eingabe-Graphen nicht vorhanden waren.
 
 \begin{algorithm}
   \captionof{algorithm}{Extend}\label{algo:extend}
@@ -380,7 +432,7 @@ In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somi
 \begin{algorithmic}[1]
 \Function{ExploredGrowReduceSolve}{\vars{input}, \vars{forbidden}}
 	\State{\vars{graph} $\gets$ $(V(\vars{input}),\emptyset)$}
-	\State{\vars{nodes} $\gets$ \func{randomOrder}(V(\vars{input}))}
+	\State{\vars{nodes} $\gets$ \func{order}(V(\vars{input}))}
 	\State{\vars{explored} $\gets \emptyset$}
 	\For{\vars{node} $\in$ \vars{nodes}}
 		
@@ -462,6 +514,7 @@ Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 
 
 \section{Aufbau der Test}
+\label{sec:tests}
 \subsection{Datensätze}
 Folgende Datensätze wurden verwendet. Da verschiedene Mengen von verbotenen Teilgraphen monotonen Grapheneigenschaften zugeordnet werden können und jeder Datensatz von Graphen und jede Methode zufällige Graphen zu erzeugen, charakteristische Eigenschaften hat, ist es notwendig verschiedene Datensätze zu verwenden und verschiedenen Methoden zur Erzeugung von zufälligen Graphen.
 Ingesammt wurde 5 verschiedene Methoden zur Erzeugung von zufälligen Graphen verwendet und 3 Datensätze.
@@ -584,6 +637,7 @@ Es sind 360 Graphen mit einer Knotenanzahl zwischen 3 und 80.
 Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden. 
 
 \section{Implementation}
+\label{sec:implementation}
 \subsection{Repräsentation vom Graphen}
 Die Graphen werden in einer Adjazenzmatrix gespeichert.
 
@@ -611,33 +665,36 @@ Bei VFLib ist der Graph immutable und bei der Suche nach einem  Subgraphen müss
 
 
 \section{Auswertung}
+\label{sec:results}
 
 \section{Vergleich mit anderen Heuristiken}
+\label{sec:compare}
+
 \subsection{Cluster-Editing}
 \subsubsection{2K-Heuristik}
-Die 2K-Heuristik, basiert auf einem Kernel für das Cluster-Editing-Problem, welches maximal 2K Knoten liefert \cite{Chen12}. Wenn man dort eine Bedingung für die \todo{?.} Reduktionsregel abschwächt  abschwächt, kommt eine sehr gute Heuristik für das Cluster-Editing-Problem heraus. Dabei wird die Bedingung mit jedem Durchlauf abgeschwächt.
+Die 2K-Heuristik basiert auf einem Kernel für das Cluster-Editing-Problem, welches maximal 2K Knoten liefert \cite{Chen12}. Wenn man dort eine Bedingung für die Reduktionsregel  abschwächt, kommt eine gute Heuristik für das Cluster-Editing-Problem heraus. Dabei wird die Bedingung mit jedem Durchlauf abgeschwächt.
 \pagebreak
 \begin{center}
   \captionof{algorithm}{2K Heuristik}\label{algo:2k}
 \begin{algorithmic}[1]
-\Function{solve2K}{g :: Gewichteter Graph}
-\State{a = 1,0} 
-\While{graph hat einen P3}
-	\For{each knoten u $\in$ g}
-		\If{$2 \cdot a \cdot costClique(g, u) + a \cdot costCut(g, u) < \#(N(u))$}
+\Function{solve2K}{\vars{g} :: Gewichteter Graph}
+\State{\vars{x} $\gets$ 1,0} 
+\While{\vars{g} has a P3}
+	\For{each knoten \vars{u} $\in$ \vars{g}}
+		\If{$2 \cdot x \cdot costClique(g, u) + x \cdot costCut(g, u) < \#(N(u))$}
 			\For{each $\{a,b\}$  mit $a \in N(u)$, $b \in N(u) \land a \neq b$}
-				\State{merge(a,b)}
+				\State{\func{merge}(a,b)}
 			\EndFor
 		\EndIf
 	\EndFor
-	\State{$a = 0,99 \cdot a - 0,01$}
+	\State{$\vars{x} \gets$ $0,99 \cdot \vars{x} - 0,01$}
 \EndWhile
 
 \Return{graph}
 \EndFunction
 
 \Function{costClique}{graph :: Gewichteter Graph, u :: Kante}
-\State{cost = 0}
+\State{cost $\gets$ 0}
 	\For{each $\{a,b\}$  mit $a \in N^{*}(u)$, $b \in N^{*}(u) \land \{a,b\} \notin graph$}
 		\State{cost += $|\,w(\{a,b\})\,|$}
 	\EndFor
@@ -645,7 +702,7 @@ Die 2K-Heuristik, basiert auf einem Kernel für das Cluster-Editing-Problem, wel
 \Return{cost}
 \EndFunction
 \Function{costCut}{graph :: Gewichteter Graph, u :: Kante}
-\State{cost = 0}
+\State{cost $\gets$ 0}
 	\For{each $\{a,b\}$  mit $a \in N^{*}(u)$, $b \notin N^{*}(u) \land \{a,b\} \in graph$}
 		\State{cost += $w(\{a,b\})$}
 	\EndFor
@@ -656,20 +713,78 @@ Die 2K-Heuristik, basiert auf einem Kernel für das Cluster-Editing-Problem, wel
 \end{center}
 
 
-\subsubsection{Andere Heuristiken}
-\cite{Bastos2014} Effiziente Algorithmen
+\begin{center}
+\captionof{table}{Vergleich der durchschnittlichen Lösungsgröße}
+\label{tab:size_2k}
+\begin{tabular}{|c|c c|c c|}
 
- \todo{GRASP Heuritik}
- \todo{ILS Heuristik}
+\hline 
+Programm / & \multicolumn{2}{c|}{Aprox2k} & \multicolumn{2}{c|}{ExploredGrowReduce\footnote{Siehe Algorithmus \ref{algo:ExploredGrowReduce} mit 5 Iterationen }} \\ 
+Datensatz & \multicolumn{1}{c}{mean}  &  \multicolumn{1}{c|}{std} &  \multicolumn{1}{c}{mean} &  \multicolumn{1}{c|}{std} \\ 
+\hline 
+bio1 \footnote{Testergebnis: 2016-04-20 17:29:08} & \textbf{43.44}  & 79.81 & 133.59 & 249,62 \\ 
+bio2 \footnote{Testergebnis: 2016-04-20 17:31:40} & \textbf{34.11} & 19.79 & 113.81 & 166,01 \\ 
+duplication-divergence \footnote{Testergebnis: 2016-04-20 17:36:40} & 155.17 & 217.38 & \textbf{92.30} & 115,22 \\ 
+newman-watts-strogatz \footnote{Testergebnis: 2016-04-20 17:36:57} & 165.22 & 149,86 & \textbf{152.34} & 127,51 \\ 
+albert-barabasi \footnote{Testergebnis: 2016-04-20 17:38:17} & 324.30 & 316,32 & \textbf{248.84} & 226,87 \\ 
+binomial \footnote{Testergebnis: 2016-04-20 18:17:08} & \textbf{493.17} & 545,19 & 554.61 & 670,91 \\ 
+ 
+\hline 
+\end{tabular} 
+\end{center}
+
 
 \subsection{Quasi-Threshold Mover}
 In \cite{BrandesHSW15} wurde ein neuer schneller und auch für große Graphen geeigneter Algorithmus entwickelt für das Quasi-Threshold Editing Problem. Quasi-Threshold Graphen, auch bekannt als trivial perfekte Graphen lassen sich auch als $(P_4, C_4)$ - freie Graphen charakterisieren. 
 
+In Tabelle \ref{tab:qual_mover} wird die Lösungsqualität von dem Quasi-Thresold-Mover und unserem Algorithmus ExploredGrowReduce verglichen. In der Tabelle \ref{tab:size_mover} wird die durschnittliche Größe der Lösungen verglichen. 
+Der Quasi-Threschold-Mover ist unserem Ansatz weit überlegen. 
+\begin{center}
+\captionof{table}{Vergleich der durchschnittlichen Lösungsqualität}
+\label{tab:qual_mover}
+\begin{tabular}{|c|c c|c c|}
 
-Vergleich mit mit meinem Algorithmus.
+\hline 
+Programm / & \multicolumn{2}{c|}{ExploredGrowReduce\footnote{Siehe Algorithmus \ref{algo:ExploredGrowReduce} mit Standard-Parametern }} & \multicolumn{2}{c|}{Quasi-Threshold-Mover} \\ 
+Datensatz & \multicolumn{1}{c}{mean}  &  \multicolumn{1}{c|}{std} &  \multicolumn{1}{c}{mean} &  \multicolumn{1}{c|}{std} \\ 
+\hline 
+bio1 \footnote{Testergebnis: 2016-04-20 12:46:35 } & 1.61x  & 1.30 & \textbf{1.05x} & 0.14 \\ 
+
+bio2 \footnote{Testergebnis: 2016-04-20 12:53:45} & 1.69x & 1.03 & \textbf{1.05x} & 0.10 \\ 
+
+duplication-divergence \footnote{Testergebnis: 2016-04-20 13:09:36} & 1.42x & 0.33 & \textbf{1.04x} & 0.05 \\ 
+
+newman-watts-strogatz \footnote{Testergebnis: 2016-04-20 13:12:44} & 1.38x & 0.22 & \textbf{1.06x} & 0.05 \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
+\begin{center}
+\captionof{table}{Vergleich der durchschnittlichen Lösungsgröße}
+\label{tab:size_mover}
+\begin{tabular}{|c|c c|c c|}
+
+\hline 
+Programm / & \multicolumn{2}{c|}{ExploredGrowReduce} & \multicolumn{2}{c|}{Quasi-Threshold-Mover} \\ 
+Datensatz & \multicolumn{1}{c}{mean}  &  \multicolumn{1}{c|}{std} &  \multicolumn{1}{c}{mean} &  \multicolumn{1}{c|}{std} \\ 
+\hline 
+bio1 & 52.25  & 150.25 & \textbf{20.88} & 46.51 \\ 
+
+bio2 & 23.12 & 19.91 & \textbf{13.89} & 9.64 \\ 
+
+duplication-divergence & 73.87 & 117.35 & \textbf{51.46} & 80.23 \\ 
+
+newman-watts-strogatz & 146.48 & 128.42 & \textbf{103.38} & 87.99 \\ 
+\hline 
+\end{tabular} 
+\end{center}
 
 
 \section{Zukünftige Forschungsmöglichkeiten}
+\subsection{Besser Sortierung von Grow-Reduce}
+\subsection{Besser Konvergenzkriterium}
+\subsection{Obere Schranken}
+\subsection{Obere Schranken}
 \section{Zusammenfassung}
 
 \section{Anhang}
