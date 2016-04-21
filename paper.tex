@@ -58,24 +58,77 @@ Diese Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum
 In diesem Abschnitt werden wir die Fundamente legen und diese Arbeit motivieren. Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
 
 \subsection{Motivation}
-Viele verschiedene Probleme erfordern, dass man einen Graphen so wenig wie möglich modifiziert, sodass er zu einer bestimmten Klassen von Graphen gehört. 
-Hereditary Graph Klassen = forbidden subgraph characterisation.
+Wenn man nun ein Model eines Problemes erstellt hat, hat dieser entstandene Graph Eigenschaften. Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Diese Graphen kennt man Cluster-Graphen. Diese bestehen einer oder mehren Komponenten, wo jeder Knoten mit jedem Knoten verbunden ist.
+Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie keinen $P_3$ als einen induzierten Teilgraphen haben, was bedeutet, dass man jedem Knoten aus dem $P_3$ einen Knoten aus der Graphen zuordnen kann, sodass gilt, wenn zwei Knoten im $P_3$ durch eine Kante verbunden sind, so sind auch die entsprechenden Knoten in dem Graphen durch eine Kante verbunden und umgekehrt.
+ 
+Erklären lässt sich das an der Abbildung \ref{fig:mot}.
+In der Abbildung \ref{fig:mot-p3} ist ein $P_3$ zu sehen. Es ist einfach ein Graphen mit 3 Knoten wo eine Knoten mit zwei anderen verbunden ist.
 
+In Graphen in der Abbildung \ref{fig:mot-1} sehen wir, dass der Teilgraph B,D,C ein von $P_3$ induzierter Subgraph ist, weil wir Konten $a$ dem Konten $B$, den Knoten $b$ dem Knoten $c$ und den Knoten $c$ dem Konten $D$ zuordnen können und die vorhin geforderte Eigenschaft gilt. Weil im Graphen \ref{fig:mot-p3} $a$ und $c$ verbunden ist, so muss auch $B$ und $D$ verbunden sein. Weil $B$ und $C$ in Graphen \ref{fig:mot-1} nicht verbunden sind, so darf auch $a$ und $b$ nicht durch eine Kante verbunden sein. Man kann überprüfen, dass es auch für die Voraussetzung für jede beliebiges Paar von Knoten geben ist und so ist der rot markierte Teilgraph ein von $P_3$ induzierte Teilgraph. 
+
+Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, weil wir nicht die Knoten vom $P_3$ zu Knoten in diesem Graphen zu zuordnen können, sodass unsere Voraussetzung erfüllt bleibt. Wenn wir zum Beispiel, die Zuordnung vom Knoten $a$ zum Knoten $A$, $b$ zu $B$ und $c$ zu $C$ nehmen sehen wir das Problem, dass wir eine Kanten zwischen $A$ und $C$ haben aber keine Kante zwischen $a$ und $b$. Somit ist das keine gültige Zuordnung. Man kann aber auch nachvollziehen, dass egal wie wir die Zuordnung wählen, wir es nicht schaffen eine solche Zuordnung zu finden. 
+
+\begin{figure}
+  \centering
+ 
+  \begin{tabular}[c]{ccc}
+    \begin{subfigure}[b]{0.32\textwidth}
+      \digraph [width=\linewidth]{dot_mot_p3}
+      {
+        a->c[dir=none];
+        b->c[dir=none];
+      }
+      \caption{Ein $P_3$}
+      \label{fig:mot-p3}
+   \end{subfigure}&
+	 \begin{subfigure}[b]{0.32\textwidth}
+	   \digraph [width=\linewidth]{dot_mot_1}
+	    {
+	     D[color=red];
+	     B[color=red];
+	     C[color=red];
+	     A->B[dir=none];
+	     A->D[dir=none];
+	     D->C[dir=none,color=red];
+	     D->B[dir=none,color=red];
+	     A->C[dir=none];
+	    }
+	    \caption{Ein Graph mit einem von $P_3$ induzierten Teilgraphen.}
+	    \label{fig:mot-1}
+	  \end{subfigure}&
+    \begin{subfigure}[b]{0.32\textwidth}
+	    \digraph [width=\linewidth]{dot_explored_3}
+	    {
+	      A->C[dir=none];
+        B->C[dir=none];
+        A->B[dir=none];
+	    }
+	    \caption{Ein Graph ohne einen induzierten $P_3$}
+	    \label{fig:mot-2}
+    \end{subfigure}
+  \end{tabular}
+  \caption{Cluster-Graphen}\label{fig:mot}
+\end{figure}
+
+Deshalb ist der Graph in \ref{fig:mot-2} ein Cluster-Graph und hat eben diese besondere Eigenschaft, die auf zwei Weisen beschreiben kann: 1. Der Graph hat eine oder mehrere Komponenten wo jeder Knoten mit jedem Knoten verbunden ist und 2. Der Graph hat kein $P_3$ als induzierten Teilgraphen. Die erste Charakterisierung ist eine mehr natürliche und wir könnten zu einer solchen Beschreibung aus praktischen Beobachtungen über unsere Daten kommen, während die zweite eine eher mathematische ist und nicht immer intuitiv, aber dennoch sehr nützlich ist, weil wir eine Eigenschaft sehr leicht formulieren können.
+
+In dieser Arbeit werden wir uns als Methoden anschauen, wie man einen Graphen möglichst schnell so modifizieren kann, so dass er eine bestimmte Eigenschaft hat. Und um diese Eigenschaft zu beschrieben, verwenden wir die Charakterisation durch verbotenen Teilgraphen. 
+ 
 
 \subsection{Anwendungsbeispiele}
 \label{sec:examples}
-
+In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum man Graphen so umformen möchte, dass sie bestimmte Eigenschaften haben.
 \subsubsection{\textsc{Maximum Clique} auf Co-Graphen}
-Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangskomponenten hat, dann können wir 
-\textsc{Maximum Clique} auf den beiden Komponeten lösen und das Maximum davon ist, dass Ergebnis für den Graphen $G$. Hiermit können wir das Problem also in kleinere Probleme zerlegen.
+Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann können wir 
+\textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist, dass Ergebnis für den Graphen $G$. Hiermit können wir das Problem also in kleinere Probleme zerlegen.
 Außerdem gilt es, dass das Finden einer Clique in einem Graphen äquivalent zum Finden der stabilen Menge in der Komplementgraphen ist.
-Wir können also unser Problem weiter zerlegen indem wir das Komplement von jeder Zusammenhangskomponenten nehmen und es wieder in seine seine Zusammenhangskomponenten zerlegen. Dabei gilt die maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangskomponenten ist.
+Wir können also unser Problem weiter zerlegen indem wir das Komplement von jeder Zusammenhangkomponenten nehmen und es wieder in seine seine Zusammenhangkomponenten zerlegen. Dabei gilt die maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponenten ist.
 
 Eine solche Vorgehensweise ist offesichtlich sehr attraktiv um eine solch schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem, wenn das Komplement eines Graphen zusammmenhängend ist und keine Zusammenhangskomponenten hat. Wir definieren, dass $G$ einen complement reducible graph, oder kurz Co-Graph, wenn so etwas in dem Graphen nie auftritt.\cite{Nastos06}
 
 Die Co-Graphen-Klasse hat also sehr wünschenswerte Eigenschaften, wie dass man \textsc{Maximum Clique} in linearer Zeit lösen kann. Diese Klasse ist eine sehr gut studierte Klasse, die in vielen  Anwendungen auftritt.
 
-Co-Graphen lassen sich auch durch charaketerisen, dass sie keinen $P_4$ als induzierten Subgraphen enthalten.
+Co-Graphen lassen sich auch durch charakterisieren, dass sie keinen $P_4$ als induzierten Subgraphen enthalten.
 \cite{NastosG13}
 \subsubsection{Soziale Netzwerke}
 
@@ -99,7 +152,6 @@ $V(G)$ ist die Menge der Konten des Graphen $G$. $E(G)$ ist die Menge der Kanten
 
 Sei $G = (V,E)$ ein Graph und $S \subseteq V$ eine beliebige Knotenmenge von $V$. 
 Dann ist $G[S]$ der auf $S$ induzierte Subgraph von $G$ mit $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$
-
 
 Sei $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
 
