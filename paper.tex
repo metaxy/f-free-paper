@@ -10,7 +10,7 @@
 
 \usepackage{footnote}
 \makesavenoteenv{tabular}
-
+\usepackage{wrapfig}
 %for pseudocode
 \usepackage{algorithm}
 \usepackage{algpseudocode}
@@ -113,7 +113,6 @@ Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, w
 Deshalb ist der Graph in \ref{fig:mot-2} ein Cluster-Graph und hat eben diese besondere Eigenschaft, die auf zwei Weisen beschreiben kann: 1. Der Graph hat eine oder mehrere Komponenten wo jeder Knoten mit jedem Knoten verbunden ist und 2. Der Graph hat kein $P_3$ als induzierten Teilgraphen. Die erste Charakterisierung ist eine mehr natürliche und wir könnten zu einer solchen Beschreibung aus praktischen Beobachtungen über unsere Daten kommen, während die zweite eine eher mathematische ist und nicht immer intuitiv, aber dennoch sehr nützlich ist, weil wir eine Eigenschaft sehr leicht formulieren können.
 
 In dieser Arbeit werden wir uns als Methoden anschauen, wie man einen Graphen möglichst schnell so modifizieren kann, so dass er eine bestimmte Eigenschaft hat. Und um diese Eigenschaft zu beschrieben, verwenden wir die Charakterisation durch verbotenen Teilgraphen. 
- 
 
 \subsection{Anwendungsbeispiele}
 \label{sec:examples}
@@ -124,15 +123,58 @@ Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so i
 Außerdem gilt es, dass das Finden einer Clique in einem Graphen äquivalent zum Finden der stabilen Menge in der Komplementgraphen ist.
 Wir können also unser Problem weiter zerlegen indem wir das Komplement von jeder Zusammenhangkomponenten nehmen und es wieder in seine seine Zusammenhangkomponenten zerlegen. Dabei gilt die maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponenten ist.
 
-Eine solche Vorgehensweise ist offesichtlich sehr attraktiv um eine solch schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem, wenn das Komplement eines Graphen zusammmenhängend ist und keine Zusammenhangskomponenten hat. Wir definieren, dass $G$ einen complement reducible graph, oder kurz Co-Graph, wenn so etwas in dem Graphen nie auftritt.\cite{Nastos06}
+Eine solche Vorgehensweise ist offensichtlich sehr attraktiv um ein schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem, wenn das Komplement eines Graphen zusammenhängend ist und keine Zusammenhangkomponenten hat. Dann funktioniert unsere Vorgehensweise nicht mehr. 
+Wir können uns aber eine Klasse von Graphen definieren, wo so etwas nie vorkommen wird und nennen sie die complement reducible graphs, oder kurz Co-Graphen. Man kann diese Klasse auch dadurch charakterisieren, dass sie keinen $P_4$ als induzierten Teilgraphen enthalten.
+Die Co-Graphen Klasse hat also einige sehr wünschenswerte Eigenschaften, wie dass man \textsc{Maximum Clique} in linearer Zeit lösen kann.
 
-Die Co-Graphen-Klasse hat also sehr wünschenswerte Eigenschaften, wie dass man \textsc{Maximum Clique} in linearer Zeit lösen kann. Diese Klasse ist eine sehr gut studierte Klasse, die in vielen  Anwendungen auftritt.
-
-Co-Graphen lassen sich auch durch charakterisieren, dass sie keinen $P_4$ als induzierten Subgraphen enthalten.
 \cite{NastosG13}
 \subsubsection{Soziale Netzwerke}
+$(P_4,C_4)$-freie Graphen modellieren eine familiäre Struktur oder eine Gemeinschaft die hierarchisch organisiert ist. Diese Graphen werden auch trivial perfekte Graphen oder quasi-threshold Graphen genannt. 
 
-$(P_4,C_4)$-freie Graphen modellieren eine soziale Struktur. \cite{NastosG13}
+Die letztere Bezeichnung kommt von Charakterisierung dieser Graphen als Baumartige Strukturen. Ein solcher Graph lässt sich als der transitive \footnote{Transitiv bedeutet, dass wenn man von a nach b und von b nach c kommt, dass man auch von a nach c kommen kann.} Abschluss eines Waldes sehen\cite{Wolk65}. 
+
+In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu sehen. Die durchgehenden Kanten zeigen den Wald, in diesem Fall ist es Wald mit genau einem Baum. Der dunkle-graue Knoten ist die Wurzel des Baumes.  Dabei stellen gestrichelten Kanten den transitiven Abschluss dar. \cite{BrandesHSW15}
+\begin{wrapfigure}{r}{0.4\textwidth}
+  \begin{center}
+    
+\begin{tikzpicture}
+  [shorten >=2pt,node distance=1cm,auto,main node/.style={circle,draw,align=center}]
+  \node[main node, fill=gray] (a) at (4,10) {};
+\node[main node] (b) at (3,9)  {};
+\node[main node] (c) at (5,9)  {};
+\node[main node] (d) at (2,8) {};
+\node[main node] (e) at (4,8)  {};
+\node[main node] (g) at (6,8)  {};
+  
+\node[main node] (f) at (2,7)  {};
+  
+  
+  \draw (a) -- (b);
+  \draw (a) -- (c);
+  \draw (b) -- (d);
+  \draw (b) -- (e);
+  \draw (d) -- (f);
+  
+  \draw (c) -- (g);
+  
+  \path
+(a) edge [bend left=35,dashed] node {} (g)
+    edge [bend left=30,dashed] node {} (f)
+    edge [bend right=35,dashed] node {} (d)
+(b) edge [bend left=15,dashed] node {} (f);
+
+\end{tikzpicture}
+
+
+  \end{center}
+  \caption{Ein Quasi-Threshold-Graph}
+  \label{fig:quasi-threhold}
+\end{wrapfigure}
+
+Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch soziale Strukturen, wie eine Hierarchie in einer Organisation. Sei die Knoten Personen und die Kanten stellen die Wege dar, auf denen die Befehle fließen. Fast alle haben einen Vorgesetzten (bis auf die Wurzel) und nehmen Befehle vom ihm an, was durch die Baumstruktur modelliert wird. Aber sie hören auch auf die Befehle von dem Vorgesetzen des Vorgesetzen, was durch den transitiven Abschluss modelliert wird. \cite{NastosG13}
+
+
+
 
 Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
 
@@ -158,6 +200,8 @@ Sei $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von 
 Ein Graph $G$ ist \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
 Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ für jeden \textit{F} $\in \cursive{F}$ \textit{F}-frei ist.
 Siehe \cite{Cai96} für eine Defintion von FPT und Kernel.
+
+Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangskomponente eines Waldes ist ein Baum.
 
 \subsubsection{Problemstellung}
 Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst ein Problem zu definieren. Es ist unter dem Namen \textsc{F-Free Edge Editing}\footnote{oder H-Free (Edge) Editing} bekannt.
@@ -686,7 +730,36 @@ Es sind 360 Graphen mit einer Knotenanzahl zwischen 3 und 80.
 
 
 \subsection{Optimale Lösung}
-Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden. 
+Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden. Der BLP-Alogoritmus versucht eine optimale Lösung zu finden. Dies kann jedoch sehr lange dauern, da die Komplexität des Problemes exponentiell. 
+In der Tabelle Tabelle \ref{tab:size_solved_bio2} sehen wir, dass für viele verbotene Teilgraphen wir für alle Instanzen eine optimale Lösung berechnen konnten, aber es gibt schwierige verbotene Teilgraphen wie ($P_5$, triangle) wo man wir für die meisten Instanzen keine optimale Lösung haben.
+\begin{center}
+\captionof{table}{Nicht gelöste Instanzen für den Datensatz $bio2$}
+\label{tab:size_solved_bio2}
+\begin{tabular}{|c|c|c|}
+\hline 
+Verbotener Teilgraph & Anzahl & Prozent \\ 
+\hline 
+$2 P_3$ & 0 & 0\% \\ 
+\hline 
+$C_4$ & 0 & 0\% \\ 
+\hline 
+claw & 0 & 0\% \\ 
+\hline 
+paw & 4 & 1\% \\ 
+\hline 
+triangle & 11 & 3\% \\ 
+\hline 
+splitcluster & 26 & 7\% \\ 
+\hline 
+($P_4,C_4)$ & 37 & 10\% \\ 
+\hline 
+(x172, triangle) & 129 & 36\% \\ 
+\hline 
+($P_5$, triangle)& 309 & 86\% \\ 
+\hline 
+\end{tabular} 
+\end{center}
+
 
 \section{Implementation}
 \label{sec:implementation}
@@ -887,7 +960,6 @@ newman-watts-strogatz & 146.48 & 128.42 & \textbf{103.38} & 87.99 \\
 \end{figure}
 
 \bibliographystyle{plain}
-\bibliographystyle{te}
 \bibliography{biblio}
 
 \end{document}
