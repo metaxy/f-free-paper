@@ -51,22 +51,25 @@
 \newpage
 
 \section{Einleitung}
-Man kann einen Graphen als eine bildliche Darstellung von Beziehungen zwischen Objekten vorstellen. Dabei stellt man sie als Kreise (auch Knoten genannt) mit einem Namen dar und die Beziehungen als als Linien die diese Kreise verbinden (auch Kanten genannt). \cite{Nastos06}  Eine genauere Definition ist im Abschnitt \ref{sec:notation} zu finden.
+Man kann sich einen Graphen als eine bildliche Darstellung von Beziehungen zwischen Objekten vorstellen. Dabei stellt man die Objekte als Kreise (auch Knoten genannt) und die Beziehungen als als Linien die diese Kreise verbinden (auch Kanten genannt) \cite{Nastos06}.
 
-Diese Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel könnten sie Knoten Städte und die Kanten Verbindungen zwischen diesen sein und somit wird der Graph das Netzwerk von diesen Städten modellieren. Weitere Bespiele sind im dem Abschnitt \ref{sec:examples} zu finden.
+Diese Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel könnten die Knoten Städte und die Kanten Zugverbindungen zwischen diesen Städten sein und somit wird der Graph das Zugnetzwerk von diesen Städten modellieren. 
 
 In diesem Abschnitt werden wir die Fundamente legen und diese Arbeit motivieren. Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
 
 \subsection{Motivation}
-Wenn man nun ein Model eines Problemes erstellt hat, hat dieser entstandene Graph Eigenschaften. Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Diese Graphen kennt man Cluster-Graphen. Diese bestehen einer oder mehren Komponenten, wo jeder Knoten mit jedem Knoten verbunden ist.
-Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie keinen $P_3$ als einen induzierten Teilgraphen haben, was bedeutet, dass man jedem Knoten aus dem $P_3$ einen Knoten aus der Graphen zuordnen kann, sodass gilt, wenn zwei Knoten im $P_3$ durch eine Kante verbunden sind, so sind auch die entsprechenden Knoten in dem Graphen durch eine Kante verbunden und umgekehrt.
+\label{sec:mot}
+Wenn man nun ein Model eines Problems erstellt hat, hat dieser entstandene Graph Eigenschaften. 
+Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Diese Graphen kennt man Cluster-Graphen. Diese bestehen aus einer oder mehren Komponenten, in welcher jeder Knoten mit jedem Knoten verbunden ist.
+Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie keinen $P_3$ als einen induzierten Teilgraphen haben. Eine $P_3$ als induzierten Teilgraphen zu haben, bedeutet, dass man jedem Knoten aus dem $P_3$ einen Knoten aus dem Graphen zuordnen kann, sodass gilt, wenn zwei Knoten im $P_3$ durch eine Kante verbunden sind, so sind auch die entsprechenden Knoten in dem Graphen durch eine Kante verbunden und umgekehrt.
  
 Erklären lässt sich das an der Abbildung \ref{fig:mot}.
-In der Abbildung \ref{fig:mot-p3} ist ein $P_3$ zu sehen. Es ist einfach ein Graphen mit 3 Knoten wo eine Knoten mit zwei anderen verbunden ist.
+In der Abbildung \ref{fig:mot-p3} ist ein $P_3$ zu sehen. Es ist einfach ein Graphen mit 3 Knoten wo ein Knoten mit zwei anderen verbunden ist.
 
-In Graphen in der Abbildung \ref{fig:mot-1} sehen wir, dass der Teilgraph B,D,C ein von $P_3$ induzierter Subgraph ist, weil wir Konten $a$ dem Konten $B$, den Knoten $b$ dem Knoten $c$ und den Knoten $c$ dem Konten $D$ zuordnen können und die vorhin geforderte Eigenschaft gilt. Weil im Graphen \ref{fig:mot-p3} $a$ und $c$ verbunden ist, so muss auch $B$ und $D$ verbunden sein. Weil $B$ und $C$ in Graphen \ref{fig:mot-1} nicht verbunden sind, so darf auch $a$ und $b$ nicht durch eine Kante verbunden sein. Man kann überprüfen, dass es auch für die Voraussetzung für jede beliebiges Paar von Knoten geben ist und so ist der rot markierte Teilgraph ein von $P_3$ induzierte Teilgraph. 
+In dem Graphen in der Abbildung \ref{fig:mot-1} sehen wir, dass der Teilgraph B,D,C ein von $P_3$ induzierter Subgraph ist, weil wir den Knoten $a$ dem Konten $B$, den Knoten $b$ dem Knoten $c$ und den Knoten $c$ dem Konten $D$ zuordnen können und die vorhin geforderte Eigenschaft gilt.
+So sehen wir, dass im Graphen \ref{fig:mot-p3} $a$ und $c$ verbunden ist und im  \ref{fig:mot-1} auch $B$ und $D$ verbunden ist. Auch ist $B$ und $C$ in Graphen \ref{fig:mot-1} nicht verbunden und $a$ und $b$ ebenso.  Man kann überprüfen, dass die Voraussetzung für jede beliebiges Paar von Knoten geben ist und so ist der rot markierte Teilgraph ein von $P_3$ induzierte Teilgraph. 
 
-Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, weil wir nicht die Knoten vom $P_3$ zu Knoten in diesem Graphen zu zuordnen können, sodass unsere Voraussetzung erfüllt bleibt. Wenn wir zum Beispiel, die Zuordnung vom Knoten $a$ zum Knoten $A$, $b$ zu $B$ und $c$ zu $C$ nehmen sehen wir das Problem, dass wir eine Kanten zwischen $A$ und $C$ haben aber keine Kante zwischen $a$ und $b$. Somit ist das keine gültige Zuordnung. Man kann aber auch nachvollziehen, dass egal wie wir die Zuordnung wählen, wir es nicht schaffen eine solche Zuordnung zu finden. 
+Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, weil wir nicht die Knoten vom $P_3$ zu Knoten in diesem Graphen zu zuordnen können, sodass unsere Voraussetzung erfüllt bleibt. Wenn wir zum Beispiel, die Zuordnung vom Knoten $a$ zum Knoten $A$, $b$ zu $B$ und $c$ zu $C$ nehmen, sehen wir das Problem, dass wir eine Kante zwischen $A$ und $C$ haben aber keine Kante zwischen $a$ und $b$. Somit ist das keine gültige Zuordnung. Man kann aber auch nachvollziehen, dass egal wie die Zuordnung gewählt wird, es nicht möglich ist die Bedingung zu erfüllen.
 
 \begin{figure}
   \centering
@@ -110,30 +113,29 @@ Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, w
   \caption{Cluster-Graphen}\label{fig:mot}
 \end{figure}
 
-Deshalb ist der Graph in \ref{fig:mot-2} ein Cluster-Graph und hat eben diese besondere Eigenschaft, die auf zwei Weisen beschreiben kann: 1. Der Graph hat eine oder mehrere Komponenten wo jeder Knoten mit jedem Knoten verbunden ist und 2. Der Graph hat kein $P_3$ als induzierten Teilgraphen. Die erste Charakterisierung ist eine mehr natürliche und wir könnten zu einer solchen Beschreibung aus praktischen Beobachtungen über unsere Daten kommen, während die zweite eine eher mathematische ist und nicht immer intuitiv, aber dennoch sehr nützlich ist, weil wir eine Eigenschaft sehr leicht formulieren können.
+Deshalb ist der Graph in \ref{fig:mot-2} ein Cluster-Graph und hat eben diese besondere Eigenschaft, die auf zwei Weisen beschreiben werden kann: 1. Der Graph hat eine oder mehrere Komponenten wo jeder Knoten mit jedem Knoten verbunden ist und 2. Der Graph hat kein $P_3$ als einen induzierten Teilgraphen. Die erste Charakterisierung ist eine mehr natürliche und wir könnten zu einer solchen Beschreibung aus praktischen Beobachtungen über unsere Daten kommen, während die zweite eine eher mathematische ist und nicht immer intuitiv, aber dennoch sehr nützlich ist, weil wir eine Eigenschaft sehr leicht formulieren können.
 
-In dieser Arbeit werden wir uns als Methoden anschauen, wie man einen Graphen möglichst schnell so modifizieren kann, so dass er eine bestimmte Eigenschaft hat. Und um diese Eigenschaft zu beschrieben, verwenden wir die Charakterisation durch verbotenen Teilgraphen. 
+In dieser Arbeit werden wir uns die Methoden anschauen, wie man einen Graphen möglichst schnell so modifizieren kann, so dass er eine bestimmte Eigenschaft hat. Und um diese Eigenschaft zu beschrieben, verwenden wir die Charakterisation durch verbotenen Teilgraphen. 
 
 \subsection{Anwendungsbeispiele}
 \label{sec:examples}
-In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum man Graphen so umformen möchte, dass sie bestimmte Eigenschaften haben.
+In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum man Graphen mit bestimmten Eigenschaften haben will.
 \subsubsection{\textsc{Maximum Clique} auf Co-Graphen}
-Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann können wir 
-\textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist, dass Ergebnis für den Graphen $G$. Hiermit können wir das Problem also in kleinere Probleme zerlegen.
-Außerdem gilt es, dass das Finden einer Clique in einem Graphen äquivalent zum Finden der stabilen Menge in der Komplementgraphen ist.
-Wir können also unser Problem weiter zerlegen indem wir das Komplement von jeder Zusammenhangkomponenten nehmen und es wieder in seine seine Zusammenhangkomponenten zerlegen. Dabei gilt die maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponenten ist.
+Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann können wir \textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist, ist das Ergebnis für den Graphen $G$. Somit können wir das Problem also in kleinere Probleme zerlegen.
+Außerdem gilt es, dass das Finden einer Clique in einem Graphen äquivalent zum Finden der stabilen Menge in dem Komplementgraphen ist.
+Wir können also unser Problem weiter zerlegen, indem wir das Komplement von jeder Zusammenhangkomponente nehmen und es wieder in ihre Zusammenhangkomponenten zerlegen. Dabei gilt dass, die maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponente ist.
 
-Eine solche Vorgehensweise ist offensichtlich sehr attraktiv um ein schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem, wenn das Komplement eines Graphen zusammenhängend ist und keine Zusammenhangkomponenten hat. Dann funktioniert unsere Vorgehensweise nicht mehr. 
-Wir können uns aber eine Klasse von Graphen definieren, wo so etwas nie vorkommen wird und nennen sie die complement reducible graphs, oder kurz Co-Graphen. Man kann diese Klasse auch dadurch charakterisieren, dass sie keinen $P_4$ als induzierten Teilgraphen enthalten.
+Eine solche Vorgehensweise ist offensichtlich sehr attraktiv um ein schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem wenn das Komplement eines Graphen zusammenhängend ist und keine Zusammenhangkomponenten hat. Dann funktioniert unsere Vorgehensweise nicht mehr. 
+Wir können uns aber eine Klasse von Graphen definieren, wo so etwas nie vorkommen wird und nennen sie die complement reducible graphs, oder kurz Co-Graphen. Man kann diese Klasse aber auch dadurch charakterisieren, dass sie keinen $P_4$ als induzierten Teilgraphen enthalten.
 Die Co-Graphen Klasse hat also einige sehr wünschenswerte Eigenschaften, wie dass man \textsc{Maximum Clique} in linearer Zeit lösen kann.
 
 \cite{NastosG13}
 \subsubsection{Soziale Netzwerke}
 $(P_4,C_4)$-freie Graphen modellieren eine familiäre Struktur oder eine Gemeinschaft die hierarchisch organisiert ist. Diese Graphen werden auch trivial perfekte Graphen oder quasi-threshold Graphen genannt. 
 
-Die letztere Bezeichnung kommt von Charakterisierung dieser Graphen als Baumartige Strukturen. Ein solcher Graph lässt sich als der transitive \footnote{Transitiv bedeutet, dass wenn man von a nach b und von b nach c kommt, dass man auch von a nach c kommen kann.} Abschluss eines Waldes sehen\cite{Wolk65}. 
+Die letztere Bezeichnung kommt von Charakterisierung dieser Graphen als Baumartige Strukturen. Ein solcher Graph lässt sich als der transitive\footnote{Transitiv bedeutet, dass wenn man von a nach b und von b nach c kommt, dass man auch von a nach c kommen kann.} Abschluss eines Waldes\footnote{Dieser Graph muss gerichtet sein, wir gehen aber der Einfachheit halber nicht weiter darauf ein.} sehen\cite{Wolk65} . 
 
-In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu sehen. Die durchgehenden Kanten zeigen den Wald, in diesem Fall ist es Wald mit genau einem Baum. Der dunkle-graue Knoten ist die Wurzel des Baumes.  Dabei stellen gestrichelten Kanten den transitiven Abschluss dar. \cite{BrandesHSW15}
+In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu sehen. Die durchgehenden Kanten zeigen den Wald, in diesem Fall ist es ein Wald mit genau einem Baum. Der dunkle-graue Knoten ist die Wurzel des Baumes.  Dabei stellen gestrichelten Kanten den transitiven Abschluss dar. \cite{BrandesHSW15}
 \begin{wrapfigure}{r}{0.4\textwidth}
   \begin{center}
     
@@ -161,7 +163,9 @@ In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu
 (a) edge [bend left=35,dashed] node {} (g)
     edge [bend left=30,dashed] node {} (f)
     edge [bend right=35,dashed] node {} (d)
+    edge [bend left=10,dashed] node {} (e)
 (b) edge [bend left=15,dashed] node {} (f);
+
 
 \end{tikzpicture}
 
@@ -179,16 +183,84 @@ Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch
 Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
 
 \subsubsection{Protein interaction networks}
-$(2K_2, C_4, C_5)$-freie Graphen haben gewisse Vorteile für die Untersuchung von Interaktionsnetzwerken von Proteinen \cite{BrucknerHK15}.
 
-\subsubsection{Bicluster Editing}
+\begin{figure}
+  \centering
+  \begin{tabular}[c]{cccc}
+    \begin{subfigure}[b]{0.32\textwidth}
+     \begin{tikzpicture}
+      [shorten >=2pt,node distance=1cm,auto,main node/.style={circle,draw,align=center}]
+        \node[main node] (a) at (2.5,1.75) {};
+        \node[main node] (b) at (1.5,1)  {};
+        \node[main node] (c) at (3.5,1)  {};
+        \node[main node] (d) at (2,0) {};
+        \node[main node] (e) at (3,0)  {};
+  
+  
+        \draw (a) -- (b);
+        \draw (a) -- (c);
+        \draw (b) -- (d);
+        \draw (d) -- (e);
+        \draw (e) -- (c);
 
-\cite{De12} \cite{Madeira04} 
+      \end{tikzpicture}  
+      \caption{$C_5$}
+      \label{fig:graphs:c5}
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.32\textwidth}
+      \begin{tikzpicture}
+      [shorten >=2pt,node distance=1cm,auto,main node/.style={circle,draw,align=center}]
+        \node[main node] (a) at (1,2) {};
+        \node[main node] (b) at (2,2)  {};
+        \node[main node] (c) at (1,1)  {};
+        \node[main node] (d) at (2,1) {};
+  
+  
+        \draw (a) -- (b);
+        \draw (a) -- (c);
+        \draw (b) -- (d);
+        \draw (d) -- (c);
+
+      \end{tikzpicture}  
+      \caption{$C_4$}
+      \label{fig:graphs:c4}
+    \end{subfigure}&
+    \begin{subfigure}[b]{0.32\textwidth}
+     \begin{tikzpicture}
+      [shorten >=2pt,node distance=1cm,auto,main node/.style={circle,draw,align=center}]
+        \node[main node] (a) at (1,2) {};
+        \node[main node] (b) at (2,2)  {};
+        \node[main node] (c) at (1,1)  {};
+        \node[main node] (d) at (2,1) {};
+  
+  
+        \draw (a) -- (c);
+        \draw (b) -- (d);
+
+      \end{tikzpicture}  
+      \caption{$2K_2$}
+      \label{fig:graphs:2k2}
+    \end{subfigure}
+  \end{tabular}
+  \caption{Die verbotenen Graphen in einem Split-Graphen}\label{fig:split_graphs}
+\end{figure}
+Im Abschnitt \ref{sec:mot} haben wir die Cluster-Graphen untersucht, wo jede Zusammenhangkomponente eine Clique ist.
+Split-Graphen sind ähnliche Graphen, aber bestehen nur aus einer Clique besteht und einigen Knoten, die an der Clique anhängen. Formell definiert heißt das, dass es man den Menge der Knoten des Graphens in zwei Mengen $V_1$ und $V_2$ teilen kann, sodass G[$V_1$] ein unabhängige Menge und eine G[$V_2$] eine Clique. Split-Graphen sind $(2K_2, C_4, C_5)$-freie Graphen. Ein Split-Cluster Graph ist ein Graph wo jede Zusammenhangkomponente ein Split-Graph ist.\cite{BrucknerHK15}
+
+Diese Struktur modelliert gut Protein-Protein Interaktion Netzwerke. In Körper vom Menschen oder anderen Lebewesen gibt es eine Vielzahl von Protein die einen Zweck haben, aber diesen erfüllen sie meistens nicht alleine, sondern in dem sie Protein-Komplexe bilden. Diese Protein-Komplexe bestehen aus einer großen Anzahl von Proteinen und sind nicht einfach zu untersuchen. Ein Weg um solche Protein-Komplexe zu identifizieren besteht darin, herauszufinden welche Proteine mit welche Proteinen überhaupt interagieren. So kann man die diese Proteine als Knoten und wenn es eine Interaktion zwischen diesen Proteinen gibt, als eine Kante ansehen. So hat ein Protein-Komplex einen Kern, wo jedes Protein mit jedem Protein interagieren und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Protein-Komplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen.
+
+\subsection{Annäherung}
+Jedoch haben die Daten aus der realen Welt Fehler oder sind unvollständig oder es gibt wie immer Ausnahmen zur Regel. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu bestimmten Paaren von Proteinen. Deswegen stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.\footnote{Siehe die Defintion in \ref{sec:problem}}. 
+
+Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr sehr aufwendig zu lösen. 
+
+%\subsubsection{Bicluster Editing}
+%\cite{De12} \cite{Madeira04} 
 
 \subsection{Definitionen}
 \subsubsection{Notationen und Definitionen}
 \label{sec:notation}
-Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und E die Menge seiner Kanten.
+Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und $E$ die Menge seiner Kanten.
 
 $V(G)$ ist die Menge der Konten des Graphen $G$. $E(G)$ ist die Menge der Kanten des Graphen $G$. $N(u)$ ist die Nachbarschaft vom Knoten $u$. $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive.
 
@@ -199,11 +271,14 @@ Sei $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von 
 
 Ein Graph $G$ ist \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
 Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ für jeden \textit{F} $\in \cursive{F}$ \textit{F}-frei ist.
-Siehe \cite{Cai96} für eine Defintion von FPT und Kernel.
+
+
+Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
 
 Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangskomponente eines Waldes ist ein Baum.
 
 \subsubsection{Problemstellung}
+\label{sec:problem}
 Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst ein Problem zu definieren. Es ist unter dem Namen \textsc{F-Free Edge Editing}\footnote{oder H-Free (Edge) Editing} bekannt.
 \begin{quote}
   \textsc{\cursive{F}-Free Edge Editing}\newline
@@ -914,50 +989,6 @@ newman-watts-strogatz & 146.48 & 128.42 & \textbf{103.38} & 87.99 \\
 
 \section{Anhang}
 \subsection{Kleine Graphen}
-
-\begin{figure}
-  \centering
-  \begin{tabular}[c]{cccc}
-    \begin{subfigure}[b]{0.20\textwidth}
-      \digraph
-[width=\linewidth]{dot_p3}
-{
-	a->b->c;
-}
-      \caption{$P_3$}
-      \label{fig:graphs:p3}
-    \end{subfigure}&
-    \begin{subfigure}[b]{0.20\textwidth}
-     \digraph
-[width=\linewidth]{dot_p4}
-{
-  a->b->c->d;
-}
-      \caption{$P_4$}
-      \label{fig:graphs:p4}
-    \end{subfigure}&
-    \begin{subfigure}[b]{0.20\textwidth}
-      \digraph
-[width=\linewidth]{dot_c4}
-{
-  a->b->c->d->a;
-}
-      \caption{$C_4$}
-      \label{fig:graphs:c4}
-    \end{subfigure}&
-    \begin{subfigure}[b]{0.20\textwidth}
-     \digraph
-[width=\linewidth]{dot_2k2}
-{
-  a->b;
-  c->d;
-}
-      \caption{$2K_2$}
-      \label{fig:mouse}
-    \end{subfigure}
-  \end{tabular}
-  \caption{Einige Graphen}\label{fig:animals}
-\end{figure}
 
 \bibliographystyle{plain}
 \bibliography{biblio}
