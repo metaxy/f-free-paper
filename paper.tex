@@ -51,20 +51,21 @@
 \newpage
 
 \section{Einleitung}
-Man kann sich einen Graphen als eine bildliche Darstellung von Beziehungen zwischen Objekten vorstellen. Dabei stellt man die Objekte als Kreise (auch Knoten genannt) und die Beziehungen als als Linien die diese Kreise verbinden (auch Kanten genannt) \cite{Nastos06}.
+Graphen sind eine bildliche Darstellung von Beziehungen zwischen Objekten vorstellen. Dabei stellt man die Objekte als Kreise (auch Knoten genannt) und die Beziehungen als Linien, die diese Kreise verbinden (auch Kanten genannt) \cite{Nastos06}.
 
-Diese Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel könnten die Knoten Städte und die Kanten Zugverbindungen zwischen diesen Städten sein und somit wird der Graph das Zugnetzwerk von diesen Städten modellieren. 
+Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel können die Knoten Städte und die Kanten Zugverbindungen zwischen diesen Städten sein und somit wird der Graph das Zugnetzwerk von diesen Städten modellieren. 
 
-In diesem Abschnitt werden wir die Fundamente legen und diese Arbeit motivieren. Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
+In diesem Abschnitt werden wir die Fundamente legen und diese Arbeit motivieren. Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird auf Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
 
 \subsection{Motivation}
 \label{sec:mot}
 Wenn man nun ein Model eines Problems erstellt hat, hat dieser entstandene Graph Eigenschaften. 
+
 Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Diese Graphen kennt man Cluster-Graphen. Diese bestehen aus einer oder mehren Komponenten, in welcher jeder Knoten mit jedem Knoten verbunden ist.
 Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie keinen $P_3$ als einen induzierten Teilgraphen haben. Eine $P_3$ als induzierten Teilgraphen zu haben, bedeutet, dass man jedem Knoten aus dem $P_3$ einen Knoten aus dem Graphen zuordnen kann, sodass gilt, wenn zwei Knoten im $P_3$ durch eine Kante verbunden sind, so sind auch die entsprechenden Knoten in dem Graphen durch eine Kante verbunden und umgekehrt.
  
 Erklären lässt sich das an der Abbildung \ref{fig:mot}.
-In der Abbildung \ref{fig:mot-p3} ist ein $P_3$ zu sehen. Es ist einfach ein Graphen mit 3 Knoten wo ein Knoten mit zwei anderen verbunden ist.
+In der Abbildung \ref{fig:mot-p3} ist ein $P_3$ zu sehen.
 
 In dem Graphen in der Abbildung \ref{fig:mot-1} sehen wir, dass der Teilgraph B,D,C ein von $P_3$ induzierter Subgraph ist, weil wir den Knoten $a$ dem Konten $B$, den Knoten $b$ dem Knoten $c$ und den Knoten $c$ dem Konten $D$ zuordnen können und die vorhin geforderte Eigenschaft gilt.
 So sehen wir, dass im Graphen \ref{fig:mot-p3} $a$ und $c$ verbunden ist und im  \ref{fig:mot-1} auch $B$ und $D$ verbunden ist. Auch ist $B$ und $C$ in Graphen \ref{fig:mot-1} nicht verbunden und $a$ und $b$ ebenso.  Man kann überprüfen, dass die Voraussetzung für jede beliebiges Paar von Knoten geben ist und so ist der rot markierte Teilgraph ein von $P_3$ induzierte Teilgraph. 
@@ -115,21 +116,25 @@ Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, w
 
 Deshalb ist der Graph in \ref{fig:mot-2} ein Cluster-Graph und hat eben diese besondere Eigenschaft, die auf zwei Weisen beschreiben werden kann: 1. Der Graph hat eine oder mehrere Komponenten wo jeder Knoten mit jedem Knoten verbunden ist und 2. Der Graph hat kein $P_3$ als einen induzierten Teilgraphen. Die erste Charakterisierung ist eine mehr natürliche und wir könnten zu einer solchen Beschreibung aus praktischen Beobachtungen über unsere Daten kommen, während die zweite eine eher mathematische ist und nicht immer intuitiv, aber dennoch sehr nützlich ist, weil wir eine Eigenschaft sehr leicht formulieren können.
 
-In dieser Arbeit werden wir uns die Methoden anschauen, wie man einen Graphen möglichst schnell so modifizieren kann, so dass er eine bestimmte Eigenschaft hat. Und um diese Eigenschaft zu beschrieben, verwenden wir die Charakterisation durch verbotenen Teilgraphen. 
+In dieser Arbeit werden wir uns die Methoden anschauen, welche einen Graphen so modifizieren, so dass er eine bestimmte Eigenschaft hat. Viele Eigenschaften lassen sich, wie in dem vorherigen Beispiel mittels einer Charakterisation durch verbotenen Teilgraphen beschreiben.
 
 \subsection{Anwendungsbeispiele}
 \label{sec:examples}
 In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum man Graphen mit bestimmten Eigenschaften haben will.
 \subsubsection{\textsc{Maximum Clique} auf Co-Graphen}
-Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann können wir \textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist, ist das Ergebnis für den Graphen $G$. Somit können wir das Problem also in kleinere Probleme zerlegen.
-Außerdem gilt es, dass das Finden einer Clique in einem Graphen äquivalent zum Finden der stabilen Menge in dem Komplementgraphen ist.
-Wir können also unser Problem weiter zerlegen, indem wir das Komplement von jeder Zusammenhangkomponente nehmen und es wieder in ihre Zusammenhangkomponenten zerlegen. Dabei gilt dass, die maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponente ist.
+%TODO: Maximun Clique
+Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann können wir \textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist das Ergebnis für den Graphen $G$. Somit können wir das Problem also in kleinere Probleme zerlegen.
+Außerdem gilt es, dass das Finden einer Clique in einem Graphen $G$ äquivalent zum Finden einer stabilen Menge in dem Komplementgraphen  von $G$ ist.
+Wir können also unser Problem weiter zerlegen, indem wir das Komplement von jeder Zusammenhangkomponente nehmen und es wieder in ihre Zusammenhangkomponenten zerlegen. Dabei gilt dass, eine maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponente ist.
 
-Eine solche Vorgehensweise ist offensichtlich sehr attraktiv um ein schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem wenn das Komplement eines Graphen zusammenhängend ist und keine Zusammenhangkomponenten hat. Dann funktioniert unsere Vorgehensweise nicht mehr. 
-Wir können uns aber eine Klasse von Graphen definieren, wo so etwas nie vorkommen wird und nennen sie die complement reducible graphs, oder kurz Co-Graphen. Man kann diese Klasse aber auch dadurch charakterisieren, dass sie keinen $P_4$ als induzierten Teilgraphen enthalten.
-Die Co-Graphen Klasse hat also einige sehr wünschenswerte Eigenschaften, wie dass man \textsc{Maximum Clique} in linearer Zeit lösen kann.
+Eine solche Vorgehensweise ist offensichtlich sehr attraktiv um ein schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem, der Graph $G$ keine Zusammenhangkomponenten hat und der Komplementgraphen von $G$
 
-\cite{NastosG13}
+Dann funktioniert unsere Vorgehensweise nicht mehr. 
+Aber es gibt eine Klasse von Graphen, die "complement reducible graphs" oder kurz Co-Graphen, die so definiert worden ist, dass es nicht zu dem eben beschriebenen Problem kommt.
+Diese Klasse von Graphen ist auch durch charaktereriesiert, dass sie keinen $P_4$ als induzierten Teilgraphen enthalten \cite{NastosG13}.
+Weil es nun bei dieser Klasse von Graphen nie dazu dem Problem kommt, können wir \textsc{Maximum Clique} in linearer Zeit auf solchen Graphen lösen, während auf allgemeinen Graphen dieses Problem NP-Vollständig ist.
+
+
 \subsubsection{Soziale Netzwerke}
 $(P_4,C_4)$-freie Graphen modellieren eine familiäre Struktur oder eine Gemeinschaft die hierarchisch organisiert ist. Diese Graphen werden auch trivial perfekte Graphen oder quasi-threshold Graphen genannt. 
 
@@ -245,7 +250,7 @@ Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch
   \caption{Die verbotenen Graphen in einem Split-Graphen}\label{fig:split_graphs}
 \end{figure}
 Im Abschnitt \ref{sec:mot} haben wir die Cluster-Graphen untersucht, wo jede Zusammenhangkomponente eine Clique ist.
-Split-Graphen sind ähnliche Graphen, aber bestehen nur aus einer Clique besteht und einigen Knoten, die an der Clique anhängen. Formell definiert heißt das, dass es man den Menge der Knoten des Graphens in zwei Mengen $V_1$ und $V_2$ teilen kann, sodass G[$V_1$] ein unabhängige Menge und eine G[$V_2$] eine Clique. Split-Graphen sind $(2K_2, C_4, C_5)$-freie Graphen. Ein Split-Cluster Graph ist ein Graph wo jede Zusammenhangkomponente ein Split-Graph ist.\cite{BrucknerHK15}
+Split-Graphen sind ähnliche Graphen, aber bestehen nur aus einer Clique und einigen Knoten, die an der Clique anhängen. Formell definiert heißt das, dass es man den Menge der Knoten des Graphens in zwei Mengen $V_1$ und $V_2$ teilen kann, sodass G[$V_1$] ein unabhängige Menge und eine G[$V_2$] eine Clique. Split-Graphen sind $(2K_2, C_4, C_5)$-freie Graphen. Ein Split-Cluster Graph ist ein Graph wo jede Zusammenhangkomponente ein Split-Graph ist \cite{BrucknerHK15}.
 
 Diese Struktur modelliert gut Protein-Protein Interaktion Netzwerke. In Körper vom Menschen oder anderen Lebewesen gibt es eine Vielzahl von Protein die einen Zweck haben, aber diesen erfüllen sie meistens nicht alleine, sondern in dem sie Protein-Komplexe bilden. Diese Protein-Komplexe bestehen aus einer großen Anzahl von Proteinen und sind nicht einfach zu untersuchen. Ein Weg um solche Protein-Komplexe zu identifizieren besteht darin, herauszufinden welche Proteine mit welche Proteinen überhaupt interagieren. So kann man die diese Proteine als Knoten und wenn es eine Interaktion zwischen diesen Proteinen gibt, als eine Kante ansehen. So hat ein Protein-Komplex einen Kern, wo jedes Protein mit jedem Protein interagieren und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Protein-Komplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen.
 
