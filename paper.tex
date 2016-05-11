@@ -136,11 +136,11 @@ Weil es nun bei dieser Klasse von Graphen nie dazu dem Problem kommt, können wi
 
 
 \subsubsection{Soziale Netzwerke}
-$(P_4,C_4)$-freie Graphen modellieren eine familiäre Struktur oder eine Gemeinschaft die hierarchisch organisiert ist. Diese Graphen werden auch trivial perfekte Graphen oder quasi-threshold Graphen genannt. 
+$(P_4,C_4)$-freie Graphen modellieren eine familiäre Struktur oder eine Gemeinschaft die hierarchisch organisiert ist. Diese Graphen werden auch trivial perfekte Graphen oder quasi-threshold Graphen genannt\cite{Wolk65}. 
 
-Die letztere Bezeichnung kommt von Charakterisierung dieser Graphen als Baumartige Strukturen. Ein solcher Graph lässt sich als der transitive\footnote{Transitiv bedeutet, dass wenn man von a nach b und von b nach c kommt, dass man auch von a nach c kommen kann.} Abschluss eines Waldes\footnote{Dieser Graph muss gerichtet sein, wir gehen aber der Einfachheit halber nicht weiter darauf ein.} sehen\cite{Wolk65} . 
+Die letztere Bezeichnung kommt von Charakterisierung dieser Graphen als baumartige Strukturen. Ein solcher gerichteter\footnote{Dieser Graph muss gerichtet sein, weil es sonst eine Clique wird} Graph lässt sich als der transitive\footnote{Transitiv bedeutet, dass wenn man von a nach b und von b nach c kommt, dass man auch von a nach c kommen kann.} Abschluss eines Waldes sehen\cite{BrandesHSW15}. 
 
-In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu sehen. Die durchgehenden Kanten zeigen den Wald, in diesem Fall ist es ein Wald mit genau einem Baum. Der dunkle-graue Knoten ist die Wurzel des Baumes.  Dabei stellen gestrichelten Kanten den transitiven Abschluss dar. \cite{BrandesHSW15}
+In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu sehen. Die durchgehenden Kanten zeigen den Wald, in diesem Fall ist es ein Wald mit genau einem Baum. Der dunkle-graue Knoten ist die Wurzel des Baumes.  Dabei stellen gestrichelten Kanten den transitiven Abschluss dar. 
 \begin{wrapfigure}{r}{0.4\textwidth}
   \begin{center}
     
@@ -180,12 +180,9 @@ In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu
   \label{fig:quasi-threhold}
 \end{wrapfigure}
 
-Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch soziale Strukturen, wie eine Hierarchie in einer Organisation. Sei die Knoten Personen und die Kanten stellen die Wege dar, auf denen die Befehle fließen. Fast alle haben einen Vorgesetzten (bis auf die Wurzel) und nehmen Befehle vom ihm an, was durch die Baumstruktur modelliert wird. Aber sie hören auch auf die Befehle von dem Vorgesetzen des Vorgesetzen, was durch den transitiven Abschluss modelliert wird. \cite{NastosG13}
+Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch soziale Strukturen, wie eine Hierarchie in einer Organisation. Sei die Knoten Personen und die Kanten stellen die Wege dar, auf denen die Befehle fließen. Fast alle haben einen Vorgesetzten (bis auf die Wurzel) und nehmen Befehle vom ihm an, was durch die Baumstruktur modelliert wird. Aber sie hören auch auf die Befehle von dem Vorgesetzen des Vorgesetzen, was durch den transitiven Abschluss modelliert wird\cite{NastosG13}. 
 
-
-
-
-Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren. \cite{Schoch15}
+Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren \cite{Schoch15}. 
 
 \subsubsection{Protein interaction networks}
 
@@ -249,15 +246,16 @@ Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch
   \end{tabular}
   \caption{Die verbotenen Graphen in einem Split-Graphen}\label{fig:split_graphs}
 \end{figure}
-Im Abschnitt \ref{sec:mot} haben wir die Cluster-Graphen untersucht, wo jede Zusammenhangkomponente eine Clique ist.
-Split-Graphen sind ähnliche Graphen, aber bestehen nur aus einer Clique und einigen Knoten, die an der Clique anhängen. Formell definiert heißt das, dass es man den Menge der Knoten des Graphens in zwei Mengen $V_1$ und $V_2$ teilen kann, sodass G[$V_1$] ein unabhängige Menge und eine G[$V_2$] eine Clique. Split-Graphen sind $(2K_2, C_4, C_5)$-freie Graphen. Ein Split-Cluster Graph ist ein Graph wo jede Zusammenhangkomponente ein Split-Graph ist \cite{BrucknerHK15}.
+Im Abschnitt \ref{sec:mot} haben wir Cluster-Graphen betrachtet, wo jede Zusammenhangkomponente eine Clique ist.
+Split-Graphen sind ähnliche Graphen, aber bestehen nur aus einer Clique und einigen Knoten, die an der Clique anhängen. Formell definiert heißt es, dass man den Menge der Knoten des Graphens in zwei Mengen $V_1$ und $V_2$ teilen kann, sodass G[$V_1$] ein stabile Menge und eine G[$V_2$] eine Clique ist. Split-Graphen sind $(2K_2, C_4, C_5)$-freie Graphen. Ein Split-Cluster Graph ist ein Graph wo jede Zusammenhangkomponente ein Split-Graph ist \cite{BrucknerHK15}.
 
-Diese Struktur modelliert gut Protein-Protein Interaktion Netzwerke. In Körper vom Menschen oder anderen Lebewesen gibt es eine Vielzahl von Protein die einen Zweck haben, aber diesen erfüllen sie meistens nicht alleine, sondern in dem sie Protein-Komplexe bilden. Diese Protein-Komplexe bestehen aus einer großen Anzahl von Proteinen und sind nicht einfach zu untersuchen. Ein Weg um solche Protein-Komplexe zu identifizieren besteht darin, herauszufinden welche Proteine mit welche Proteinen überhaupt interagieren. So kann man die diese Proteine als Knoten und wenn es eine Interaktion zwischen diesen Proteinen gibt, als eine Kante ansehen. So hat ein Protein-Komplex einen Kern, wo jedes Protein mit jedem Protein interagieren und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Protein-Komplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen.
+Diese Struktur modelliert gut Protein-Protein Interaktion Netzwerke. In Körper vom Menschen oder anderen Lebewesen gibt es eine Vielzahl von Proteinen, die einen Zweck haben, aber diesen erfüllen sie meistens nicht alleine, sondern in dem sie Proteinkomplexe bilden. Diese Protein-Komplexe bestehen aus einer großen Anzahl von Proteinen und sind nicht einfach zu untersuchen. Ein Weg um solche Proteinkomplexe zu identifizieren besteht darin, herauszufinden welche Proteine mit welche Proteinen überhaupt interagieren. So kann man die diese Proteine als Knoten ansehen und wenn es eine Interaktion zwischen diesen Proteinen gibt, diese als eine Kante ansehen. 
+Ein Proteinkomplex hat einen Kern, wo jedes Protein mit jedem Protein interagiert und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Proteinkomplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen.
 
 \subsection{Annäherung}
-Jedoch haben die Daten aus der realen Welt Fehler oder sind unvollständig oder es gibt wie immer Ausnahmen zur Regel. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu bestimmten Paaren von Proteinen. Deswegen stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.\footnote{Siehe die Defintion in \ref{sec:problem}}. 
+Jedoch haben die Eingabedaten typischerweise  Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu bestimmten Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.\footnote{Siehe die Defintion in \ref{sec:problem}}. 
 
-Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr sehr aufwendig zu lösen. 
+Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen. 
 
 %\subsubsection{Bicluster Editing}
 %\cite{De12} \cite{Madeira04} 
@@ -267,34 +265,31 @@ Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr
 \label{sec:notation}
 Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und $E$ die Menge seiner Kanten.
 
-$V(G)$ ist die Menge der Konten des Graphen $G$. $E(G)$ ist die Menge der Kanten des Graphen $G$. $N(u)$ ist die Nachbarschaft vom Knoten $u$. $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive.
+Die Menge der Konten des Graphen $G$ ist $V(G)$ ist und die Menge der Kanten des Graphen $G$ heißt $E(G)$. Die Nachbarschaft vom Knoten $u$ heißt $N(u)$,  während $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive ist.
 
 Sei $G = (V,E)$ ein Graph und $S \subseteq V$ eine beliebige Knotenmenge von $V$. 
-Dann ist $G[S]$ der auf $S$ induzierte Subgraph von $G$ mit $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$
+Dann ist $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$ der durch $S$ induzierte Subgraph von $G$.
 
-Sei $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
+Seien $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann gilt auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
 
-Ein Graph $G$ ist \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
-Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ für jeden \textit{F} $\in \cursive{F}$ \textit{F}-frei ist.
-
+Seinen $G$ und $F$ Graphen, dann ist der Graph $G$ \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
+Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ \textit{F}-frei ist für jeden \textit{F} $\in \cursive{F}$.
 
 Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
 
-Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangskomponente eines Waldes ist ein Baum.
+Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph $G$ zudem zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangkomponente eines Waldes ist daher ein Baum.
 
 \subsubsection{Problemstellung}
 \label{sec:problem}
-Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst ein Problem zu definieren. Es ist unter dem Namen \textsc{F-Free Edge Editing}\footnote{oder H-Free (Edge) Editing} bekannt.
+Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst ein Problem zu definieren. Es ist unter dem Namen \textsc{F-Free Edge Editing} bekannt.
 \begin{quote}
-  \textsc{\cursive{F}-Free Edge Editing}\newline
+  \textsc{F-Free Edge Editing}\newline
   \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$\newline
   \textbf{Frage:} Können wir von $G$ höchstens $k$ Kanten entfernen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
   \textbf{Parameter:} $k$
 \end{quote}
 \textsc{\cursive{F}-Free Edge Editing} ist NP-Schwer für die meisten \cursive{F}. Man es exakt mit FPT lösen\cite{Cai96}, für die meisten Instanzen von \cursive{F} gibt es keine Polynomiale Kernel.
 
-
-Die hier vorgestellten Heuristiken.
 \begin{quote}
   \textsc{\cursive{F}-Free Edge Editing}\newline
   \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
