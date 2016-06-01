@@ -49,28 +49,29 @@
 \maketitle
 \tableofcontents
 \newpage
-
+\begin{abstract}
+  Hight-Level: Was trage ich bei und was nicht?
+\end{abstract}
+  
 \section{Einleitung}
-Graphen sind eine bildliche Darstellung von Beziehungen zwischen Objekten vorstellen. Dabei stellt man die Objekte als Kreise (auch Knoten genannt) und die Beziehungen als Linien, die diese Kreise verbinden (auch Kanten genannt) \cite{Nastos06}.
+Graphen sind eine bildliche Darstellung von Beziehungen zwischen Objekten. Dabei stellt man die Objekte als Kreise (auch Knoten genannt) und die Beziehungen als Linien, die diese Kreise verbinden (auch Kanten genannt) \cite{Nastos06}.
 
 Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel können die Knoten Städte und die Kanten Zugverbindungen zwischen diesen Städten sein und somit wird der Graph das Zugnetzwerk von diesen Städten modellieren. 
 
-In diesem Abschnitt werden wir die Fundamente legen und diese Arbeit motivieren. Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird auf Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
-
 \subsection{Motivation}
 \label{sec:mot}
-Wenn man nun ein Model eines Problems erstellt hat, hat dieser entstandene Graph Eigenschaften. 
+Wird nun ein System von Objekten mittels einem Graphen modelliert, hat der Graph ebenso wie das modellierte System gewisse Eigenschaften.
 
-Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Diese Graphen kennt man Cluster-Graphen. Diese bestehen aus einer oder mehren Komponenten, in welcher jeder Knoten mit jedem Knoten verbunden ist.
-Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie keinen $P_3$ als einen induzierten Teilgraphen haben. Eine $P_3$ als induzierten Teilgraphen zu haben, bedeutet, dass man jedem Knoten aus dem $P_3$ einen Knoten aus dem Graphen zuordnen kann, sodass gilt, wenn zwei Knoten im $P_3$ durch eine Kante verbunden sind, so sind auch die entsprechenden Knoten in dem Graphen durch eine Kante verbunden und umgekehrt.
+Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Diese Graphen werden Cluster-Graphen  genannt. Diese bestehen aus einer oder mehreren Komponenten, in welcher jeder Knoten mit jedem Knoten verbunden ist.
+Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie gewisse Strukturen nicht besitzen und zwar dass sie in diesem Fall nicht den Graphen $P_3$ als einen induzierten Graphen haben. Der $P_3$ Graph ist in der Abbildung \ref{fig:mot-p3} zu sehen.
+Einen $P_3$ als induzierten Teilgraphen zu haben, bedeutet, dass man jedem Knoten aus dem $P_3$ einen Knoten aus dem Graphen zuordnen kann, sodass gilt, wenn zwei Knoten im $P_3$ durch eine Kante verbunden sind, so sind auch die entsprechenden Knoten in dem Graphen durch eine Kante verbunden und umgekehrt.
  
 Erklären lässt sich das an der Abbildung \ref{fig:mot}.
-In der Abbildung \ref{fig:mot-p3} ist ein $P_3$ zu sehen.
+In dem Graphen $G_1$ in der Abbildung \ref{fig:mot-1} sehen wir, dass der Teilgraph mit den Knoten B,D und C ein von $P_3$ induzierter Subgraph ist, weil wir den Knoten $a$ dem Konten $B$, den Knoten $b$ dem Knoten $c$ und den Knoten $c$ dem Konten $D$ zuordnen können und die vorhin geforderte Eigenschaft gilt.
+So sehen wir, dass im Graphen $P_3$ $a$ und $c$ verbunden ist und im  
+$G_1$ auch $B$ und $D$ verbunden ist. Auch ist $B$ und $C$ in Graphen $G_1$ nicht verbunden und $a$ und $b$ ebenso.  Man kann überprüfen, dass die Voraussetzung für jede beliebiges Paar von Knoten geben ist und so ist der rot markierte Teilgraph ein von $P_3$ induzierte Teilgraph. 
 
-In dem Graphen in der Abbildung \ref{fig:mot-1} sehen wir, dass der Teilgraph B,D,C ein von $P_3$ induzierter Subgraph ist, weil wir den Knoten $a$ dem Konten $B$, den Knoten $b$ dem Knoten $c$ und den Knoten $c$ dem Konten $D$ zuordnen können und die vorhin geforderte Eigenschaft gilt.
-So sehen wir, dass im Graphen \ref{fig:mot-p3} $a$ und $c$ verbunden ist und im  \ref{fig:mot-1} auch $B$ und $D$ verbunden ist. Auch ist $B$ und $C$ in Graphen \ref{fig:mot-1} nicht verbunden und $a$ und $b$ ebenso.  Man kann überprüfen, dass die Voraussetzung für jede beliebiges Paar von Knoten geben ist und so ist der rot markierte Teilgraph ein von $P_3$ induzierte Teilgraph. 
-
-Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, weil wir nicht die Knoten vom $P_3$ zu Knoten in diesem Graphen zu zuordnen können, sodass unsere Voraussetzung erfüllt bleibt. Wenn wir zum Beispiel, die Zuordnung vom Knoten $a$ zum Knoten $A$, $b$ zu $B$ und $c$ zu $C$ nehmen, sehen wir das Problem, dass wir eine Kante zwischen $A$ und $C$ haben aber keine Kante zwischen $a$ und $b$. Somit ist das keine gültige Zuordnung. Man kann aber auch nachvollziehen, dass egal wie die Zuordnung gewählt wird, es nicht möglich ist die Bedingung zu erfüllen.
+Der Graph $G_2$ (Abbildung \ref{fig:mot-2})hat keinen $P_3$ als induzierten Teilgraphen, weil wir nicht die Knoten vom $P_3$ zu Knoten in diesem Graphen zu zuordnen können, sodass unsere Voraussetzung erfüllt bleibt. Wenn wir zum Beispiel, die Zuordnung vom Knoten $a$ zum Knoten $A$, $b$ zu $B$ und $c$ zu $C$ nehmen, sehen wir das Problem, dass wir eine Kante zwischen $A$ und $C$ haben aber keine Kante zwischen $a$ und $b$. Somit ist das keine gültige Zuordnung. Man kann aber auch nachvollziehen, dass egal wie die Zuordnung gewählt wird, es nicht möglich ist die Bedingung zu erfüllen.
 
 \begin{figure}
   \centering
@@ -82,7 +83,7 @@ Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, w
         a->c[dir=none];
         b->c[dir=none];
       }
-      \caption{Ein $P_3$}
+      \caption{Ein $P_3$ Graph }
       \label{fig:mot-p3}
    \end{subfigure}&
 	 \begin{subfigure}[b]{0.32\textwidth}
@@ -97,7 +98,7 @@ Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, w
 	     D->B[dir=none,color=red];
 	     A->C[dir=none];
 	    }
-	    \caption{Ein Graph mit einem von $P_3$ induzierten Teilgraphen.}
+	    \caption{Graph $G_1$ mit einem von $P_3$ induzierten Teilgraphen.}
 	    \label{fig:mot-1}
 	  \end{subfigure}&
     \begin{subfigure}[b]{0.32\textwidth}
@@ -107,14 +108,14 @@ Im Graphen \ref{fig:mot-2} haben wir keinen von $P_3$ induzierten Teilgraphen, w
         B->C[dir=none];
         A->B[dir=none];
 	    }
-	    \caption{Ein Graph ohne einen induzierten $P_3$}
+	    \caption{Graph $G_2$ ohne einen induzierten $P_3$}
 	    \label{fig:mot-2}
     \end{subfigure}
   \end{tabular}
   \caption{Cluster-Graphen}\label{fig:mot}
 \end{figure}
 
-Deshalb ist der Graph in \ref{fig:mot-2} ein Cluster-Graph und hat eben diese besondere Eigenschaft, die auf zwei Weisen beschreiben werden kann: 1. Der Graph hat eine oder mehrere Komponenten wo jeder Knoten mit jedem Knoten verbunden ist und 2. Der Graph hat kein $P_3$ als einen induzierten Teilgraphen. Die erste Charakterisierung ist eine mehr natürliche und wir könnten zu einer solchen Beschreibung aus praktischen Beobachtungen über unsere Daten kommen, während die zweite eine eher mathematische ist und nicht immer intuitiv, aber dennoch sehr nützlich ist, weil wir eine Eigenschaft sehr leicht formulieren können.
+Deshalb ist der Graph $G_2$ ein Cluster-Graph und hat eben diese besondere Eigenschaft, die auf zwei Weisen beschreiben werden kann: 1. Der Graph hat eine oder mehrere Komponenten wo jeder Knoten mit jedem Knoten verbunden ist und 2. Der Graph hat kein $P_3$ als einen induzierten Teilgraphen. Die erste Charakterisierung ist eine mehr natürliche und wir könnten zu einer solchen Beschreibung aus praktischen Beobachtungen über unsere Daten kommen, während die zweite eine eher mathematische ist und nicht immer intuitiv, aber dennoch sehr nützlich ist, weil wir eine Eigenschaft sehr leicht formulieren können.
 
 In dieser Arbeit werden wir uns die Methoden anschauen, welche einen Graphen so modifizieren, so dass er eine bestimmte Eigenschaft hat. Viele Eigenschaften lassen sich, wie in dem vorherigen Beispiel mittels einer Charakterisation durch verbotenen Teilgraphen beschreiben.
 
@@ -138,7 +139,7 @@ Weil es nun bei dieser Klasse von Graphen nie dazu dem Problem kommt, können wi
 \subsubsection{Soziale Netzwerke}
 $(P_4,C_4)$-freie Graphen modellieren eine familiäre Struktur oder eine Gemeinschaft die hierarchisch organisiert ist. Diese Graphen werden auch trivial perfekte Graphen oder quasi-threshold Graphen genannt\cite{Wolk65}. 
 
-Die letztere Bezeichnung kommt von Charakterisierung dieser Graphen als baumartige Strukturen. Ein solcher gerichteter\footnote{Dieser Graph muss gerichtet sein, weil es sonst eine Clique wird} Graph lässt sich als der transitive\footnote{Transitiv bedeutet, dass wenn man von a nach b und von b nach c kommt, dass man auch von a nach c kommen kann.} Abschluss eines Waldes sehen\cite{BrandesHSW15}. 
+Die letztere Bezeichnung kommt von Charakterisierung dieser Graphen als baumartige Strukturen. Ein solcher gerichteter Graph lässt sich als der transitive Abschluss eines Waldes sehen\cite{BrandesHSW15}. Dieser Graph muss gerichtet sein, weil es sonst eine Clique wird.
 
 In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu sehen. Die durchgehenden Kanten zeigen den Wald, in diesem Fall ist es ein Wald mit genau einem Baum. Der dunkle-graue Knoten ist die Wurzel des Baumes.  Dabei stellen gestrichelten Kanten den transitiven Abschluss dar. 
 \begin{wrapfigure}{r}{0.4\textwidth}
@@ -253,7 +254,7 @@ Diese Struktur modelliert gut Protein-Protein Interaktion Netzwerke. In Körper 
 Ein Proteinkomplex hat einen Kern, wo jedes Protein mit jedem Protein interagiert und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Proteinkomplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen.
 
 \subsection{Annäherung}
-Jedoch haben die Eingabedaten typischerweise  Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu bestimmten Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.\footnote{Siehe die Defintion in \ref{sec:problem}}. 
+Jedoch haben die Eingabedaten typischerweise  Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu bestimmten Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.
 
 Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen. 
 
@@ -304,7 +305,8 @@ Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13}
 Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ ist effizient, aber $O(n^{2-\epsilon})$ ist NP-Hard.\cite{Alon09}
 
 
-
+\subsection{Überblick}
+Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird auf Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
 
 \section{Algorithmen}
 \label{sec:algos}
@@ -316,18 +318,18 @@ Dieses Prinzip ist im Algoritmus \ref{algo:general} zu sehen. Dabei steht \func{
 \begin{algorithm}
   \captionof{algorithm}{Genereller Aufbau}\label{algo:general}
 \begin{algorithmic}[1]
-\Function{Solve}{\vars{graph}, \vars{forbidden}, \vars{iterations}}
+\Function{Solve}{\vars{$G_{input}$}, \vars{F}, \vars{$i_{max}$}}
 
-\State{\vars{best} $\gets$ $(\emptyset,\emptyset)$}
+\State{\vars{$G_{best}$} $\gets$ $(\emptyset,\emptyset)$}
 
-\For{\vars{i} = 1 to \vars{iterations}}
-	\State{\vars{valid} $\gets$ \func{solveAlgo}(\vars{graph}, \vars{forbidden})}
-	\If{\#(\func{diff}(\vars{best}, \vars{graph})) < \#(\func{diff}(\vars{valid}, \vars{graph}))}
-		\State{\vars{best} $\gets$ \vars{valid}}
+\For{\vars{i} = 1 to \vars{$i_{max}$}}
+	\State{\vars{$G_{valid}$} $\gets$ \func{solveAlgo}(\vars{$G_{input}$}, \vars{F})}
+	\If{\#(\func{diff}(\vars{$G_{best}$}, \vars{$G_{input}$})) < \#(\func{diff}(\vars{$G_{valid}$}, \vars{$G_{input}$}))}
+		\State{\vars{$G_{best}$} $\gets$ \vars{$G_{valid}$}}
 	\EndIf  
 \EndFor
 
-\State{print \func{diff}(\vars{graph}, \vars{best})}
+\State{print \func{diff}(\vars{$G_{input}$}, \vars{$G_{best}$})}
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -338,8 +340,8 @@ Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
 Der Top-Bottom-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht. Der Bottom-Top-Ansatz fängt mit einem leeren oder vollen Graphen an, und ändert solange Konten, bis man möglichst nahe an dem Eingabegraphen ist.
 Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es unterschiedliche Stadien gibt… 
 
-\subsection{Top-Bottom}
-Der Top-Bottom-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht.
+\subsection{Backward-Ansatz}
+Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht.
 
 \subsubsection{RandomChange}
 Das ist der einfachste Algorithmus. Solange der Graph verbotene Subgraphen hat, dann versuche eine Kante in dem Graphen zu ändern. 
@@ -360,7 +362,7 @@ Das ist der einfachste Algorithmus. Solange der Graph verbotene Subgraphen hat, 
 \end{algorithm}
 
 \subsubsection{Random}
-Es ist wie RandomChange\footnote{Algorithmus \ref{algo:RandomChange}}, aber bereits editierte Kanten werden mit einer geringeren Wahrscheinlichkeit geändert.
+Es ist wie RandomChange, aber bereits editierte Kanten werden mit einer geringeren Wahrscheinlichkeit geändert.
 Auch hat es für kleine Graphen ein Konvergenzkriterium. Dieses Konvergenzkriterum besteht darin, dass nach für jede Änderung, die Anzahl der verbotenen Subgraphen gezählt wird und die nur dann ausgeführt wird, wenn die Anzahl der verbotenen Subgraphen dadurch weniger wird.
 Der allgemeine Vorgehensweise wird im Algorithmus \ref{algo:random} beschrieben.
 Der große Unterschied zu zum RandomChange sehen wir ab Zeile  \ref{algo:random:select}. Dort wählen wird die Kante ausgewählt welche geändert werden soll, aber eine bereits geänderte Kante bekommt eine Wahrscheinlichkeit zugewiesen die 4-mal kleiner ist(siehe Zeile \ref{algo:random:prob4}).
@@ -393,13 +395,13 @@ Der große Unterschied zu zum RandomChange sehen wir ab Zeile  \ref{algo:random:
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Bottom-Top}
-Die Bottom-Top-Ansätze zeichnet sich dadurch aus, dass wir mit einem Graphen beginnen, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten.
+\subsection{Forward-Ansatz}
+Die Forward-Ansätze zeichnet sich dadurch aus, dass wir mit einem Graphen beginnen, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten.
 Dieser Graph ist somit valide, weil er keine verbotenen Subgraphen enthält.
 Dies ist ein Vorteil gegenüber den Top-Bottom-Ansätzen, da es möglich ist immer einen validen Graphen zu haben und somit jederzeit terminieren.
  
 \subsubsection{Extend}
-Das ist der einfachste Algorithmus aus der Klasse der Bottom-Top-Ansätze.
+Das ist der einfachste Algorithmus aus der Klasse der Forward-Ansätze.
 Zu sehen die Vorgehensweise in Algorithmus \ref{algo:extend}.
 Er fängt mit einem Graphen an, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten (Zeile \ref{algo:extend:start}). Dann wird versucht jede Kante einzufügen, die auch im originalen Graphen \vars{input} vorhanden war (Zeile \ref{algo:extend:each}). Wenn es einen invaliden Graphen erzeugt, also dass es nun einen verbotenen Teilgraphen im \vars{graph} gibt, dann wird die Änderung rückgängig gemacht (Zeile \ref{algo:extend:change}).
 Wenn nun keine Änderung in einem Durchlauf gemacht wurden, dann bricht der Algorithmus ab (Zeile \ref{algo:extend:break}) und gibt den erzeugen Graphen zurück. 
@@ -510,9 +512,9 @@ Die ist im Algorithmus \ref{algo:growReduce} zu sehen.
 \begin{algorithm}
   \captionof{algorithm}{GrowReduce}\label{algo:growReduce}
 \begin{algorithmic}[1]
-\Function{GrowReduceSolve}{\vars{input}, \vars{forbidden}}
+\Function{GrowReduceSolve}{\vars{G}, \vars{forbidden}}
 	\State{\vars{graph} $\gets$ $(V(\vars{input}),\emptyset)$}
-	\State{\vars{nodes} $\gets$ \func{randomOrder}(V(\vars{input}))}
+	\State{\vars{nodes} $\gets$ \func{randomOrder}(V(\vars{G}))}
 	\For{\vars{node} $\in$ \vars{nodes}}
 		
 		\For{\vars{neighbor} $\in$ N(\vars{node})}\Comment{Grow Phase}
