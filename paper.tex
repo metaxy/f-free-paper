@@ -311,10 +311,10 @@ Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu 
 \section{Algorithmen}
 \label{sec:algos}
 
-In diesem Abschnitt werden die verschiedenen Ansätze an die das Problem beschrieben.
-Die im nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält. Wiederhole dies \vars{iterations}-mal und dann geben die Differenz zwischen  besten validen Graphen und dem Eingabegraphen aus.
+In diesem Abschnitt werden die verschiedenen Heuristik-Ansätze für \textsc{\cursive{F}-Free Edge Editing} vorgestellt.
+Die im nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält. Wiederhole dies mehrmals und gebe dann die Differenz zwischen dem besten validen Graphen und dem Eingabegraphen aus.
 
-Dieses Prinzip ist im Algoritmus \ref{algo:general} zu sehen. Dabei steht \func{SolveAlgo} für einen der Algorithmen, die wir in den folgenden Abschnitten betrachten werden.
+Dieses Prinzip ist im Algorithmus \ref{algo:general} zu sehen. Dort ist \vars{$G_{input}$} der Eingabegraph, \vars{F} die Menge der verbotenen Teilgraphen und \vars{$i_{max}$} die Angabe wie oft der Algorithmus wiederholt werden soll. Dabei steht \func{SolveAlgo} für einen der Algorithmen, die wir in den folgenden Abschnitten betrachten werden.
 \begin{algorithm}
   \captionof{algorithm}{Genereller Aufbau}\label{algo:general}
 \begin{algorithmic}[1]
@@ -334,10 +334,10 @@ Dieses Prinzip ist im Algoritmus \ref{algo:general} zu sehen. Dabei steht \func{
 \end{algorithmic}
 \end{algorithm}
 
-Da alle Ansätze diesen Schritte enthalten und sich nur in dem unterschieden, wie der valide Graph gefunden wird, wird folgend nur dieser Aspekt betrachtet.
+Da alle Ansätze diese Schritte enthalten und sich nur darin unterschieden, wie der valide Graph mittels \func{SolveAlgo} gefunden wird, wird folgend nur dieser Aspekt betrachtet.
 
 Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
-Der Top-Bottom-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht. Der Bottom-Top-Ansatz fängt mit einem leeren oder vollen Graphen an, und ändert solange Konten, bis man möglichst nahe an dem Eingabegraphen ist.
+Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht. Der Forward-Ansatz fängt mit einem leeren oder vollen Graphen an, und ändert solange Konten, bis man möglichst nahe an dem Eingabegraphen ist.
 Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es unterschiedliche Stadien gibt… 
 
 \subsection{Backward-Ansatz}
