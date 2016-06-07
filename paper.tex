@@ -338,48 +338,51 @@ Da alle Ansätze diese Schritte enthalten und sich nur darin unterschieden, wie 
 
 Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
 Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht. Der Forward-Ansatz fängt mit einem leeren oder vollen Graphen an, und ändert solange Konten, bis man möglichst nahe an dem Eingabegraphen ist.
-Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es unterschiedliche Stadien gibt… 
+Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es prinzipielle zwei Stufen gibt. In der Grow Stufe werden mögliche Kanten eingefügt und in der Reduce Stufe werden Kanten entfernt.
 
 \subsection{Backward-Ansatz}
 Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht.
 
-\subsubsection{RandomChange}
+\subsubsection{RandomFlip}
 Das ist der einfachste Algorithmus. Solange der Graph verbotene Subgraphen hat, dann versuche eine Kante in dem Graphen zu ändern. 
 \begin{algorithm}
-  \captionof{algorithm}{RandomChange}\label{algo:RandomChange}
+  \captionof{algorithm}{RandomFlip}\label{algo:RandomFlip}
 \begin{algorithmic}[1]
-\Function{RandomChangeSolve}{\vars{graph}, \vars{forbidden}}
-\For{Graph \vars{f} $\in$ \vars{forbidden} }
-	\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
+\Function{RandomFlip}{\vars{$G$}, \vars{$F$}}
+\While{$G$ is not valid}
+\For{every Graph \vars{f} $\in$ \vars{$F$} }
+	\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}($G$, \vars{f})}
 	\While{forbiddenSubgraph  $\neq \emptyset$}
-		\State{change a random edge $\in$ \vars{forbiddenSubgraph}}
-		\State{\vars{forbiddenSubgraph} $\gets$	 \func{findFS}(\vars{graph}, \vars{f})}
+		\State{change the edge in $G$ corresponding to an random edge in \vars{forbiddenSubgraph}}
+		\State{\vars{forbiddenSubgraph} $\gets$	 \func{findFS}($G$, \vars{f})}
 	\EndWhile
 \EndFor
+\EndWhile
 \Return{\vars{graph}}
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Random}
-Es ist wie RandomChange, aber bereits editierte Kanten werden mit einer geringeren Wahrscheinlichkeit geändert.
+\subsubsection{RandomFlipUnchanged}
+Der RandomFlipUnchanged-Algorithmus ist wie der RandomFlip-Algorithmus, aber bereits editierte Kanten werden mit einer geringeren Wahrscheinlichkeit geändert.
 Auch hat es für kleine Graphen ein Konvergenzkriterium. Dieses Konvergenzkriterum besteht darin, dass nach für jede Änderung, die Anzahl der verbotenen Subgraphen gezählt wird und die nur dann ausgeführt wird, wenn die Anzahl der verbotenen Subgraphen dadurch weniger wird.
-Der allgemeine Vorgehensweise wird im Algorithmus \ref{algo:random} beschrieben.
-Der große Unterschied zu zum RandomChange sehen wir ab Zeile  \ref{algo:random:select}. Dort wählen wird die Kante ausgewählt welche geändert werden soll, aber eine bereits geänderte Kante bekommt eine Wahrscheinlichkeit zugewiesen die 4-mal kleiner ist(siehe Zeile \ref{algo:random:prob4}).
+
+Der allgemeine Vorgehensweise wird im Algorithmus \ref{algo:randomFlipUnchanged} beschrieben.
+Der große Unterschied zu zum RandomFlip sehen wir ab Zeile  \ref{algo:randomFlipUnchanged:select}. Dort wird eine Kante zufällig ausgewählt, welche geändert werden soll, aber eine bereits geänderte Kante wird 4-mal so selten ausgewählt, wie eine noch nicht geändertete Kante (siehe Zeile \ref{algo:randomFlipUnchanged:prob4}).
 
 \begin{algorithm}
-  \captionof{algorithm}{Random}\label{algo:random}
+  \captionof{algorithm}{RandomFlipUnchanged}\label{algo:randomFlipUnchanged}
 \begin{algorithmic}[1]
-\Function{StateRandom2Solve}{\vars{graph}, \vars{forbidden}}
-\For{Graph \vars{f} $\in$ \vars{forbidden} }
-	\State{f\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
+\Function{RandomFlipUnchanged}{$G$, $F$}
+\For{Graph \vars{f} $\in$ \vars{$F$} }
+	\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{$G$}, \vars{f})}
 	\While{\vars{forbiddenSubgraph} != $\emptyset$}
 	    \State{\vars{foundEdge} $\gets \emptyset$}
-		\While{true\label{algo:random:select}}
+		\While{true\label{algo:randomFlipUnchanged:select}}
 			\State{\vars{e} $\gets$ random edge from \vars{forbiddenSubgraph}}
 			\State{\vars{prob} $\gets$ 1 / \#(E(f))}
 			\If{e is already visited}
-				\State{\vars{prob} $\gets$ \vars{prob} / 4}\label{algo:random:prob4}
+				\State{\vars{prob} $\gets$ \vars{prob} / 4}\label{algo:randomFlipUnchanged:prob4}
 		    \EndIf
 		    \If{random number from [0,1] > \vars{prob}}
 		    	\State{\vars{foundEdge} $\gets$ \vars{e}}
