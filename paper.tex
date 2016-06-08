@@ -50,10 +50,12 @@
 \tableofcontents
 \newpage
 \begin{abstract}
-  Hight-Level: Was trage ich bei und was nicht?
+%Graphen so zu modifizieren, dass sie gewisse induzierte Teilgraphen nicht mehr enthalten, ist bis auf gewisse triviale Fälle NP-Vollständig. In dieser Arbeit erarbeiten wir schnelle Annäherungen und testen diese auf ihre Güte.
+  
 \end{abstract}
   
 \section{Einleitung}
+
 Graphen sind eine bildliche Darstellung von Beziehungen zwischen Objekten. Dabei stellt man die Objekte als Kreise (auch Knoten genannt) und die Beziehungen als Linien, die diese Kreise verbinden (auch Kanten genannt) \cite{Nastos06}.
 
 Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel können die Knoten Städte und die Kanten Zugverbindungen zwischen diesen Städten sein und somit wird der Graph das Zugnetzwerk von diesen Städten modellieren. 
@@ -185,7 +187,7 @@ Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch
 
 Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren \cite{Schoch15}. 
 
-\subsubsection{Protein interaction networks}
+\subsubsection{Protein Interaktionsnetzwerke}
 
 \begin{figure}
   \centering
@@ -309,6 +311,7 @@ Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ is
 Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu lösen. Dann werden wir im Abschnitt \ref{sec:tests} betrachten wie die Tests aussehen und auf welchen Modellen diese Algorithmen auf ihre Tauglichkeit getestet wurden. Im Abschnitt \ref{sec:implementation} wird auf Details der Umsetzung von diesen Algorithmen eingegangen. Darauf folgend werden im Abschnitt \ref{sec:results} die Resultate vorgestellt und diskutiert, während im Abschnitt \ref{sec:compare} unsere Lösungen mit anderen bisherigen Lösungsansätzen verglichen werden.
 
 \section{Algorithmen}
+
 \label{sec:algos}
 
 In diesem Abschnitt werden die verschiedenen Heuristik-Ansätze für \textsc{\cursive{F}-Free Edge Editing} vorgestellt.
@@ -338,7 +341,7 @@ Da alle Ansätze diese Schritte enthalten und sich nur darin unterschieden, wie 
 
 Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
 Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht. Der Forward-Ansatz fängt mit einem leeren oder vollen Graphen an, und ändert solange Konten, bis man möglichst nahe an dem Eingabegraphen ist.
-Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es prinzipielle zwei Stufen gibt. In der Grow Stufe werden mögliche Kanten eingefügt und in der Reduce Stufe werden Kanten entfernt.
+Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es prinzipielle zwei Stufen gibt. In der Grow-Stufe werden mögliche Kanten eingefügt und in der Reduce-Stufe werden Kanten entfernt.
 
 \subsection{Backward-Ansatz}
 Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht.
@@ -374,6 +377,7 @@ Der große Unterschied zu zum RandomFlip sehen wir ab Zeile  \ref{algo:randomFli
   \captionof{algorithm}{RandomFlipUnchanged}\label{algo:randomFlipUnchanged}
 \begin{algorithmic}[1]
 \Function{RandomFlipUnchanged}{$G$, $F$}
+\While{$G$ is not valid}
 \For{Graph \vars{f} $\in$ \vars{$F$} }
 	\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{$G$}, \vars{f})}
 	\While{\vars{forbiddenSubgraph} != $\emptyset$}
@@ -393,6 +397,7 @@ Der große Unterschied zu zum RandomFlip sehen wir ab Zeile  \ref{algo:randomFli
 		\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph}, \vars{f})}
 	\EndWhile
 \EndFor
+\EndWhile
 \Return{\vars{graph}}
 \EndFunction
 \end{algorithmic}
@@ -416,10 +421,10 @@ Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in d
 \begin{algorithm}
   \captionof{algorithm}{Extend}\label{algo:extend}
 \begin{algorithmic}[1]
-\Function{ExtendSolve}{\vars{input}, \vars{forbidden}}
-	\State{\vars{graph} = $(V(\vars{input}),\emptyset)$}\label{algo:extend:start}
+\Function{ExtendSolve}{$G$, $F$}
+	\State{\vars{graph} $\gets$ $(V(G),\emptyset)$}\label{algo:extend:start}
 	\While{true}
-		\For{each Edge \vars{e} $\in$ \func{Difference}(\vars{graph},\vars{input}) }\label{algo:extend:each}
+		\For{each Edge \vars{e} $\in$ \func{Difference}(\vars{graph},$G$) }\label{algo:extend:each}
 			\State{try to flip \vars{e}, revert if it produces an invalid graph}\label{algo:extend:change}
 		\EndFor
 		\State{break if there was no change}\label{algo:extend:break}
@@ -517,7 +522,7 @@ Die ist im Algorithmus \ref{algo:growReduce} zu sehen.
 \begin{algorithmic}[1]
 \Function{GrowReduceSolve}{\vars{G}, \vars{forbidden}}
 	\State{\vars{graph} $\gets$ $(V(\vars{input}),\emptyset)$}
-	\State{\vars{nodes} $\gets$ \func{randomOrder}(V(\vars{G}))}
+	\State{\vars{nodes} $\gets$ \func{order}(V(\vars{G}))}
 	\For{\vars{node} $\in$ \vars{nodes}}
 		
 		\For{\vars{neighbor} $\in$ N(\vars{node})}\Comment{Grow Phase}
@@ -690,6 +695,7 @@ Dieses Vorgehen ist im Algorithmus \ref{algo:blp} zu sehen.
 
 
 \section{Aufbau der Test}
+
 \label{sec:tests}
 \subsection{Datensätze}
 Folgende Datensätze wurden verwendet. Da verschiedene Mengen von verbotenen Teilgraphen monotonen Grapheneigenschaften zugeordnet werden können und jeder Datensatz von Graphen und jede Methode zufällige Graphen zu erzeugen, charakteristische Eigenschaften hat, ist es notwendig verschiedene Datensätze zu verwenden und verschiedenen Methoden zur Erzeugung von zufälligen Graphen.
@@ -698,22 +704,22 @@ Wir brachten zuerst die zufälligen Graphen.
 
 
 \subsubsection{Barabási–Albert}
-Für den Datensatz \vars{barabasi\_albert} wurde das Barabási–Albert Modell verwendet, welches ein zufälliges skalenfreies Netz erzeugt.\cite{Albert02}
+Für den Datensatz \vars{barabasi albert} wurde das Barabási–Albert Modell verwendet, welches ein zufälliges skalenfreies Netz erzeugt\cite{Albert02}.
 Skalenfrei bedeutet hier, dass die Knotengrad einer Potenzverteilung folgt. Es gibt also viel mehr Konten die einen geringeren Grad haben als Knoten mit einem hohen Anzahl von Nachbarn. 
 
-Es wurden 56 Graphen generiert mit Knotenanzahl zwischen 10 und 150, wobei der Parameter $m$, welcher die Anzahl der der Kanten definiert, die zu bereits bestehenden Knoten erstellt werden, zwischen 1 und 8 war.
+Es wurden 56 Graphen generiert mit Knotenanzahl in $\{10,20,30…140\}$, mit dem Parameter $m \in \{1,3,5,7\}$, welcher die Anzahl der der Kanten definiert, die zu bereits bestehenden Knoten erstellt werden.
 \subsubsection{Erdős-Rényi}
-Für den Datensatz \vars{binomial} wurde das Erdős-Rényi Modell verwendet\cite{Gilbert59} \cite{Batagelj05}, wo jede Kante eine fixe Wahrscheinlichkeit hat zu existieren oder nicht zu existieren.
+Für den Datensatz \vars{ER} wurde das Erdős-Rényi Modell verwendet\cite{Gilbert59} \cite{Batagelj05}, wo jede Kante eine fixe Wahrscheinlichkeit hat zu existieren oder nicht zu existieren.
 
-Es wurden dabei 54 Graphen generiert, mit einer Knotenanzahl zwischen 10 und 100 und den folgenden Wahrscheinlichkeiten: $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
+Es wurden dabei 54 Graphen generiert, mit einer Knotenanzahl $n \in \{10,20…,90\}$ und den folgenden Wahrscheinlichkeiten: $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
 
 
 \subsubsection{Duplication-Divergence}
 Für den Datensatz \vars{duplication divergence} wurde das Duplication Divergence Modell verwendet\cite{Ispolatov05}, welches Interaktionsnetzwerke zwischen Proteinen modelliert. Ein Beispiel ist in Abbildung \ref{fig:duplication-divergence} zu sehen.
 
-Dabei gibt es in jeder Iteration bei der Erstellung eines solchen zufälligen Graphen zwei Phase. Die erste ist die Duplikations-Phase, wo ein zufälliger Knoten $u$ genommen und dupliziert wird zu $v$. Dann beginnt die Divergence-Phase, wo zu jedem Nachbarn von $u$ mit gewissen Wahrscheinlichkeit $p$ eine Kante zu $v$ hinzugefügt wird. Falls keine Kanten hinzugefügt wurde, dann wird $v$ wieder gelöscht. Dies wird $n$-mal wiederholt 
+Dabei gibt es in jeder Iteration bei der Erstellung eines solchen zufälligen Graphen zwei Phasen. Die erste ist die Duplikations-Phase, wo ein zufälliger Knoten $u$ genommen und dupliziert wird zu $v$. Dann beginnt die Divergence-Phase, wo zu jedem Nachbarn von $u$ mit gewissen Wahrscheinlichkeit $p$ eine Kante zu $v$ hinzugefügt wird. Falls keine Kanten hinzugefügt wurde, dann wird $v$ wieder gelöscht. Dies wird $n$-mal wiederholt 
 
-Es wurden mit diesem Modell 54 Graphen generiert mit $n$ zwischen 10 und 100. Für die Wahrscheinlichkeiten $p$ wurden folgenden Werte verwendet $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
+Es wurden mit diesem Modell 54 Graphen generiert mit $n \in \{10,20…,90\}$ . Für die Wahrscheinlichkeiten $p$ wurden folgenden Werte verwendet $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
 \begin{figure}
 \digraph
 [scale=0.4]{dot_dupdivergence}
@@ -749,16 +755,15 @@ Es wurden mit diesem Modell 54 Graphen generiert mit $n$ zwischen 10 und 100. F�
 \end{figure}
 
 \subsubsection{Newman-Watts-Strogatz}
-Für den Datensatz \vars{newman\_watts\_strogatz} wurde das Newman-Watts-Strogatz Modell verwendet\cite{Newman99}, welches einen Kleine-Welt-Graphen erzeugt mit kurzen durchschnittlichen Pfaden und einem hohen Clusterkoeffizienten.
+Für den Datensatz \vars{newman\_watts\_strogatz} wurde das Newman-Watts-Strogatz Modell verwendet\cite{Newman99}, welches Kleine-Welt-Graphen erzeugt mit geringen durchschnittlichen Knotendistanzen und einem hohen Clusterkoeffizienten.
 
 Dabei wird zuerst ein Ring von $n$ Knoten erstellt. Dann wird jeder Knoten mit $k$ von seinen nächsten Nachbarn verbunden (oder mit $k-1$, wenn $k$ ungerade ist).
-Dann werden Abkürzungen erzeugt indem, man für jede Kante $(u,v)$ in dem zugrundeliegenden $n$-Ring mit den $k$-nächsten Nachbarn: Füge mit der der Wahrscheinlichkeit $p$ eine neue Kante $(u,w)$ ein, wobei $w$ ein zufälliger existierender Knoten ist.
+Dann werden Abkürzungen erzeugt indem, man für jede Kante $(u,v)$ in dem zugrundeliegenden $n$-Ring mit den $k$ nächsten Nachbarn: Füge mit der der Wahrscheinlichkeit $p$ eine neue Kante $(u,w)$ ein, wobei $w$ ein zufällig gewählter Knoten ist.
 
-Es wurden mit diesem Model 144 Graphen generiert mit einer Knotenanzahl($n$) zwischen 10 und 100, $m$ zwischen 2 und 8 und der Wahrscheinlichkeit $p$ zwischen 0,2 und 0,8.
-
+Es wurden mit diesem Model 144 Graphen generiert mit einer Knotenanzahl $n \in \{10,20…,90\}$  , $m \in \{2,4,6,8\}$ und der Wahrscheinlichkeit $p \in \{\frac{2}{10},\frac{4}{10},\frac{6}{10},\frac{8}{10}\}$.
 \subsubsection{Powerlaw-Baum}
-Für den Datensatz \vars{powerlaw}, wurde ein Modell verwendet, dass einen Baum erzeugt, deren Knotengrad einer Potenzverteilung folgt. Ein Beispiel ist in Abbildung \ref{fig:powerlaw-tree} zu sehen.
-Es wurden mit diesem Model 30 Graphen generiert mit einer Knotenanzahl zwischen 10 und 160.
+Für den Datensatz \vars{powerlaw}, wurde ein Modell verwendet, dass einen Baum erzeugt, dessen Knotengrad einer Potenzverteilung folgt. Ein Beispiel ist in Abbildung \ref{fig:powerlaw-tree} zu sehen.
+Es wurden mit diesem Model 30 Graphen generiert mit einer Knotenanzahl zwischen $n \in \{10,15,20…,155\}$.
 \begin{figure}
  \digraph
 [scale=0.4]{dot_powerlaw}
@@ -777,37 +782,36 @@ Es wurden mit diesem Model 30 Graphen generiert mit einer Knotenanzahl zwischen 
 \label{fig:powerlaw-tree}
 \end{figure}
 
-\subsubsection{UCINetworkDataRepository}
+\subsubsection{Netzwerke}
 Für den Datensatz \vars{UCINetworkDataRepository} wurden 9 reale Graphen verwendet, bereitgestellt von der University of California.
+\begin{itemize}
+\item Der Graph \vars{karate} ist ein soziales Netzwerk von Freundschaften zwischen 34 Mitgliedern eines Karate-Clubs in einer US-Universität in 1970 \cite{Zachary77}.
+\item Der Graph \vars{polbooks.paj} ist ein Netzwerk von Bücher über die aktuelle US Politik, die von dem Onlinehänder Amazon.com verkauft wurdem. Kanten repräsentieren häufiges Kaufen von den beiden Büchern von dem selben Käufer \cite{polbooks}.+
 
-Der Graph \vars{karate} ist ein soziales Netzwerk von Freundschaften zwischen 34 Mitgliedern eines Karate-Clubs in einer US-Universität in 1970 \cite{Zachary77}.
+\item Der Graph \vars{football} ist ein Netzwerk von amerikanischen Footballspielen im Herbst 2000 \cite{Girvan02}.
 
-Der Graph \vars{polbooks.paj} ist ein Netzwerk von Bücher über die aktuelle US Politik, die von dem Onlinehänder Amazon.com verkauft wurdem. Kanten repräsentieren häufiges Kaufen von den beiden Büchern von dem selben Käufer \cite{polbooks}.
+\item Der Graph \vars{power.paj} ist ein Netzwerk, dass die Topologie des "Western States Power Grid" in der Vereinigten Staaten wiederspieglt  \cite{Watts98}.
 
-Der Graph \vars{football} ist ein Netzwerk von amerikanischen Footballspielen im Herbst 2000 \cite{Girvan02}.
+\item Der Graph \vars{adjnoun} ist ein Netzwerk von häufigen Adjektiven und Nomen in dem Roman "David Copperfield" von Charles Dickens \cite{Newman06}.
 
-Der Graph \vars{power.paj} ist ein Netzwerk, dass die Topologie des "Western States Power Grid" in der Vereinigten Staaten wiederspieglt  \cite{Watts98}.
-
-Der Graph \vars{adjnoun} ist ein Netzwerk von häufigen Adjektiven und Nomen in dem Roman "David Copperfield" von Charles Dickens \cite{Newman06}.
-
-Der Graph \vars{lesmiserables} ist ein Netwerke von Figuren, die in dem  Roman "Les Misérables" von Victor Hugo, zur gleichen Zeit auftreten \cite{Knuth93}. 
-
-
-Der Graph \vars{celegansneural.paj} welches das neurale Netzwerk von Caenorhabditis elegans \cite{Watts98}. Es ist ein Fadenwurm, welcher gerne als Modellorganismus studiert wird. Jeder erwachsene C. elegans hat genau 302 Nervenzellen.
+\item Der Graph \vars{lesmiserables} ist ein Netwerke von Figuren, die in dem  Roman "Les Misérables" von Victor Hugo, zur gleichen Zeit auftreten \cite{Knuth93}. 
 
 
-Der Graph \vars{dolphins} ist ein soziales Netzwerk von 62 Dolphinen die in einer Gemeinschaft in der Nähe von Neuseeland leben \cite{Lusseau03}. 
-
-Der Graph \vars{polblogs} ist ein Netzwerk von Hyperlinks zwischen Webblogs in 2005, die sich mit auf US Politik beschäftigten \cite{Adamic05}.
-
-\subsubsection{bio1}
-Anzahl: 147
-\todo{Was ist die Quelle für diese Daten???}
-\subsubsection{bio2}
-Der Datensatz \vars{bio2} sind COG protein similarity data \cite{Rahmann07} \cite{Bocker08}
-Es sind 360 Graphen mit einer Knotenanzahl zwischen 3 und 80.
+\item Der Graph \vars{celegansneural.paj} welches das neurale Netzwerk von Caenorhabditis elegans \cite{Watts98}. Es ist ein Fadenwurm, welcher gerne als Modellorganismus studiert wird. Jeder erwachsene C. elegans hat genau 302 Nervenzellen.
 
 
+\item Der Graph \vars{dolphins} ist ein soziales Netzwerk von 62 Dolphinen die in einer Gemeinschaft in der Nähe von Neuseeland leben \cite{Lusseau03}. 
+
+\item Der Graph \vars{polblogs} ist ein Netzwerk von Hyperlinks zwischen Webblogs in 2005, die sich mit auf US Politik beschäftigten \cite{Adamic05}.
+\end{itemize}
+
+
+
+
+
+
+\subsubsection{Squenzähnlichkeit von Proteinen}
+Der Datensatz  \vars{bio1} umfasst 147 Graphen und der \vars{bio2} umfasst 350 Graphen. Beide sind Grahen die Squenzähnlichkeit von Proteinen modellieren \cite{Rahmann07} \cite{Bocker08}.
 
 \subsection{Optimale Lösung}
 Um die Qualität der Lösung eines heuristischen Ansatzes bewerten zu können, ist es sehr gut die optimale Lösung zu wissen. Es gibt verschiedene Ansatz wie das Problem zu lösen sein, wir haben uns jedoch für die lineare Optimierung entschieden. Der BLP-Alogoritmus versucht eine optimale Lösung zu finden. Dies kann jedoch sehr lange dauern, da die Komplexität des Problemes exponentiell. 
@@ -842,35 +846,61 @@ splitcluster & 26 & 7\% \\
 
 
 \section{Implementation}
+
 \label{sec:implementation}
 \subsection{Repräsentation vom Graphen}
 Die Graphen werden in einer Adjazenzmatrix gespeichert.
 
 
 \subsection{Das Finden von induzierten Subgraphen}
+Das Finden von induzierten Subgraphen ist der Teil der Algorithmen, der am zeitaufwändigsten ist und auf häufigsten aufgerufen wird. Deswegen ist hier die Wahl von dem richtigen Ansatz sehr wichtig. 
+
 \cite{Ullmann76}
 Wie verwenden einen VF Algorithmus für \func{findFS}(\vars{graph},\vars{forbidden}).
 Dieser gibt gibt eine Menge von Subgraphen zurück.
 
-\subsubsection{Vergleich VFLib, Boost und eigene Implemtation}
+\subsubsection{Vergleich VFLib, Boost und eigene Implementation}
+In diesem Abschnitt wollen wir drei Ansätze bezüglich ihrer Geschwindkeit vergleichen. Um das ganze zu vereinfachen, testen wir Anwendungsfälle eines Ansatzes mit dem verbotenen Teilgraphen $P_3$. 
+
+\begin{itemize}
+\item Der erste ist VFLib. Es ist ein Bibliothekt, die mehrere Algorithmen jeweils für das Graphen Isomorphismus Problem, Graphen-Subgraph Isomorphismus Problem und das Graphen Monomorphimus Problem implementiert und zählt zu den schnellsten Implementationen \cite{Cordella04}.
+
+\item Der zweite Ansatz nutzt die Boost-Implementation von VF2, welches VFLib auch implementiert.
+
+\item Im dritten Ansatz wird die Suche nach dem $P_3$ selbst möglichst effizient implementiert. 
+\end{itemize}
+
+Hierbei vergleichen wir nicht die verschiedenen Algorithmen für das Graph-Subgraph Isomorphismus Problem, weil VFLib und Boost den selben grundlegenden Ansatz verwenden und die eigene Implentieren gar kein Graph-Subgraph Isomorphismus Algorithmus ist. Vielmehr geht es darum, herausfinden wie groß ungefähr der Overhead ist und wo es sich lohnt zu optimieren.
+
+Die drei Anwendungsfälle wären:
+\begin{itemize}
+ \item \textbf{Alle Finden}: Finde und gebe alle verbotenen Teilgraphen zurück
+ \item \textbf{Alle Zählen}: Zählen wie viele verbotene Teilgraphen der Graph hat
+ \item \textbf{Einen zurückgeben}: Finde einen verbotenen Teilgraphen und gebe ihn zurück.
+\end{itemize}
+In der folgenden Tabelle werden die Resultate anzeigt, dabei gibt die Zeit an wie lange es gebraucht hat die Aufgabe auf allen 147 Graphen von dem Datensatz \vars{bio1} auszuführen. In der Zeit ist die Zeit für das Einlesen der Graphen nicht mit einbegriffen.
 \begin{tabular}{|c|c|c|c|}
 \hline 
-• & find all p3s & count all p3s & has a p3 \\ 
-\hline 
-Spezial & 0.73s & 0.04s & 0.00016s \\ 
+• & Alle Finden & Alle Zählen & Einen zurückgeben \\ 
 \hline 
 VFLib & 1.73s & 0.87s & 0.01236s \\ 
 \hline 
-Boost & 3.04s & 1.68 & 0.00102s \\ 
+Boost & 3.04s & 1.68s & 0.00102s \\ 
+\hline 
+Spezial & 0.73s & 0.04s & 0.00016s \\ 
 \hline 
 \end{tabular} 
 \\
-
+Zu sehen ist, dass die speizialle 
 Bei VFLib ist der Graph immutable und bei der Suche nach einem  Subgraphen müssen wir jedes Mal den Graphen neu erstellen.
 
 
 \section{Auswertung}
 \label{sec:results}
+\subsection{Backward-Ansatz}
+\subsection{Forward-Ansatz}
+\subsection{Grow-Reduce-Ansatz}
+
 
 \section{Vergleich mit anderen Heuristiken}
 \label{sec:compare}
@@ -940,6 +970,8 @@ binomial \footnote{Testergebnis: 2016-04-20 18:17:08} & \textbf{493.17} & 545,19
 
 
 \subsection{Quasi-Threshold Mover}
+
+
 In \cite{BrandesHSW15} wurde ein neuer schneller und auch für große Graphen geeigneter Algorithmus entwickelt für das Quasi-Threshold Editing Problem. Quasi-Threshold Graphen, auch bekannt als trivial perfekte Graphen lassen sich auch als $(P_4, C_4)$ - freie Graphen charakterisieren. 
 
 In Tabelle \ref{tab:qual_mover} wird die Lösungsqualität von dem Quasi-Thresold-Mover und unserem Algorithmus ExploredGrowReduce verglichen. In der Tabelle \ref{tab:size_mover} wird die durschnittliche Größe der Lösungen verglichen. 
@@ -984,16 +1016,12 @@ newman-watts-strogatz & 146.48 & 128.42 & \textbf{103.38} & 87.99 \\
 \end{tabular} 
 \end{center}
 
-
-\section{Zukünftige Forschungsmöglichkeiten}
-\subsection{Besser Sortierung von Grow-Reduce}
-\subsection{Besser Konvergenzkriterium}
-\subsection{Obere Schranken}
-\subsection{Obere Schranken}
 \section{Zusammenfassung}
-
-\section{Anhang}
-\subsection{Kleine Graphen}
+\subsection{Zukünftige Forschungsmöglichkeiten}
+\subsubsection{Besser Sortierung von Grow-Reduce}
+\subsubsection{Besser Konvergenzkriterium}
+\subsubsection{Obere Schranken}
+\subsubsection{Obere Schranken}
 
 \bibliographystyle{plain}
 \bibliography{biblio}
