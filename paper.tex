@@ -878,22 +878,28 @@ Die drei Anwendungsfälle wären:
  \item \textbf{Alle Zählen}: Zählen wie viele verbotene Teilgraphen der Graph hat
  \item \textbf{Einen zurückgeben}: Finde einen verbotenen Teilgraphen und gebe ihn zurück.
 \end{itemize}
-In der folgenden Tabelle werden die Resultate anzeigt, dabei gibt die Zeit an wie lange es gebraucht hat die Aufgabe auf allen 147 Graphen von dem Datensatz \vars{bio1} auszuführen. In der Zeit ist die Zeit für das Einlesen der Graphen nicht mit einbegriffen.
+
+In der folgenden Tabelle werden die Resultate anzeigt, dabei gibt die Zeit an wie lange es gebraucht hat die Aufgabe auf allen 147 Graphen von dem Datensatz \vars{bio1} auszuführen. In der Zeit ist die Zeit für das Einlesen der Graphen nicht mit einbegriffen. Die Werte unter der Zeit, sind Angaben, wie viel mal langsamer der Ansatz als der schnellste Ansatz ist.
+\begin{figure}
+\label{tab:}
 \begin{tabular}{|c|c|c|c|}
 \hline 
-• & Alle Finden & Alle Zählen & Einen zurückgeben \\ 
+• & Alle finden & Alle zählen & Einen zurückgeben \\ 
 \hline 
-VFLib & 1.73s & 0.87s & 0.01236s \\ 
+VFLib & 1,73s & 0,87s & 0,01236s \\ 
+ & 2,4x & 22x & 77,3x \\ 
 \hline 
-Boost & 3.04s & 1.68s & 0.00102s \\ 
+Boost & 3,04s & 1,68s & 0,00102s \\ 
+ & 4,2x & 42x & 6,4x \\ 
 \hline 
-Spezial & 0.73s & 0.04s & 0.00016s \\ 
+Eigner & 0,73s & 0,04s & 0,00016s \\ 
 \hline 
 \end{tabular} 
-\\
-Zu sehen ist, dass die speizialle 
-Bei VFLib ist der Graph immutable und bei der Suche nach einem  Subgraphen müssen wir jedes Mal den Graphen neu erstellen.
 
+\end{figure}
+Zu sehen ist, dass der eigne Ansatz viel schneller ist, doch sie Werte wie 2 mal so langsam nicht so schlimm, wenn man bedenkt, dass VFLib und Boost allgemeine Ansätze sind, während unser nur für den Graphen $P_3$ funktioniert. 
+
+Zu beobachten ist auch, dass VFLib bei dem "Alle finden" und "Alle zählen" deutlich schneller ist, aber beim "Einen zurückgeben" weitaus langsamer ist. Dies hat mit dem Benchmark selbst zu tun. Weil dort die Algorithmen sehr schnell sind, wurde es 100-mal auf jedem Graphen ausgeführt. Dann wurde die Zeit durch 100 dividiert. An sich ist es auch kein Problem, aber der Unterschied liegt in der Tatsache, dass die Datenstruktur von von VFLib unveränderlich ist und wir bei jedem Aufruf einen neuen Graphen für VFLib erstellen, während bei Boost wir den Graphen nicht immer wieder neu erstellen müssen. Auch wenn man den Benchmark anders gestalten könnte, habe ich ihn so absichtlich gestaltet, weil es in den Heuristiken eine reale Anwendung ist. Oft wird wiederholt eine Änderung gemacht und dann nach einem verbotenen Teilgraphen gesucht. Hier wäre der Boost-Ansatz also weitaus besser, weil man nach einer jeder Änderung nicht einen neuen Graphen konstruieren müsste.
 
 \section{Auswertung}
 \label{sec:results}
