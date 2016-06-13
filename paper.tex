@@ -20,6 +20,7 @@
 \usepackage{subcaption}
 \usepackage{graphvizzz} 
 \usepackage{url}
+\usepackage{booktabs}
 
 
 \DeclareCaptionFormat{algor}{%
@@ -121,6 +122,36 @@ Deshalb ist der Graph $G_2$ ein Cluster-Graph und hat eben diese besondere Eigen
 
 In dieser Arbeit werden wir uns die Methoden anschauen, welche einen Graphen so modifizieren, so dass er eine bestimmte Eigenschaft hat. Viele Eigenschaften lassen sich, wie in dem vorherigen Beispiel mittels einer Charakterisation durch verbotenen Teilgraphen beschreiben.
 
+
+\subsection{Definitionen}
+\subsubsection{Notationen und Definitionen}
+\label{sec:notation}
+Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und $E$ die Menge seiner Kanten.
+
+Die Menge der Konten des Graphen $G$ ist $V(G)$ ist und die Menge der Kanten des Graphen $G$ heißt $E(G)$. Die Nachbarschaft vom Knoten $u$ heißt $N(u)$,  während $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive ist.
+
+Sei $G = (V,E)$ ein Graph und $S \subseteq V$ eine beliebige Knotenmenge von $V$. 
+Dann ist $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$ der durch $S$ induzierte Subgraph von $G$.
+
+Seien $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann gilt auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
+
+Seinen $G$ und $F$ Graphen, dann ist der Graph $G$ \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
+Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ \textit{F}-frei ist für jeden \textit{F} $\in \cursive{F}$.
+
+TODO: Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
+
+Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph $G$ zudem zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangkomponente eines Waldes ist daher ein Baum.
+
+\subsubsection{Problemstellung}
+\label{sec:problem}
+Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst das Problem selbst zu definieren. Es ist unter dem Namen \textsc{\cursive{F}-Free Edge Editing} bekannt.
+\begin{quote}
+  \textsc{\cursive{F}-Free Edge Editing}\newline
+  \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
+  \textbf{Frage:} Können wir in $G$ höchstens $k$ Änderungen machen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
+  \textbf{Parameter:} $k$
+\end{quote}
+
 \subsection{Anwendungsbeispiele}
 \label{sec:examples}
 In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum man Graphen mit bestimmten Eigenschaften haben will.
@@ -189,6 +220,7 @@ Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch
 
 \subsubsection{Protein Interaktionsnetzwerke}
 
+
 \begin{figure}
   \centering
   \begin{tabular}[c]{cccc}
@@ -256,55 +288,29 @@ Diese Struktur modelliert gut Protein-Protein Interaktion Netzwerke. In Körper 
 Ein Proteinkomplex hat einen Kern, wo jedes Protein mit jedem Protein interagiert und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Proteinkomplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen.
 
 \subsection{Annäherung}
-Jedoch haben die Eingabedaten typischerweise  Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu bestimmten Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.
+Jedoch haben die Eingabedaten typischerweise Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu gewissen Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.
 
-Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen. 
+Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen. Nun ist es möglich dieses Problem nicht perfekt zu lösen indem wir die minimale Anzahl von Änderungen finden, sonder einfach eine möglichst kleine Anzahl von Änderungen.
+
+Was bringt es aber, wenn man nur eine Annäherung hat. Wenn der zugrunde liegende Graph eine gewisse Struktur hat, kann auch mit 2-mal soviel Änderungen wie es nötig, eine ganz andere Struktur aufgedeckt oder eher erzeugt werden. Auch wenn wenn in den Experimenten festgestellt wurde, dass die Heuristik um 1.7x größere Menge von zu änderenden Kanten zurückgibt, wie kann diese Heuristiken sinnvoll verwenden?
+
+1. Es ist eine allgemeine Heuristik. Für konkrete Anwendungsfälle sind konkrete Heuristken wohl sehr sinnvoll, weil man dort nachvollziehen und nachprüfen vermag, dass es zu ähnlichen Resultaten kommt. Dies in dieser Arbeit zu überprüfen würden den Umfang sprengen.
+
+Deswegen ist der Fokus der Anwendung mehr komplementär. Dieses hier entwickelten Heuristiken können eine helfende Rolle spielen. Ein möglicher Anwendungsfall wäre, dass man eine Menge von Graphen hat, die man noch nicht analysiert hat. Wenn man nun die Heuristiken mit vielen möglichen verbotenen Teilgraphen auf den Eingabegraphen laufen lässt und dann vergleicht, kann man sehen, welche Graphen welche Strukturen eher besitzen.
+
+TODO: Beispiele
 
 %\subsubsection{Bicluster Editing}
 %\cite{De12} \cite{Madeira04} 
 
-\subsection{Definitionen}
-\subsubsection{Notationen und Definitionen}
-\label{sec:notation}
-Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und $E$ die Menge seiner Kanten.
-
-Die Menge der Konten des Graphen $G$ ist $V(G)$ ist und die Menge der Kanten des Graphen $G$ heißt $E(G)$. Die Nachbarschaft vom Knoten $u$ heißt $N(u)$,  während $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive ist.
-
-Sei $G = (V,E)$ ein Graph und $S \subseteq V$ eine beliebige Knotenmenge von $V$. 
-Dann ist $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$ der durch $S$ induzierte Subgraph von $G$.
-
-Seien $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann gilt auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
-
-Seinen $G$ und $F$ Graphen, dann ist der Graph $G$ \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
-Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ \textit{F}-frei ist für jeden \textit{F} $\in \cursive{F}$.
-
-Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
-
-Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph $G$ zudem zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangkomponente eines Waldes ist daher ein Baum.
-
-\subsubsection{Problemstellung}
-\label{sec:problem}
-Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst ein Problem zu definieren. Es ist unter dem Namen \textsc{F-Free Edge Editing} bekannt.
-\begin{quote}
-  \textsc{F-Free Edge Editing}\newline
-  \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$\newline
-  \textbf{Frage:} Können wir von $G$ höchstens $k$ Kanten entfernen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
-  \textbf{Parameter:} $k$
-\end{quote}
-\textsc{\cursive{F}-Free Edge Editing} ist NP-Schwer für die meisten \cursive{F}. Man es exakt mit FPT lösen\cite{Cai96}, für die meisten Instanzen von \cursive{F} gibt es keine Polynomiale Kernel.
-
-\begin{quote}
-  \textsc{\cursive{F}-Free Edge Editing}\newline
-  \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
-  \textbf{Frage:} Können wir von $G$ höchstens $k$ Kanten entfernen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
-  \textbf{Parameter:} $k$
-\end{quote}
 
 
 \subsection{Ähnliche Arbeiten}
 Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13} 
 
 Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ ist effizient, aber $O(n^{2-\epsilon})$ ist NP-Hard.\cite{Alon09}
+
+\textsc{\cursive{F}-Free Edge Editing} ist NP-Schwer für die meisten \cursive{F}. Man es exakt mit FPT lösen\cite{Cai96}, für die meisten Instanzen von \cursive{F} gibt es keine Polynomiale Kernel.
 
 
 \subsection{Überblick}
@@ -819,28 +825,27 @@ In der Tabelle Tabelle \ref{tab:size_solved_bio2} sehen wir, dass für viele ver
 \begin{center}
 \captionof{table}{Nicht gelöste Instanzen für den Datensatz $bio2$}
 \label{tab:size_solved_bio2}
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{ccc}
 \hline 
 Verbotener Teilgraph & Anzahl & Prozent \\ 
-\hline 
+\hline
 $2 P_3$ & 0 & 0\% \\ 
-\hline 
+ 
 $C_4$ & 0 & 0\% \\ 
-\hline 
+
 claw & 0 & 0\% \\ 
-\hline 
 paw & 4 & 1\% \\ 
-\hline 
+
 triangle & 11 & 3\% \\ 
-\hline 
+
 splitcluster & 26 & 7\% \\ 
-\hline 
+
 ($P_4,C_4)$ & 37 & 10\% \\ 
-\hline 
+
 (x172, triangle) & 129 & 36\% \\ 
-\hline 
+ 
 ($P_5$, triangle)& 309 & 86\% \\ 
-\hline 
+\hline
 \end{tabular} 
 \end{center}
 
@@ -851,16 +856,13 @@ splitcluster & 26 & 7\% \\
 \subsection{Repräsentation vom Graphen}
 Die Graphen werden in einer Adjazenzmatrix gespeichert.
 
+TODO: MORE
 
 \subsection{Das Finden von induzierten Subgraphen}
 Das Finden von induzierten Subgraphen ist der Teil der Algorithmen, der am zeitaufwändigsten ist und auf häufigsten aufgerufen wird. Deswegen ist hier die Wahl von dem richtigen Ansatz sehr wichtig. 
 
-\cite{Ullmann76}
-Wie verwenden einen VF Algorithmus für \func{findFS}(\vars{graph},\vars{forbidden}).
-Dieser gibt gibt eine Menge von Subgraphen zurück.
-
-\subsubsection{Vergleich VFLib, Boost und eigene Implementation}
-In diesem Abschnitt wollen wir drei Ansätze bezüglich ihrer Geschwindkeit vergleichen. Um das ganze zu vereinfachen, testen wir Anwendungsfälle eines Ansatzes mit dem verbotenen Teilgraphen $P_3$. 
+\subsubsection{Vergleich von Algorithmen fürs Finden von Ismorphen Subgraphen}
+In diesem Abschnitt wollen wir drei Ansätze bezüglich ihrer Geschwindigkeit vergleichen. Um das ganze zu vereinfachen, testen wir Anwendungsfälle eines Ansatzes mit dem verbotenen Teilgraphen $P_3$. 
 
 \begin{itemize}
 \item Der erste ist VFLib. Es ist ein Bibliothekt, die mehrere Algorithmen jeweils für das Graphen Isomorphismus Problem, Graphen-Subgraph Isomorphismus Problem und das Graphen Monomorphimus Problem implementiert und zählt zu den schnellsten Implementationen \cite{Cordella04}.
@@ -879,27 +881,29 @@ Die drei Anwendungsfälle wären:
  \item \textbf{Einen zurückgeben}: Finde einen verbotenen Teilgraphen und gebe ihn zurück.
 \end{itemize}
 
-In der folgenden Tabelle werden die Resultate anzeigt, dabei gibt die Zeit an wie lange es gebraucht hat die Aufgabe auf allen 147 Graphen von dem Datensatz \vars{bio1} auszuführen. In der Zeit ist die Zeit für das Einlesen der Graphen nicht mit einbegriffen. Die Werte unter der Zeit, sind Angaben, wie viel mal langsamer der Ansatz als der schnellste Ansatz ist.
-\begin{figure}
-\label{tab:}
-\begin{tabular}{|c|c|c|c|}
+In der Tabelle \ref{tab:benchmark_isomorph} werden die Resultate anzeigt, dabei gibt die Zeit an wie lange es gebraucht hat die Aufgabe auf allen 147 Graphen von dem Datensatz \vars{bio1} auszuführen. In der Zeit ist die Zeit für das Einlesen der Graphen nicht mit einbegriffen. Die Werte unter der Zeit, sind Angaben, wie viel mal langsamer der Ansatz als der schnellste Ansatz ist.
+\begin{table}
+
+\centering
+
+\begin{tabular}{c ccc}
 \hline 
-• & Alle finden & Alle zählen & Einen zurückgeben \\ 
+Verfahren & Alle finden & Alle zählen & Einen zurückgeben \\ 
 \hline 
-VFLib & 1,73s & 0,87s & 0,01236s \\ 
- & 2,4x & 22x & 77,3x \\ 
-\hline 
-Boost & 3,04s & 1,68s & 0,00102s \\ 
- & 4,2x & 42x & 6,4x \\ 
-\hline 
-Eigner & 0,73s & 0,04s & 0,00016s \\ 
+VFLib & 1,73s (2,4x) & 0,87s (22x) & 0,0124s (77x) \\ 
+Boost & 3,04s (4,2x) & 1,68s (42x) & 0,00102s (6,4x) \\ 
+Naive P3-Suche & 0,73s & 0,04s & 0,00016s \\ 
 \hline 
 \end{tabular} 
+\caption{Benchamrk}
+\label{tab:benchmark_isomorph}
+\end{table}
+Zu sehen ist, dass die "Naive P3-Suche" viel schneller ist, aber es ist zu bebachten, dass VFLib und Boost allgemeine Ansätze sind, während unse nur für den Graphen $P_3$ funktioniert. 
 
-\end{figure}
-Zu sehen ist, dass der eigne Ansatz viel schneller ist, doch sie Werte wie 2 mal so langsam nicht so schlimm, wenn man bedenkt, dass VFLib und Boost allgemeine Ansätze sind, während unser nur für den Graphen $P_3$ funktioniert. 
+Zu beobachten ist auch, dass VFLib bei dem \glqq Alle finden\grqq \, und \glqq Alle zählen\grqq \, deutlich schneller ist, aber beim \glqq Einen zurückgeben\grqq \, weitaus langsamer ist. Dies hat mit dem Benchmark selbst zu tun. Weil dort die Algorithmen sehr schnell sind, wurde es 100-mal auf jedem Graphen ausgeführt. Dann wurde die Zeit durch 100 dividiert. 
+An sich ist es auch kein Problem, aber der Unterschied liegt in der Tatsache, dass die Datenstruktur von von VFLib unveränderlich ist und wir bei jedem Aufruf einen neuen Graphen für VFLib erstellen, während bei Boost wir den Graphen nicht immer wieder neu erstellen müssen. Auch wenn man den Benchmark anders gestalten könnte, wurde er absichtlich so gestaltet, weil es in den Heuristiken eine reale Anwendung ist: Oft wird wiederholt eine Änderung gemacht und dann nach einem verbotenen Teilgraphen gesucht. Hier wäre der Boost-Ansatz also weitaus besser, weil man nach einer jeder Änderung nicht einen neuen Graphen konstruieren müsste.
 
-Zu beobachten ist auch, dass VFLib bei dem "Alle finden" und "Alle zählen" deutlich schneller ist, aber beim "Einen zurückgeben" weitaus langsamer ist. Dies hat mit dem Benchmark selbst zu tun. Weil dort die Algorithmen sehr schnell sind, wurde es 100-mal auf jedem Graphen ausgeführt. Dann wurde die Zeit durch 100 dividiert. An sich ist es auch kein Problem, aber der Unterschied liegt in der Tatsache, dass die Datenstruktur von von VFLib unveränderlich ist und wir bei jedem Aufruf einen neuen Graphen für VFLib erstellen, während bei Boost wir den Graphen nicht immer wieder neu erstellen müssen. Auch wenn man den Benchmark anders gestalten könnte, habe ich ihn so absichtlich gestaltet, weil es in den Heuristiken eine reale Anwendung ist. Oft wird wiederholt eine Änderung gemacht und dann nach einem verbotenen Teilgraphen gesucht. Hier wäre der Boost-Ansatz also weitaus besser, weil man nach einer jeder Änderung nicht einen neuen Graphen konstruieren müsste.
+Die Schlussfolgerung von diesem Benchmark ist, dass die VFLib und Boost Algorithmen schnell genug sind und höchstens eine Optimierung von \glqq   Alle zählen\grqq \, eine Option wäre, die auch vielversprechend wäre.
 
 \section{Auswertung}
 \label{sec:results}
