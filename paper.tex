@@ -518,10 +518,19 @@ Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in d
 \end{figure}
 
 \subsection{GRASP}
+Nach dem experimentellen Untersuchen der Forward und Backward-Ansätze wurden deren Stärken und Schwächen deutlich. So kam auch die Idee diese beiden Ansätze zu kombinieren. Nach dem Planen und der Umsetzung einer solchen kombinierten Heuristik, hat die Recherche ergeben, dass es eine sehr ähnliche Art von Algorithmen bereits beschrieben wurde und unter dem dem Namen GRASP (Greedy Randomized Adaptive Search Procedure) \cite{Feo95} \cite{Bastos2014} bekannt ist. Es ist eine iterative Vorgehensweise wobei jede Iteration aus zwei Phasen besteht: 
+\begin{itemize}
+\item \textbf{Konstruktions-Phase.} Es wird mit einem leeren Graphen angefangen und nach und nach werden Knoten/Kanten nach einem bestimmten Kriterium hinzugefügt.
+\item \textbf{Lokale Suche.} Da die Lösung, die in der Konstruktions-Phase generiert wurde, meistens nicht optimal ist, auch nicht in der einfachen Nachbarschaft. Deswegen wird in der Lokalen Suche versucht die Lösung zu verbessern, indem man nach und nach die derzeitige Lösung durch eine bessere Lösung in der Nachbarschaft ersetzt.
+\end{itemize}
+Dieser GRASP Ansatz wurde auch schon erfolgreich für das Biclustering-Problem verwendet \cite{De12}.
+
+Unsere Ansätze unterscheidet sich darin von den GRASP-Algorithmen, dass wir nicht in jeder Iteration einen neuen Graphen Konstruieren, sondern auf dem bereits konstruieren Graphen weiter arbeiten. 
+
 \subsubsection{Grow-Reduce}
-Der Grow-Reduce-Ansatz ist ein Art von einer greedy randomized adaptive search procedure(GRASP).\todo{GRASPH beschreiben Siehe \cite{Bastos2014}}
-Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem Graphen, der die selben Knoten wie der Eingabegraph hat, aber keine kanten. Dann wird in jeder Iteration ein Knoten und seine Umgebung hinzugefügt und durch lokale Suche werden alle neu entstandenen verbotenen Subgraphen wieder entfernt.
-Die ist im Algorithmus \ref{algo:growReduce} zu sehen. 
+Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem Graphen, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten. Dann wird in jeder Iteration ein Knoten und seine Umgebung hinzugefügt und durch lokale Suche werden alle neu entstandenen verbotenen Subgraphen wieder entfernt. Dies ist im Algorithmus \ref{algo:growReduce} zu sehen. 
+
+Die Grow-Phase ist mit der Konstruktion-Phase des GRASP-Ansatzes vergleichbar und die Reduce-Phase mit der lokalen Suche.
 
 \begin{algorithm}
   \captionof{algorithm}{GrowReduce}\label{algo:growReduce}
@@ -648,6 +657,15 @@ In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somi
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
+\subsubsection{Sortierung der Knoten}
+Sowohl in dem Grow-Reduce als auch dem Explorer-Grow-Reduce Algorithmus werden die Knoten mittels der Funktion \func{order} sortiert  und dann eine nach der anderen abgearbeitet. Nun kann man die Knoten nach unterschiedlichen Kriterien sortieren.
+Es wurden 3 Sorterierungsfunktionen verwendet:
+\begin{itemize}
+\item Zufällig. Das ist einfachste und offensichtliches Sortierungsfunktion. Wenn keine Informationen über die Struktur der Daten vorhanden sind, dann ist das zufällige Abarbeiten der Knoten naheliegend.
+\item Anzahl der Nachbarn. Die Knoten werden nach der Anzahl der Nachbarn im Eingabegraphen sortiert.
+\item Anzahl von verbotenen Teilgraphen. Die Knoten werden danach sortiert, wie oft der Knoten in einem verbotenen Teilgraphen vorkam.
+\end{itemize}
+Bei den letzten beiden Sortierunsgmöglichenkeiten gibt es sowohl die aufsteigende und absteigende Variante. 
 \subsection{Lineare Programmierung}
 \subsubsection{Lineare Optimierung}
 Bei der linearen Optimierung wird eine lineare Zielfunktion minimiert bzw. maximiert, wobei sie durch lineare Gleichungen und Ungleichungen beschränkt ist.
