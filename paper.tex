@@ -15,10 +15,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{caption}
-\usepackage{graphicx}
-\usepackage{caption}
 \usepackage{subcaption}
-\usepackage{graphvizzz} 
 \usepackage{url}
 \usepackage{booktabs}
 
@@ -28,7 +25,7 @@
     \textbf{#1#2}#3\offinterlineskip\hrulefill}
 \DeclareCaptionStyle{algori}{singlelinecheck=off,format=algor,labelsep=space}
 \captionsetup[algorithm]{style=algori}
-\usepackage{morewrites}
+
 %return on a new line
 \let\oldReturn\Return
 \renewcommand{\Return}{\State\oldReturn}
@@ -51,7 +48,8 @@
 \tableofcontents
 \newpage
 \begin{abstract}
-%Graphen so zu modifizieren, dass sie gewisse induzierte Teilgraphen nicht mehr enthalten, ist bis auf gewisse triviale Fälle NP-Vollständig. In dieser Arbeit erarbeiten wir schnelle Annäherungen und testen diese auf ihre Güte.
+Graphen so zu modifizieren, dass sie gewisse induzierte Teilgraphen nicht mehr enthalten, ist bis auf gewisse triviale Fälle NP-Vollständig.
+ In dieser Arbeit erarbeiten wir schnelle Annäherungen und testen diese auf ihre Güte.
   
 \end{abstract}
   
@@ -81,36 +79,19 @@ Der Graph $G_2$ (Abbildung \ref{fig:mot-2})hat keinen $P_3$ als induzierten Teil
  
   \begin{tabular}[c]{ccc}
     \begin{subfigure}[b]{0.32\textwidth}
-      \digraph [width=\linewidth]{dot_mot_p3}
-      {
-        a->c[dir=none];
-        b->c[dir=none];
-      }
+      \includegraphics[scale=0.6]{dot/dot_mot_p3.png}
+   
       \caption{Ein $P_3$ Graph }
       \label{fig:mot-p3}
    \end{subfigure}&
 	 \begin{subfigure}[b]{0.32\textwidth}
-	   \digraph [width=\linewidth]{dot_mot_1}
-	    {
-	     D[color=red];
-	     B[color=red];
-	     C[color=red];
-	     A->B[dir=none];
-	     A->D[dir=none];
-	     D->C[dir=none,color=red];
-	     D->B[dir=none,color=red];
-	     A->C[dir=none];
-	    }
+	 \includegraphics[scale=0.5]{dot/dot_mot_1.png}
+	 
 	    \caption{Graph $G_1$ mit einem von $P_3$ induzierten Teilgraphen.}
 	    \label{fig:mot-1}
 	  \end{subfigure}&
     \begin{subfigure}[b]{0.32\textwidth}
-	    \digraph [width=\linewidth]{dot_explored_3}
-	    {
-	      A->C[dir=none];
-        B->C[dir=none];
-        A->B[dir=none];
-	    }
+       \includegraphics[scale=0.5]{dot/dot_explored_3.png}
 	    \caption{Graph $G_2$ ohne einen induzierten $P_3$}
 	    \label{fig:mot-2}
     \end{subfigure}
@@ -141,6 +122,8 @@ Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ \
 TODO: Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
 
 Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph $G$ zudem zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangkomponente eines Waldes ist daher ein Baum.
+
+TODO: normierter Abstand
 
 \subsubsection{Problemstellung}
 \label{sec:problem}
@@ -296,17 +279,16 @@ Was bringt es aber, wenn man nur eine Annäherung hat? Wenn der zugrunde liegend
 
 Ersten soll es die Frage klären, wie gut eine allgemeine Heuristik ist im Vergleich zu den auf spezifische Anwendungsfälle zugeschnittenen Heuristiken. Lohnt es sich überhaupt für spezifische Heuristiken zu entwickeln? 
 
-Auch ein möglicher Anwendungsfall wäre, dass man eine Menge von Graphen hat, die man noch nicht analysiert hat. Wenn man nun die Heuristiken mit vielen möglichen verbotenen Teilgraphen auf den Eingabegraphen laufen lässt und dann vergleicht, kann man sehen, welche Graphen welche Strukturen eher besitzen.
 
-Um diesen Anwendungsfall zu demonstrieren: Wir testen 3 Graphen die aus verschiendenen Datensätzen kommen.
-
-\includegraphics[scale=0.7]{plots/best.png} 
 %\subsubsection{Bicluster Editing}
 %\cite{De12} \cite{Madeira04} 
 
 
 
 \subsection{Ähnliche Arbeiten}
+Es wurden Greedy-Alogrithmen für das Hitting-Set Probem entwickelt \cite{Moreno13}, welches sich wie folgt definieren lässt \cite{Karp72}: Gegeb ist ein Universum $U$ und eine Menge $\Gamma$ von Teilmengen von $U$. Gesucht ist eine Teilmenge $H$ von $U$, sodass jede Menge in $\Gamma$ ein Element aus $H$ enthält.
+  
+
 Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13} 
 
 Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ ist effizient, aber $O(n^{2-\epsilon})$ ist NP-Hard.\cite{Alon09}
@@ -445,35 +427,20 @@ Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in d
   \centering
   \begin{tabular}[c]{ccc}
     \begin{subfigure}[b]{0.32\textwidth}
-      \digraph [width=\linewidth]{dot_extend_1}
-      {
-       a->b[style=dashed,dir=none];
-       a->c[style=dashed,dir=none];
-       d->b[style=dashed,dir=none];
-       b->c[style=dashed,dir=none];
-      }
+     \includegraphics[scale=0.6]{dot/dot_extend_1.png}
+     
       \caption{Startgraph}
       \label{fig:algo:extend:1}
    \end{subfigure}&
    \begin{subfigure}[b]{0.32\textwidth}
-     \digraph [width=\linewidth]{dot_extend_2}
-      {
-       a->b[style=dashed,dir=none];
-       a->c[style=dashed,dir=none];
-       d->b[color=green,dir=none];
-       b->c[style=dashed,dir=none];
-      }
+      \includegraphics[scale=0.6]{dot/dot_extend_2.png}
+     
       \caption{Kante (d,b) wird erfolgreich hinzugefügt}
       \label{fig:algo:extend:2}
     \end{subfigure}&
     \begin{subfigure}[b]{0.32\textwidth}
-      \digraph [width=\linewidth]{dot_extend_3}
-      {
-       a->b[style=dashed,dir=none];
-       a->c[color=green,dir=none];
-       d->b[dir=none];
-       b->c[style=dashed,dir=none];
-      }
+       \includegraphics[scale=0.6]{dot/dot_extend_3.png}
+    
       \caption{Kante (a,c) erfolgreich wird hinzugefügt}
       \label{fig:algo:extend:3}
     \end{subfigure}
@@ -481,35 +448,19 @@ Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in d
   
     \begin{tabular}[c]{ccc}
     \begin{subfigure}[b]{0.32\textwidth}
-      \digraph [width=\linewidth]{dot_extend_4}
-      {
-       a->b[color=red,dir=none];
-       a->c[dir=none];
-       d->b[dir=none];
-       b->c[style=dashed,dir=none];
-      }
+     \includegraphics[scale=0.6]{dot/dot_extend_4.png}
+    
       \caption{Kante (a,b) kann nicht hinzugefügt werden}
       \label{fig:algo:extend:4}
    \end{subfigure}&
    \begin{subfigure}[b]{0.32\textwidth}
-     \digraph [width=\linewidth]{dot_extend_5}
-      {
-       a->b[style=dashed,dir=none];
-       a->c[dir=none];
-       d->b[dir=none];
-       b->c[color=red,dir=none];
-      }
+    \includegraphics[scale=0.6]{dot/dot_extend_5.png}
       \caption{Kante (b,c) kann nicht hinzugefügt werden}
       \label{fig:algo:extend:5}
     \end{subfigure}&
     \begin{subfigure}[b]{0.32\textwidth}
-      \digraph [width=\linewidth]{dot_extend_6}
-      {
-       a->b[style=dashed,dir=none];
-       a->c[dir=none];
-       d->b[dir=none];
-       b->c[style=dashed,dir=none];
-      }
+     \includegraphics[scale=0.6]{dot/dot_extend_6.png}
+    
       \caption{Resultierender Graph}
       \label{fig:algo:extend:6}
     \end{subfigure}
@@ -575,47 +526,19 @@ In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somi
   \centering
   \begin{tabular}[c]{ccc}
     \begin{subfigure}[b]{0.32\textwidth}
-      \digraph [width=\linewidth]{dot_explored_1}
-      {
-       a[color=red];
-       b[style=dashed];
-       c[style=dashed];
-       d[style=dashed];
-       a->b[style=dashed,dir=none];
-       a->c[style=dashed,dir=none];
-       d->b[style=dashed,dir=none];
-       b->c[style=dashed,dir=none];
-      }
+      \includegraphics[scale=0.5]{dot/dot_explored_1.png}
+     
       \caption{Knoten a wird hinzugefügt}
       \label{fig:algo_explored_1}
    \end{subfigure}&
 	 \begin{subfigure}[b]{0.32\textwidth}
-	   \digraph [width=\linewidth]{dot_explored_2}
-	    {
-	     a[];
-	     b[color=red];
-	     c[style=dashed];
-	     d[style=dashed];
-	     a->b[dir=none];
-	     a->c[style=dashed,dir=none];
-	     d->b[style=dashed,dir=none];
-	     b->c[style=dashed,dir=none];
-	    }
+	   \includegraphics[scale=0.5]{dot/dot_explored_2.png}
 	    \caption{Knoten b wird hinzugefügt}
 	    \label{fig:algo_explored_2}
 	  \end{subfigure}&
     \begin{subfigure}[b]{0.32\textwidth}
-	    \digraph [width=\linewidth]{dot_explored_3}
-	    {
-	     a[];
-	     b[];
-	     c[color=red];
-	     d[style=dashed];
-	     a->b[dir=none];
-	     a->c[dir=none];
-	     d->b[style=dashed,dir=none];
-	     b->c[dir=none];
-	    }
+      \includegraphics[scale=0.5]{dot/dot_explored_3.png}
+	 
 	    \caption{Knoten c wird hinzugefügt}
 	    \label{fig:algo_explored_3}
     \end{subfigure}
@@ -746,35 +669,7 @@ Dabei gibt es in jeder Iteration bei der Erstellung eines solchen zufälligen Gr
 
 Es wurden mit diesem Modell 54 Graphen generiert mit $n \in \{10,20…,90\}$ . Für die Wahrscheinlichkeiten $p$ wurden folgenden Werte verwendet $\frac{1}{10}$, $\frac{2}{10}$, $\frac{5}{20}$, $\frac{4}{10}$, $\frac{5}{10}$, $\frac{8}{10}$.
 \begin{figure}
-\digraph
-[scale=0.4]{dot_dupdivergence}
-{
-0->8;
-0->1;
-0->12;
-1->16;
-1->2;
-1->3;
-1->4;
-1->5;
-1->6;
-1->7;
-1->17;
-1->11;
-1->13;
-5->8;
-5->10;
-5->19;
-5->12;
-7->8;
-7->19;
-8->18;
-8->9;
-8->14;
-8->15;
-14->19;
-15->19;
-}
+\includegraphics[scale=0.35]{dot/dot_dupdivergence.png}
 \caption{Ein beispielhafter Duplication-Divergence Graph mit $n$ = 20 und $p$ = 0,4}
 \label{fig:duplication-divergence}
 \end{figure}
@@ -790,19 +685,7 @@ Es wurden mit diesem Model 144 Graphen generiert mit einer Knotenanzahl $n \in \
 Für den Datensatz \vars{powerlaw}, wurde ein Modell verwendet, dass einen Baum erzeugt, dessen Knotengrad einer Potenzverteilung folgt. Ein Beispiel ist in Abbildung \ref{fig:powerlaw-tree} zu sehen.
 Es wurden mit diesem Model 30 Graphen generiert mit einer Knotenanzahl zwischen $n \in \{10,15,20…,155\}$.
 \begin{figure}
- \digraph
-[scale=0.4]{dot_powerlaw}
-{
- 0->1;
-1->2;
-2->3;
-3->4;
-4->5;
-4->7;
-5->8;
-5->9;
-5->6;
-}
+\includegraphics[scale=0.35]{dot/dot_powerlaw.png}
 \caption{Ein Powerlaw-Baum mit $n$ = 10}
 \label{fig:powerlaw-tree}
 \end{figure}
@@ -1037,11 +920,29 @@ newman-watts-strogatz & 146.48 & 128.42 & \textbf{103.38} & 87.99 \\
 \end{center}
 
 \section{Zusammenfassung}
+\subsection{Anwendungen}
+Auch ein möglicher Anwendungsfall wäre, dass man eine Menge von Graphen hat, die man noch nicht analysiert hat. Wenn man nun die Heuristiken mit vielen möglichen verbotenen Teilgraphen auf den Eingabegraphen laufen lässt und dann vergleicht, kann man sehen, welche Graphen welche Strukturen eher besitzen.
+
+Um diesen Anwendungsfall zu demonstrieren. Wir testen jeweils 15 Graphen aus verschiedenen Quellen: Graphen die mit dem Duplication-Divergence Modell generiert wurden, Graphen die mit dem Powerlaw-Modell generiert wurden und und biologische Daten, die aus der Squenzähnlichkeit von Proteinen generiert wurden.
+In der Abbildung \ref{fig:best-graph} ist die durschnittliche normalisierte Lösungsgröße der 3 Graphengruppen mit verschiedenen verbotenen Teilgraphen.
+
+\begin{figure}
+\includegraphics[scale=0.7]{plots/best.png} 
+\caption{Durschnittliche normalisierte Lösungsgröße}
+\label{fig:best-graph}
+\end{figure}
+
+So ist es zu erwarten, dass die Bearbeitungsdistanz zu $C_4$-freien Graphen 0 ist, weil es eben Bäume sind und dort es keine Zyklen gibt.
+Auch ist die verhältnismäßige kleine Distanz zu $P_4$-freien Graphen in einem Powerlaw-Graphen nicht ungewöhnlich, denn es gibt wenige Knoten, die einen Knotengrad von 4 haben. Siehe auch Abbildung \ref{fig:powerlaw-tree} auf der Seite \pageref{fig:powerlaw-tree}.
+
+Diese gerade getätigten Beobachtungen konnten wir tun, weil wir die Struktur der Powerlaw-Graphen kennen. Aber was können wir rausfinden, wenn wir uns die Duplication-Divergence-Graphen anschauen und sie mit den $bio$-Graphen vergleichen. 
+
+
 \subsection{Zukünftige Forschungsmöglichkeiten}
 \subsubsection{Besser Sortierung von Grow-Reduce}
 \subsubsection{Besser Konvergenzkriterium}
 \subsubsection{Obere Schranken}
-\subsubsection{Obere Schranken}
+\subsubsection{Untere Schranken}
 
 \bibliographystyle{plain}
 \bibliography{biblio}
