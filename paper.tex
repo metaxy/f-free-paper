@@ -437,7 +437,7 @@ Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in d
 \begin{algorithm}
   \captionof{algorithm}{Extend}\label{algo:extend}
 \begin{algorithmic}[1]
-\Function{ExtendSolve}{$G$, $F$}
+\Function{ExtendSolve}{$G$, \cursive{F}}
 	\State{\vars{graph} $\gets$ $(V(G),\emptyset)$}\label{algo:extend:start}
 	\While{true}
 		\For{each Edge \vars{e} $\in$ \func{Difference}(\vars{graph},$G$) }\label{algo:extend:each}
@@ -514,7 +514,7 @@ Die Grow-Phase ist mit der Konstruktion-Phase des GRASP-Ansatzes vergleichbar un
 \begin{algorithm}
   \captionof{algorithm}{GrowReduce}\label{algo:growReduce}
 \begin{algorithmic}[1]
-\Function{GrowReduceSolve}{\vars{G}, \vars{forbidden}}
+\Function{GrowReduceSolve}{\vars{G}, \cursive{F}}
 	\State{\vars{graph} $\gets$ $(V(\vars{input}),\emptyset)$}
 	\State{\vars{nodes} $\gets$ \func{order}(V(\vars{G}))}
 	\For{\vars{node} $\in$ \vars{nodes}}
@@ -522,7 +522,7 @@ Die Grow-Phase ist mit der Konstruktion-Phase des GRASP-Ansatzes vergleichbar un
 		\For{\vars{neighbor} $\in$ N(\vars{node})}\Comment{Grow Phase}
 			\State{Add Edge (\vars{node}, \vars{neighbor}) to \vars{graph}}
 		\EndFor
-		\For{\vars{f} $\in$ \vars{forbidden}}\Comment{Reduce Phase}
+		\For{\vars{f} $\in$ \cursive{F}}\Comment{Reduce Phase}
 			\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph},\vars{f})}
 			\While{\vars{forbiddenSubgraph} != $\emptyset$}
 				\State{\vars{edge} $\gets$ random Edge from \vars{forbiddenSubgraph}}
