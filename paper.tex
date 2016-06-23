@@ -127,17 +127,37 @@ TODO: normierter Abstand
 
 \subsubsection{Problemstellung}
 \label{sec:problem}
-Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst das Problem selbst zu definieren. Es ist unter dem Namen \textsc{\cursive{F}-Free Edge Editing} bekannt.
+Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst das Problem selbst zu definieren. 
+Es ist unter dem Namen \textsc{\cursive{F}-Free Edge Editing} bekannt.
 \begin{quote}
   \textsc{\cursive{F}-Free Edge Editing}\newline
   \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
   \textbf{Frage:} Können wir in $G$ höchstens $k$ Änderungen machen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
   \textbf{Parameter:} $k$
 \end{quote}
+Es gibt auch das \textsc{F-Free Edge Editing}. Hier ist \textsc{F} keine Menge von Graphen, sondern nur ein Graph. In dieser Arbeit werden wir uns darauf beschränken, dass \cursive{F} eine endliche Menge ist.\\
+
+
+
+\textbf{Ähnliche Probleme:}
+
+\begin{quote}
+  \textsc{\cursive{F}-Free Edge Deletion/Completion}\newline
+  \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
+  \textbf{Frage:} Können wir in $G$ höchstens $k$ Kanten löschen/entfernen  machen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
+  \textbf{Parameter:} $k$
+\end{quote}
+
+\begin{quote}
+  \textsc{\cursive{F}-Free Vertex Deletion/Completion}\newline
+  \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
+  \textbf{Frage:} Können wir in $G$ höchstens $k$ Knoten löschen/entfernen  machen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
+  \textbf{Parameter:} $k$
+\end{quote}
 
 \subsection{Anwendungsbeispiele}
 \label{sec:examples}
-In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum man Graphen mit bestimmten Eigenschaften haben will.
+In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum Graphen mit bestimmten Eigenschaften gewünscht sind.
 \subsubsection{\textsc{Maximum Clique} auf Co-Graphen}
 %TODO: Maximun Clique
 Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann können wir \textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist das Ergebnis für den Graphen $G$. Somit können wir das Problem also in kleinere Probleme zerlegen.
@@ -273,7 +293,7 @@ Ein Proteinkomplex hat einen Kern, wo jedes Protein mit jedem Protein interagier
 \subsection{Annäherung}
 Jedoch haben die Eingabedaten typischerweise Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu gewissen Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.
 
-Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen. Nun ist es möglich dieses Problem nicht perfekt zu lösen indem wir die minimale Anzahl von Änderungen finden, sonder einfach eine möglichst kleine Anzahl von Änderungen.
+Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen \cite{Burzyn06}. Nun ist es möglich dieses Problem nicht perfekt zu lösen indem wir die minimale Anzahl von Änderungen finden, sonder einfach eine möglichst kleine Anzahl von Änderungen.
 
 Was bringt es aber, wenn man nur eine Annäherung hat? Wenn der zugrunde liegende Graph eine gewisse Struktur hat, kann auch mit 2-mal soviel Änderungen wie es nötig, eine ganz andere Struktur aufgedeckt oder eher erzeugt werden. Auch wenn wenn in den Experimenten festgestellt wurde, dass die Heuristik um 1.7x größere Menge von zu änderenden Kanten zurückgibt, wie kann diese Heuristiken sinnvoll verwenden?
 
@@ -286,14 +306,28 @@ Ersten soll es die Frage klären, wie gut eine allgemeine Heuristik ist im Vergl
 
 
 \subsection{Ähnliche Arbeiten}
-Es wurden Greedy-Alogrithmen für das Hitting-Set Probem entwickelt \cite{Moreno13}, welches sich wie folgt definieren lässt \cite{Karp72}: Gegeb ist ein Universum $U$ und eine Menge $\Gamma$ von Teilmengen von $U$. Gesucht ist eine Teilmenge $H$ von $U$, sodass jede Menge in $\Gamma$ ein Element aus $H$ enthält.
-  
+\subsubsection{Hardness}
 
-Implicit Hitting Set hilft hier leider nicht viel.\cite{Moreno13} 
+Einige Edge Editing/Deletion/Completion Probleme wurde in \cite{Natanzon01} und in untersucht. Weitere Hardness Resulate wurden in \cite{Burzyn06} erbracht.
 
+
+
+
+\subsubsection{Approximationen}
 Approximation von H-Free Editing für montone graphen eigenschaften: $o(n^2)$ ist effizient, aber $O(n^{2-\epsilon})$ ist NP-Hard.\cite{Alon09}
 
+\subsubsection{Polynomiale Kernel}
+
 \textsc{\cursive{F}-Free Edge Editing} ist NP-Schwer für die meisten \cursive{F}. Man es exakt mit FPT lösen\cite{Cai96}, für die meisten Instanzen von \cursive{F} gibt es keine Polynomiale Kernel.
+
+\subsubsection{Hitting-Set}
+Es wurden Greedy-Alogrithmen für das Hitting-Set Probem entwickelt \cite{Moreno13}, welches sich wie folgt definieren lässt \cite{Karp72}: Gegeben ist ein Universum $U$ und eine Menge $\Gamma$ von Teilmengen von $U$. Gesucht ist eine Teilmenge $H$ von $U$, sodass jede Menge in $\Gamma$ ein Element aus $H$ enthält, dazu soll die Mächtigkeit der Menge kleiner sein als eine positive ganze Zahl $k$.
+
+Wenn die Menge \cursive{F} endlich ist, dann kann das \textsc{\cursive{F}-Free Vertex Deletion} Problem leicht als \textsc{$d$-Hitting Set} formuliert werden, wobei die Konstante $d$ die größte Anzahl von Knoten in einem Graphen in \cursive{F} ist \cite{Kratsch13}. Damit gäbe es polynomiale Kernel für \textsc{\cursive{F}-Free Vertex Deletion} nach \cite{Abu07}.
+Nach \cite{Bodlaender06} ist es offen, ob es für \textsc{F-Free Edge Deletion} analog auch polymiale Kernel gibt. TODO: ??? Was ist mit \textsc{\cursive{F}-Free Edge Deletion}
+
+Es scheint eine Ähnlichkeit zu dem \textsc{F-Free Edge Editing} zu bestehen, aber leider lässt sich das \textsc{F-Free Edge Editing} nicht leicht als ein Hitting-Set-Problem formulieren. Die Schwierigkeit beim Editing Problem ist, dass auch Kanten hinzugefügt werden können. Wenn wir nun das Universum $U$ als alle möglichen Kanten nehmen und $\Gamma$ die Menge der verbotenen Teilgraphen ist, dann wäre zwar $H$ die Menge der Änderungen, doch diese Änderungen könnten neue verbotene Teilgraphen erzeugen.
+
 
 
 \subsection{Überblick}
