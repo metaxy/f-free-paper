@@ -119,24 +119,20 @@ Für eine Menge \cursive{F} von Graphen, heißt der Graph $G$ \cursive{F}-frei, 
 
 Die Editierdistanz $\Delta(G, \cursive{F})$ ist die minimale Anzahl von Kantenänderungen an G, damit G \cursive{F}-frei ist.\\ Die normierte Editierdistanz $\Delta^{*}(G, \cursive{F})$ ist $\frac{\Delta(G, \cursive{F})}{|E(G)|^{2}}$
 
-TODO: Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
-
 Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph $G$ zudem zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangkomponente eines Waldes ist daher ein Baum.
 
-TODO: normierter Abstand
-
+TODO: Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
 \subsubsection{Problemstellung}
 \label{sec:problem}
-Um Heuristiken für das Entfernen von verbotenen Teilgraphen entwickeln zu können, ist zuerst das Problem selbst zu definieren. 
-Es ist unter dem Namen \textsc{\cursive{F}-Free Edge Editing} bekannt.
+Das Problem, für das in dieser Arbeit Heuristiken entwickelt werden, kann wie folgt definiert werden:
 \begin{quote}
   \textsc{\cursive{F}-Free Edge Editing}\newline
   \textbf{Eingabe:} Graph $G$, natürliche Zahl $k$, Menge von Graphen \cursive{F}\newline
   \textbf{Frage:} Können wir in $G$ höchstens $k$ Änderungen machen, so dass $G$ keinen induzierten Teilgraphen aus \cursive{F} enthält?\newline
   \textbf{Parameter:} $k$
 \end{quote}
-Es gibt auch das \textsc{F-Free Edge Editing}. Hier ist \textsc{F} keine Menge von Graphen, sondern nur ein Graph. In dieser Arbeit werden wir uns darauf beschränken, dass \cursive{F} eine endliche Menge ist.\\
-
+In dieser Arbeit werden wir uns darauf beschränken, dass \cursive{F} eine endliche Menge ist.
+Desweiteren gibt es das \textsc{F-Free Edge Editing}, wo \textsc{F} keine Menge von Graphen, sondern nur ein Graph ist. \\
 
 
 \textbf{Ähnliche Probleme:}
@@ -157,20 +153,19 @@ Es gibt auch das \textsc{F-Free Edge Editing}. Hier ist \textsc{F} keine Menge v
 
 \subsection{Anwendungsbeispiele}
 \label{sec:examples}
-In diesem Abschnitt werden wir auf einige Anwendungsfälle eingehen, warum Graphen mit bestimmten Eigenschaften gewünscht sind.
+In diesem Abschnitt werden auf einige Anwendungsfälle eingegangen, warum Graphen mit bestimmten Eigenschaften gewünscht sind.
 \subsubsection{\textsc{Maximum Clique} auf Co-Graphen}
 %TODO: Maximun Clique
-Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann können wir \textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist das Ergebnis für den Graphen $G$. Somit können wir das Problem also in kleinere Probleme zerlegen.
-Außerdem gilt es, dass das Finden einer Clique in einem Graphen $G$ äquivalent zum Finden einer stabilen Menge in dem Komplementgraphen  von $G$ ist.
-Wir können also unser Problem weiter zerlegen, indem wir das Komplement von jeder Zusammenhangkomponente nehmen und es wieder in ihre Zusammenhangkomponenten zerlegen. Dabei gilt dass, eine maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponente ist.
+Um das Problem der \textsc{Maximum Clique} auf einem Graphen $G$ zu finden, so ist es offensichtlich, dass wenn der Graph zwei Zusammenhangkomponenten hat, dann möglich ist \textsc{Maximum Clique} auf den beiden Komponenten lösen und das Maximum davon ist das Resultat für den Graphen $G$. Somit kann das Problem also in kleinere Probleme zerlegt werden.
+Außerdem gilt es, dass das Finden einer Clique in einem Graphen $G$ äquivalent zum Finden einer stabilen Menge in dem Komplementgraphen von $G$ ist.
+Es ist also möglich das Problem weiter zerlegen, indem das Komplement von jeder Zusammenhangkomponente genommen wird und es wieder in ihre Zusammenhangkomponenten zerlegt wird. Dabei gilt dass, eine maximale stabile Menge die Vereinigung aller maximalen stabilen Mengen der Zusammenhangkomponente ist.
 
-Eine solche Vorgehensweise ist offensichtlich sehr attraktiv um ein schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen hat jedoch ein Problem, der Graph $G$ keine Zusammenhangkomponenten hat und der Komplementgraphen von $G$
+Eine solche Vorgehensweise ist offensichtlich sehr attraktiv um ein schweres Problem, wie \textsc{Maximum Clique} es ist, zu lösen. Dieses Vorgehen kommt jedoch in eine Sackgasse, wenn der Graph $G$ keine Zusammenhangkomponenten hat und der Komplementgraphen von $G$ TODO ???.
+Dann funktioniert diese Vorgehensweise nicht mehr. 
 
-Dann funktioniert unsere Vorgehensweise nicht mehr. 
-Aber es gibt eine Klasse von Graphen, die "complement reducible graphs" oder kurz Co-Graphen, die so definiert worden ist, dass es nicht zu dem eben beschriebenen Problem kommt.
+Aber es gibt eine Klasse von Graphen, die "complement reducible graphs" oder kurz Co-Graphen, die so definiert worden ist, dass es nicht zu dem eben beschriebenen Sackgasse nicht kommen kann.
+Das bedeutet, dass \textsc{Maximum Clique} in linearer Zeit auf solchen Graphen lösbar ist, während auf allgemeinen Graphen \textsc{Maximum Clique} NP-Vollständig ist.
 Diese Klasse von Graphen ist auch durch charaktereriesiert, dass sie keinen $P_4$ als induzierten Teilgraphen enthalten \cite{NastosG13}.
-Weil es nun bei dieser Klasse von Graphen nie dazu dem Problem kommt, können wir \textsc{Maximum Clique} in linearer Zeit auf solchen Graphen lösen, während auf allgemeinen Graphen dieses Problem NP-Vollständig ist.
-
 
 \subsubsection{Soziale Netzwerke}
 $(P_4,C_4)$-freie Graphen modellieren eine familiäre Struktur oder eine Gemeinschaft die hierarchisch organisiert ist. Diese Graphen werden auch trivial perfekte Graphen oder quasi-threshold Graphen genannt\cite{Wolk65}. 
@@ -217,7 +212,7 @@ In der Abbildung \ref{fig:quasi-threhold} ist solch ein Quasi-Threshold Graph zu
   \label{fig:quasi-threhold}
 \end{wrapfigure}
 
-Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch soziale Strukturen, wie eine Hierarchie in einer Organisation. Sei die Knoten Personen und die Kanten stellen die Wege dar, auf denen die Befehle fließen. Fast alle haben einen Vorgesetzten (bis auf die Wurzel) und nehmen Befehle vom ihm an, was durch die Baumstruktur modelliert wird. Aber sie hören auch auf die Befehle von dem Vorgesetzen des Vorgesetzen, was durch den transitiven Abschluss modelliert wird\cite{NastosG13}. 
+Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch soziale Strukturen, wie eine Hierarchie in einer Organisation. Dabei modelieren die Knoten Personen und die Kanten stellen die Wege dar, auf denen die Befehle fließen. Fast alle haben einen Vorgesetzten (bis auf die Wurzel) und nehmen Befehle von dem Vorgesetzten an, was durch die Baumstruktur modelliert wird. Aber sie hören auch auf die Befehle von dem Vorgesetzen des Vorgesetzen, was durch den transitiven Abschluss modelliert wird\cite{NastosG13}. 
 
 Ähnlich dazu sind $(P_5,C_5)$-freie Graphen die auch soziale Strukturen modellieren und dafür geeignet sind Gemeinschaften zu identifizieren \cite{Schoch15}. 
 
@@ -285,19 +280,21 @@ Solche Graphen modellieren eine große Anzahl von Netzwerken. Unter anderem auch
   \caption{Die verbotenen Graphen in einem Split-Graphen}\label{fig:split_graphs}
 \end{figure}
 Im Abschnitt \ref{sec:mot} haben wir Cluster-Graphen betrachtet, wo jede Zusammenhangkomponente eine Clique ist.
-Split-Graphen sind ähnliche Graphen, aber bestehen nur aus einer Clique und einigen Knoten, die an der Clique anhängen. Formell definiert heißt es, dass man den Menge der Knoten des Graphens in zwei Mengen $V_1$ und $V_2$ teilen kann, sodass G[$V_1$] ein stabile Menge und eine G[$V_2$] eine Clique ist. Split-Graphen sind $(2K_2, C_4, C_5)$-freie Graphen. Ein Split-Cluster Graph ist ein Graph wo jede Zusammenhangkomponente ein Split-Graph ist \cite{BrucknerHK15}.
+Split-Graphen sind ähnliche Graphen, aber bestehen nur aus einer Clique und einigen Knoten, die an der Clique anhängen. Formell definiert heißt es, dass man die Menge der Knoten des Graphens in zwei Mengen $V_1$ und $V_2$ teilen kann, sodass G[$V_1$] ein stabile Menge und G[$V_2$] eine Clique ist. Split-Graphen lassen sich als $(2K_2, C_4, C_5)$-freie Graphen beschrieben. 
+Dazu ist Split-Cluster Graph ein Graph wo jede Zusammenhangkomponente ein Split-Graph ist \cite{BrucknerHK15}.
 
-Diese Struktur modelliert gut Protein-Protein Interaktion Netzwerke. In Körper vom Menschen oder anderen Lebewesen gibt es eine Vielzahl von Proteinen, die einen Zweck haben, aber diesen erfüllen sie meistens nicht alleine, sondern in dem sie Proteinkomplexe bilden. Diese Protein-Komplexe bestehen aus einer großen Anzahl von Proteinen und sind nicht einfach zu untersuchen. Ein Weg um solche Proteinkomplexe zu identifizieren besteht darin, herauszufinden welche Proteine mit welche Proteinen überhaupt interagieren. So kann man die diese Proteine als Knoten ansehen und wenn es eine Interaktion zwischen diesen Proteinen gibt, diese als eine Kante ansehen. 
-Ein Proteinkomplex hat einen Kern, wo jedes Protein mit jedem Protein interagiert und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Proteinkomplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen.
+Diese Struktur modelliert gut Protein-Protein Interaktionsnetzwerke. In Körper vom Menschen oder anderen Lebewesen gibt es eine Vielzahl von Proteinen, die einen Zweck haben, aber diesen erfüllen sie meistens nicht alleine, sondern in dem sie Proteinkomplexe bilden. Diese Protein-Komplexe bestehen aus einer großen Anzahl von Proteinen und sind nicht einfach zu untersuchen. Ein Weg um solche Proteinkomplexe zu identifizieren besteht darin, herauszufinden welche Proteine mit welche Proteinen überhaupt interagiert. So kann man diese Proteine als Knoten ansehen und wenn es eine Interaktion zwischen diesen Proteinen gibt, diese als eine Kante ansehen. 
+Ein Proteinkomplex hat einen Kern, wo jedes Protein mit jedem Protein interagiert und Anhängsel, einzelne Proteine, die nur mit dem Kern interagieren. Damit modellieren Split-Cluster-Graphen die Struktur von Proteinkomplexen und können dazu verwendet werden um Protein-Komplexe zu bestimmen\cite{BrucknerHK15}.
 
 \subsection{Annäherung}
-Jedoch haben die Eingabedaten typischerweise Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen zu gewissen Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit er die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.
+Jedoch haben die Eingabedaten typischerweise Fehler oder sind unvollständig. So können in einem Cluster-Graphen bestimmte Kanten fehlen, obwohl sie dazu gehören sollten. Oder in Split-Cluster-Graphen fehlen Informationen zu Interaktionen von gewissen Paaren von Proteinen. Weil die Daten nun fehlerhaft sind, stellt sich die Frage, wie viele und welche Änderung müssen am Graphen getan werden, damit der Graph die erwünschte Struktur hat. Wenn man nun die Struktur durch eine Menge \cursive{F} von verbotenen Graphen charakterisiert, nennt sich das Problem \textsc{\cursive{F}-Free Edge Editing}.
 
-Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen \cite{Burzyn06}. Nun ist es möglich dieses Problem nicht perfekt zu lösen indem wir die minimale Anzahl von Änderungen finden, sonder einfach eine möglichst kleine Anzahl von Änderungen.
+Nun ist \textsc{\cursive{F}-Free Edge Editing} für die meisten \cursive{F} sehr aufwendig zu lösen \cite{Burzyn06}, weil NP-Vollständig ist. 
+Deswegen ist es attraktiv dieses Problem nicht perfekt zu lösen, indem die minimale Anzahl von Änderungen gefunden wird, sonder einfach eine möglichst kleine Anzahl von Änderungen.
 
-Was bringt es aber, wenn man nur eine Annäherung hat? Wenn der zugrunde liegende Graph eine gewisse Struktur hat, kann auch mit 2-mal soviel Änderungen wie es nötig, eine ganz andere Struktur aufgedeckt oder eher erzeugt werden. Auch wenn wenn in den Experimenten festgestellt wurde, dass die Heuristik um 1.7x größere Menge von zu änderenden Kanten zurückgibt, wie kann diese Heuristiken sinnvoll verwenden?
+Was bringt es aber, wenn man nur eine Annäherung hat?  Ersten soll es die Frage klären, wie gut eine allgemeine Heuristik ist, im Vergleich zu den auf spezifische Anwendungsfälle zugeschnittenen Heuristiken. Lohnt es sich überhaupt für spezifische Heuristiken zu entwickeln? 
 
-Ersten soll es die Frage klären, wie gut eine allgemeine Heuristik ist im Vergleich zu den auf spezifische Anwendungsfälle zugeschnittenen Heuristiken. Lohnt es sich überhaupt für spezifische Heuristiken zu entwickeln? 
+TODO: zweitens?
 
 
 %\subsubsection{Bicluster Editing}
@@ -307,10 +304,7 @@ Ersten soll es die Frage klären, wie gut eine allgemeine Heuristik ist im Vergl
 
 \subsection{Ähnliche Arbeiten}
 \subsubsection{Hardness}
-
 Einige Edge Editing/Deletion/Completion Probleme wurde in \cite{Natanzon01} und in untersucht. Weitere Hardness Resulate wurden in \cite{Burzyn06} erbracht.
-
-
 
 
 \subsubsection{Approximationen}
@@ -340,16 +334,16 @@ Im Abschnitt \ref{sec:algos} werden die Ansätze vorstellt um dieses Problem zu 
 In diesem Abschnitt werden die verschiedenen Heuristik-Ansätze für \textsc{\cursive{F}-Free Edge Editing} vorgestellt.
 Die im nachfolgenden beschriebenen Algorithmen basieren alle auf dem folgenden Prinzip: Suche einen validen Graphen, welcher die verbotenen Subgraphen nicht enthält. Wiederhole dies mehrmals und gebe dann die Differenz zwischen dem besten validen Graphen und dem Eingabegraphen aus.
 
-Dieses Prinzip ist im Algorithmus \ref{algo:general} zu sehen. Dort ist \vars{$G_{input}$} der Eingabegraph, \vars{F} die Menge der verbotenen Teilgraphen und \vars{$i_{max}$} die Angabe wie oft der Algorithmus wiederholt werden soll. Dabei steht \func{SolveAlgo} für einen der Algorithmen, die wir in den folgenden Abschnitten betrachten werden.
+Dieses Prinzip ist im Algorithmus \ref{algo:general} zu sehen. Dort ist \vars{$G_{input}$} der Eingabegraph, \cursive{F} die Menge der verbotenen Teilgraphen und \vars{$i_{max}$} die Angabe wie oft der Algorithmus wiederholt werden soll. Dabei steht \func{SolveAlgo} für einen der Algorithmen, die in den folgenden Abschnitten betrachtet werden.
 \begin{algorithm}
   \captionof{algorithm}{Genereller Aufbau}\label{algo:general}
 \begin{algorithmic}[1]
-\Function{Solve}{\vars{$G_{input}$}, \vars{F}, \vars{$i_{max}$}}
+\Function{Solve}{\vars{$G_{input}$}, \cursive{F}, \vars{$i_{max}$}}
 
 \State{\vars{$G_{best}$} $\gets$ $(\emptyset,\emptyset)$}
 
 \For{\vars{i} = 1 to \vars{$i_{max}$}}
-	\State{\vars{$G_{valid}$} $\gets$ \func{solveAlgo}(\vars{$G_{input}$}, \vars{F})}
+	\State{\vars{$G_{valid}$} $\gets$ \func{solveAlgo}(\vars{$G_{input}$}, \cursive{F})}
 	\If{\#(\func{diff}(\vars{$G_{best}$}, \vars{$G_{input}$})) < \#(\func{diff}(\vars{$G_{valid}$}, \vars{$G_{input}$}))}
 		\State{\vars{$G_{best}$} $\gets$ \vars{$G_{valid}$}}
 	\EndIf  
@@ -364,7 +358,7 @@ Da alle Ansätze diese Schritte enthalten und sich nur darin unterschieden, wie 
 
 Die entwickelten Ansätze sind in 3 große Gruppen zu unterteilen.
 Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht. Der Forward-Ansatz fängt mit einem leeren oder vollen Graphen an, und ändert solange Konten, bis man möglichst nahe an dem Eingabegraphen ist.
-Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es prinzipielle zwei Stufen gibt. In der Grow-Stufe werden mögliche Kanten eingefügt und in der Reduce-Stufe werden Kanten entfernt.
+Der Grow-Reduce-Ansatz kombiniert diese beiden Ansätze, indem es zwei Stufen gibt. In der Grow-Stufe werden mögliche Kanten eingefügt und in der Reduce-Stufe werden Kanten entfernt.
 
 \subsection{Backward-Ansatz}
 Der Backward-Ansatz nimmt den Graphen und ändert ihn solange, bis ein gültiger Graph entsteht.
@@ -374,9 +368,9 @@ Das ist der einfachste Algorithmus. Solange der Graph verbotene Subgraphen hat, 
 \begin{algorithm}
   \captionof{algorithm}{RandomFlip}\label{algo:RandomFlip}
 \begin{algorithmic}[1]
-\Function{RandomFlip}{\vars{$G$}, \vars{$F$}}
+\Function{RandomFlip}{\vars{$G$}, \cursive{F}}
 \While{$G$ is not valid}
-\For{every Graph \vars{f} $\in$ \vars{$F$} }
+\For{every Graph \vars{f} $\in$ \cursive{F} }
 	\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}($G$, \vars{f})}
 	\While{forbiddenSubgraph  $\neq \emptyset$}
 		\State{change the edge in $G$ corresponding to an random edge in \vars{forbiddenSubgraph}}
@@ -427,16 +421,16 @@ Der große Unterschied zu zum RandomFlip sehen wir ab Zeile  \ref{algo:randomFli
 \end{algorithm}
 
 \subsection{Forward-Ansatz}
-Die Forward-Ansätze zeichnet sich dadurch aus, dass wir mit einem Graphen beginnen, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten.
+Der Forward-Ansatz zeichnnet sich dadurch aus, dass wir mit einem Graphen beginnen, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten.
 Dieser Graph ist somit valide, weil er keine verbotenen Subgraphen enthält.
 Dies ist ein Vorteil gegenüber den Top-Bottom-Ansätzen, da es möglich ist immer einen validen Graphen zu haben und somit jederzeit terminieren.
  
 \subsubsection{Extend}
 Zu sehen die Vorgehensweise in Algorithmus \ref{algo:extend}.
-Er fängt mit einem Graphen an, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten (Zeile \ref{algo:extend:start}). Dann wird versucht jede Kante einzufügen, die auch im originalen Graphen \vars{input} vorhanden war (Zeile \ref{algo:extend:each}). Wenn es einen invaliden Graphen erzeugt, also dass es nun einen verbotenen Teilgraphen im \vars{graph} gibt, dann wird die Änderung rückgängig gemacht (Zeile \ref{algo:extend:change}).
+Er fängt mit einem Graphen an, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten (Zeile \ref{algo:extend:start}). Dann wird versucht jede Kante einzufügen, die auch im originalen Graphen $G$ vorhanden war (Zeile \ref{algo:extend:each}). Wenn es einen invaliden Graphen erzeugt, also dass es nun einen verbotenen Teilgraphen im \vars{graph} gibt, dann wird die Änderung rückgängig gemacht (Zeile \ref{algo:extend:change}).
 Wenn nun keine Änderung in einem Durchlauf gemacht wurden, dann bricht der Algorithmus ab (Zeile \ref{algo:extend:break}) und gibt den erzeugen Graphen zurück. 
 
-Ein beispielsweiser Ablauf für den Extend-Algorithmus, wo $P_3$ der verbotene Teilgraph ist ist in der Abbildung \ref{fig:algo:extend} zu sehen. Dabei wird der Graph \vars{graph} dargestellt und eine gestrichelte Kante gibt an, wenn die Kante in dem Graphen \vars{input} vorhanden ist, aber nicht in dem Graphen \vars{input}. Wenn die Kante rot ist, dann wurde versucht die Kante einzufügen, aber es hat eine $P_3$ erzeugt, wenn die Kante grün ist, dann wurde die Kante eingefügt, ohne dass ein $P_3$ erzeugt wurde.
+Ein beispielsweiser Ablauf für den Extend-Algorithmus, wo $P_3$ der verbotene Teilgraph ist, ist in der Abbildung \ref{fig:algo:extend} zu sehen. Dabei wird der Graph \vars{graph} dargestellt und eine gestrichelte Kante gibt an, wenn die Kante in dem Graphen $G$ vorhanden ist, aber nicht in dem Graphen \vars{input}. Wenn die Kante rot ist, dann wurde versucht die Kante einzufügen, aber es hat eine $P_3$ erzeugt, wenn die Kante grün ist, dann wurde die Kante eingefügt, ohne dass ein $P_3$ erzeugt wurde.
 
 Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in dem Eingabe-Graphen nicht vorhanden waren.
 
@@ -506,11 +500,11 @@ Es ist zu sehen, dass dieser Algorithmus keine Kanten hinzufügt, die nicht in d
 Nach dem experimentellen Untersuchen der Forward und Backward-Ansätze wurden deren Stärken und Schwächen deutlich. So kam auch die Idee diese beiden Ansätze zu kombinieren. Nach dem Planen und der Umsetzung einer solchen kombinierten Heuristik, hat die Recherche ergeben, dass es eine sehr ähnliche Art von Algorithmen bereits beschrieben wurde und unter dem dem Namen GRASP (Greedy Randomized Adaptive Search Procedure) \cite{Feo95} \cite{Bastos2014} bekannt ist. Es ist eine iterative Vorgehensweise wobei jede Iteration aus zwei Phasen besteht: 
 \begin{itemize}
 \item \textbf{Konstruktions-Phase.} Es wird mit einem leeren Graphen angefangen und nach und nach werden Knoten/Kanten nach einem bestimmten Kriterium hinzugefügt.
-\item \textbf{Lokale Suche.} Da die Lösung, die in der Konstruktions-Phase generiert wurde, meistens nicht optimal ist, auch nicht in der einfachen Nachbarschaft. Deswegen wird in der Lokalen Suche versucht die Lösung zu verbessern, indem man nach und nach die derzeitige Lösung durch eine bessere Lösung in der Nachbarschaft ersetzt.
+\item \textbf{Lokale Suche.} Da die Lösung, die in der Konstruktions-Phase generiert wurde, meistens nicht optimal ist, auch nicht in der einfachen Nachbarschaft. Deswegen wird in der lokalen Suche versucht die Lösung zu verbessern, indem man nach und nach die derzeitige Lösung durch eine bessere Lösung in der Nachbarschaft ersetzt.
 \end{itemize}
 Dieser GRASP Ansatz wurde auch schon erfolgreich für das Biclustering-Problem verwendet \cite{De12}.
 
-Unsere Ansätze unterscheidet sich darin von den GRASP-Algorithmen, dass wir nicht in jeder Iteration einen neuen Graphen Konstruieren, sondern auf dem bereits konstruieren Graphen weiter arbeiten. 
+Unsere Ansätze unterscheidet sich darin von den GRASP-Algorithmen, dass wir nicht in jeder Iteration einen neuen Graphen konstruieren, sondern auf dem bereits konstruierten Graphen weiter arbeiten. 
 
 \subsubsection{Grow-Reduce}
 Der Grow-Reduce-Ansatz sieht wie folgt aus: Begonnen wird mit einem Graphen, der die selben Knoten wie der Eingabegraph hat, aber keine Kanten. Dann wird in jeder Iteration ein Knoten und seine Umgebung hinzugefügt und durch lokale Suche werden alle neu entstandenen verbotenen Subgraphen wieder entfernt. Dies ist im Algorithmus \ref{algo:growReduce} zu sehen. 
