@@ -55,16 +55,14 @@ Graphen so zu modifizieren, dass sie gewisse induzierte Teilgraphen nicht mehr e
   
 \section{Einleitung}
 
-Graphen sind eine bildliche Darstellung von Beziehungen zwischen Objekten. Dabei stellt man die Objekte als Kreise (auch Knoten genannt) und die Beziehungen als Linien, die diese Kreise verbinden (auch Kanten genannt) \cite{Nastos06}.
-
-Graphen können eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel können die Knoten Städte und die Kanten Zugverbindungen zwischen diesen Städten sein und somit wird der Graph das Zugnetzwerk von diesen Städten modellieren. 
+Graphen sind eine bildliche Darstellung von Beziehungen zwischen Objekten. Damit können sie eine Vielzahl von Problemen und Szenarien modellieren. Zum Beispiel können die Knoten Städte und die Kanten Zugverbindungen zwischen diesen Städten sein und somit wird der Graph das Zugnetzwerk von diesen Städten modellieren \cite{Nastos06}. 
 
 \subsection{Motivation}
 \label{sec:mot}
 Wird nun ein System von Objekten mittels einem Graphen modelliert, hat der Graph ebenso wie das modellierte System gewisse Eigenschaften.
 
-Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Diese Graphen werden Cluster-Graphen  genannt. Diese bestehen aus einer oder mehreren Komponenten, in welcher jeder Knoten mit jedem Knoten verbunden ist.
-Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie gewisse Strukturen nicht besitzen und zwar dass sie in diesem Fall nicht den Graphen $P_3$ als einen induzierten Graphen haben. Der $P_3$ Graph ist in der Abbildung \ref{fig:mot-p3} zu sehen.
+Eine solche Eigenschaft wäre, dass wenn ein Knoten $u$ mit einem anderen Knoten $v$ verbunden ist, so ist $u$ auch mit allen Nachbarn von $v$ verbunden. Graphen mit dieser Eigenschaft werden Cluster-Graphen  genannt. Diese bestehen aus einer oder mehreren Komponenten, in welcher jeder Knoten mit jedem Knoten verbunden ist.
+Diese Cluster-Graphen lassen sich aber auch dadurch charakterisieren, dass sie gewisse Strukturen nicht besitzen und zwar, dass sie nicht den Graphen $P_3$ als einen induzierten Graphen haben. Der $P_3$ Graph ist in der Abbildung \ref{fig:mot-p3} zu sehen.
 Einen $P_3$ als induzierten Teilgraphen zu haben, bedeutet, dass man jedem Knoten aus dem $P_3$ einen Knoten aus dem Graphen zuordnen kann, sodass gilt, wenn zwei Knoten im $P_3$ durch eine Kante verbunden sind, so sind auch die entsprechenden Knoten in dem Graphen durch eine Kante verbunden und umgekehrt.
  
 Erklären lässt sich das an der Abbildung \ref{fig:mot}.
@@ -72,7 +70,7 @@ In dem Graphen $G_1$ in der Abbildung \ref{fig:mot-1} sehen wir, dass der Teilgr
 So sehen wir, dass im Graphen $P_3$ $a$ und $c$ verbunden ist und im  
 $G_1$ auch $B$ und $D$ verbunden ist. Auch ist $B$ und $C$ in Graphen $G_1$ nicht verbunden und $a$ und $b$ ebenso.  Man kann überprüfen, dass die Voraussetzung für jede beliebiges Paar von Knoten geben ist und so ist der rot markierte Teilgraph ein von $P_3$ induzierte Teilgraph. 
 
-Der Graph $G_2$ (Abbildung \ref{fig:mot-2})hat keinen $P_3$ als induzierten Teilgraphen, weil wir nicht die Knoten vom $P_3$ zu Knoten in diesem Graphen zu zuordnen können, sodass unsere Voraussetzung erfüllt bleibt. Wenn wir zum Beispiel, die Zuordnung vom Knoten $a$ zum Knoten $A$, $b$ zu $B$ und $c$ zu $C$ nehmen, sehen wir das Problem, dass wir eine Kante zwischen $A$ und $C$ haben aber keine Kante zwischen $a$ und $b$. Somit ist das keine gültige Zuordnung. Man kann aber auch nachvollziehen, dass egal wie die Zuordnung gewählt wird, es nicht möglich ist die Bedingung zu erfüllen.
+Der Graph $G_2$ in der Abbildung \ref{fig:mot-2} hat keinen $P_3$ als induzierten Teilgraphen, weil wir nicht die Knoten vom $P_3$ zu Knoten in diesem Graphen zuordnen können und dabei unsere Voraussetzung erfüllt bleibt. Wenn wir also zum Beispiel, die Zuordnung vom Knoten $a$ zum Knoten $A$, $b$ zu $B$ und $c$ zu $C$ nehmen, sehen wir das Problem, dass wir eine Kante zwischen $A$ und $C$ haben aber keine Kante zwischen $a$ und $b$. Somit ist das keine gültige Zuordnung. Man kann aber auch nachvollziehen, dass egal wie die Zuordnung gewählt wird, es nicht möglich ist, die Bedingung zu erfüllen.
 
 \begin{figure}
   \centering
@@ -107,17 +105,19 @@ In dieser Arbeit werden wir uns die Methoden anschauen, welche einen Graphen so 
 \subsection{Definitionen}
 \subsubsection{Notationen und Definitionen}
 \label{sec:notation}
-Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und $E$ die Menge seiner Kanten.
+Mit Graphen sei im Folgenden stets ein ungerichteter, einfacher Graph gemeint. Wenn nicht anders angegeben ist, ist $G=(V,E)$ ein Graph, $V$ die Menge seiner Knoten und $E$ die Menge seiner Kanten.
 
-Die Menge der Konten des Graphen $G$ ist $V(G)$ ist und die Menge der Kanten des Graphen $G$ heißt $E(G)$. Die Nachbarschaft vom Knoten $u$ heißt $N(u)$,  während $N^{*}(u)$ ist die Nachbarschaft von $u$ mit $u$ inklusive ist.
+Die Menge der Knoten des Graphen $G$ ist $V(G)$ und die Menge der Kanten des Graphen $G$ heißt $E(G)$. Die Nachbarschaft vom Knoten $u$ heißt $N(u)$, während $N^{*}(u)$ die Nachbarschaft von $u$ mit $u$ inklusive ist.
 
 Sei $G = (V,E)$ ein Graph und $S \subseteq V$ eine beliebige Knotenmenge von $V$. 
 Dann ist $G[S] = (S, E \cap \{\{u,v\} \,|\, u \in S \land w \in S\})$ der durch $S$ induzierte Subgraph von $G$.
 
-Seien $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$ sodass wenn $(u,v) \in E_H $, dann gilt auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
+Seien $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus von H nach G ist eine Funktion $f : V_H \rightarrow V$, sodass wenn $(u,v) \in E_H $ gilt, dann gilt auch $(f(u),f(v)) \in E$. $f$ ist ein induzierter Subgraph-Isomorphismus, wenn es auch gilt, dass wenn $(u,v) \notin E_H$, dann auch $(f(u),f(v)) \notin E$.
 
 Seinen $G$ und $F$ Graphen, dann ist der Graph $G$ \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
-Für eine Menge \cursive{F} von Graphen, heißt $G$ \cursive{F}-frei, wenn $G$ \textit{F}-frei ist für jeden \textit{F} $\in \cursive{F}$.
+Für eine Menge \cursive{F} von Graphen, heißt der Graph $G$ \cursive{F}-frei, wenn $G$ \textit{F}-frei ist für jeden \textit{F} $\in \cursive{F}$.
+
+Die Editierdistanz $\Delta(G, \cursive{F})$ ist die minimale Anzahl von Kantenänderungen an G, damit G \cursive{F}-frei ist.\\ Die normierte Editierdistanz $\Delta^{*}(G, \cursive{F})$ ist $\frac{\Delta(G, \cursive{F})}{|E(G)|^{2}}$
 
 TODO: Siehe \cite{Cai96} für eine Definition von FPT und Kernel.
 
@@ -836,6 +836,12 @@ Die Schlussfolgerung von diesem Benchmark ist, dass die VFLib und Boost Algorith
 
 \section{Auswertung}
 \label{sec:results}
+
+Zuerst eine grober Vergleich.
+
+
+\includegraphics[scale=0.3]{plots/table_all.png}
+
 \subsection{Backward-Ansatz}
 \subsection{Forward-Ansatz}
 \subsection{Grow-Reduce-Ansatz}
