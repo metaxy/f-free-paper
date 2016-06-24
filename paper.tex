@@ -117,7 +117,9 @@ Seien $H = (V_H,E_H)$ und $G =(V,E)$ zwei Graphen. Ein Subgraph-Isomorphismus vo
 Seinen $G$ und $F$ Graphen, dann ist der Graph $G$ \textit{F}-frei, wenn es nicht \textit{F} als induzierten Subgraphen enthält.
 Für eine Menge \cursive{F} von Graphen, heißt der Graph $G$ \cursive{F}-frei, wenn $G$ \textit{F}-frei ist für jeden \textit{F} $\in \cursive{F}$.
 
-Die Editierdistanz $\Delta(G, \cursive{F})$ ist die minimale Anzahl von Kantenänderungen an G, damit G \cursive{F}-frei ist.\\ Die normierte Editierdistanz $\Delta^{*}(G, \cursive{F})$ ist $\frac{\Delta(G, \cursive{F})}{|E(G)|^{2}}$
+Die Editierdistanz  $\Delta(G_1,G_2)$ zwischen zwei Graphen $G_1$ und $G_2$ ist definiert als die symmetrische Differenz der Kantenmengen der beiden Graphen $\Delta(G_1,G_2) = E(G_1) \Delta E(G_2)$. Die normierte Editierdistanz $\Delta^{*}(G_1,G_2)$ zwischen zwei Graphen $G_1$ und $G_2$ ist  $\Delta^{*}(G_1,G_2) =  \frac{\Delta(G_1,G_2)}{|E(G_2)|^2}$
+
+%Die Editierdistanz $\Delta(G, \cursive{F})$ ist die minimale Anzahl von Kantenänderungen an G, damit G \cursive{F}-frei ist.\\ Die normierte Editierdistanz $\Delta^{*}(G, \cursive{F})$ ist $\frac{\Delta(G, \cursive{F})}{|E(G)|^{2}}$
 
 Ein ungerichteter Graph $G$ heißt Wald, wenn er keinen Zyklus enthält. Ist der Graph $G$ zudem zusammenhängend, dann heißt er auch Baum. Jede Zusammenhangkomponente eines Waldes ist daher ein Baum.
 
@@ -344,12 +346,12 @@ Dieses Prinzip ist im Algorithmus \ref{algo:general} zu sehen. Dort ist \vars{$G
 
 \For{\vars{i} = 1 to \vars{$i_{max}$}}
 	\State{\vars{$G_{valid}$} $\gets$ \func{solveAlgo}(\vars{$G_{input}$}, \cursive{F})}
-	\If{\#(\func{diff}(\vars{$G_{best}$}, \vars{$G_{input}$})) < \#(\func{diff}(\vars{$G_{valid}$}, \vars{$G_{input}$}))}
+	\If{|$\Delta$(\vars{$G_{input}$}, \vars{$G_{best}$})| < |$\Delta$(\vars{$G_{input}$}, \vars{$G_{valid}$})|}
 		\State{\vars{$G_{best}$} $\gets$ \vars{$G_{valid}$}}
 	\EndIf  
 \EndFor
 
-\State{print \func{diff}(\vars{$G_{input}$}, \vars{$G_{best}$})}
+\Return{$\Delta$(\vars{$G_{input}$}, \vars{$G_{best}$})}
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
@@ -526,9 +528,9 @@ Die Grow-Phase ist mit der Konstruktion-Phase des GRASP-Ansatzes vergleichbar un
 			\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph},\vars{f})}
 			\While{\vars{forbiddenSubgraph} != $\emptyset$}
 				\State{\vars{edge} $\gets$ random Edge from \vars{forbiddenSubgraph}}
-				\State{\vars{count} $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\State{\vars{count} $\gets$ |(\func{findAllFS}(\vars{graph},\vars{f})|}
 				\State{flip \vars{edge} in \vars{graph}}
-				\State{countAfter $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\State{countAfter $\gets$ |(\func{findAllFS}(\vars{graph},\vars{f})|}
 				\If{\vars{countAfter} $\geq$ \vars{count}}
 					\State{flip \vars{edge} in \vars{graph}}
 				\EndIf
@@ -593,9 +595,9 @@ In Abbildung \ref{fig:algo_explored_3} wird der Knoten $c$ hinzugefügt und somi
 			\State{\vars{forbiddenSubgraph} $\gets$ \func{findFS}(\vars{graph},\vars{f})}
 			\While{\vars{forbiddenSubgraph} != $\emptyset$}
 				\State{\vars{edge} $\gets$ random Edge from \vars{forbiddenSubgraph}}
-				\State{\vars{count} $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\State{\vars{count} $\gets$ |\func{findAllFS}(\vars{graph},\vars{f})|}
 				\State{flip \vars{edge} in \vars{graph}}
-				\State{countAfter $\gets$ \#(\func{findAllFS}(\vars{graph},\vars{f}))}
+				\State{countAfter $\gets$ |\func{findAllFS}(\vars{graph},\vars{f})|}
 				\If{\vars{countAfter} $\geq$ \vars{count}}
 					\State{flip \vars{edge} in \vars{graph}}
 				\EndIf
