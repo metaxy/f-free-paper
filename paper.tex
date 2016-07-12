@@ -475,8 +475,8 @@ Im Algorithmus \ref{algo:is_valid} sehen wir eine Funktion, die eine Graphen dar
   \captionof{algorithm}{Zufällige Kante aus dem Eingabegraphen}\label{algo:is_valid}
 \begin{algorithmic}[1]
 \Function{randomEdge}{\vars{f}}
-  \State{\vars{u} $\gets$ random node from $Bild(\vars{f})$
-  \State{\vars{v} $\gets$ random node from $Bild(\vars{f}) \setminus \{u\}$
+  \State{\vars{u} $\gets$ random node from $Bild(\vars{f})$}
+  \State{\vars{v} $\gets$ random node from $Bild(\vars{f}) \setminus \{u\}$}
   \Return{$(\vars{u},\vars{v})$}
 \EndFunction
 \end{algorithmic}
@@ -518,8 +518,8 @@ Den großen Unterschied zu zum RandomFlip sehen wir ab Zeile  \ref{algo:randomFl
 \begin{algorithmic}[1]
 \Function{RandomFlipUnchanged}{$G$, \cursive{F}}
 	\While{\vars{forbidden} $\gets$ \func{findFS}(\vars{$G$},  \cursive{F})}
-		\While{true\label{algo:randomFlipUnchanged:select}}
-			\State{\vars{e} $\gets$ \func{randomEdge}(\vars{forbidden)}
+		\While{true} \label{algo:randomFlipUnchanged:select}
+			\State{\vars{e} $\gets$ \func{randomEdge}(\vars{forbidden}}
 			\State{\vars{maxEdges} $\gets$ $\binom{|Bild(\vars{forbidden})|}{2}$}
 			\If{e is already visited}
 				\State{\vars{prob} $\gets$ 1 / $4 \cdot \vars{maxEdges}$} \label{algo:randomFlipUnchanged:prob4}
@@ -1186,7 +1186,7 @@ Graph & \textbf{ExploredGrowReduce} & \textbf{Quasi-Threshold-Mover} \\
 \end{table}
 
 
-\section{Zusammenfassung}\\
+\section{Zusammenfassung}
 In dieser Arbeit wurde gezeigt, dass es möglich ist, gute Heuristiken für \textsc{\cursive{F}-Free Edge Editing} zu finden. Dafür wurden 3 Ansätze entwickelt. Der Forward-Ansatz modifiziert den Graphen so lange bis er \cursive{F}-frei ist. Der Backward-Ansatz baut den Graphen aus einem leeren Graphen auf, bis er möglichst nahe an dem Eingabegraphen ist und dabei \cursive{F}-frei bleibt. Der Grow-Reduce-Ansatz kombiniert diese beiden Ansatz und baut iterativ den Graphen auf und dann modifiziert ihn durch lokale Suche, sodass er \cursive{F}-frei wird. Der Forward-Ansatz zeichnet sich durch gute Lösungen für kleine Graphen aus, während der Backward-Ansatz sich durch eine schnelle Laufzeit auszeichnet. Die besten Lösungen liefern aber der ExploreGrowReduce-Algorithmus, ist jedoch auf großen Graphen nicht sehr schnell.
 Der Vergleich mit anderen Heuristiken hat ergeben, dass die speziellen Heuristiken bessere Ergebnisse liefern, aber diese Lösungen durchschnittlich nur um 70\% besser sind.
 
